@@ -27,9 +27,19 @@ const usd = (n: number) => '$ ' + n.toFixed(2)
 // Alles uit de database dat in de mail komt gaat hierdoorheen; kind is sinds 7 sep een vaste lijst, maar oude rijen niet.
 const esc = (s: unknown) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string))
 
+// Geheim vergelijken zonder dat de duur verraadt waar het verschil zit: eerst allebei hashen
+// (dan zijn ze even lang), dan elke byte meenemen.
+async function geheimGelijk(a: string | null, b: string): Promise<boolean> {
+  if (!a) return false
+  const h = async (s: string) => new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))
+  const [x, y] = await Promise.all([h(a), h(b)])
+  let d = 0
+  for (let i = 0; i < x.length; i++) d |= x[i] ^ y[i]
+  return d === 0
+}
 Deno.serve(async (req) => {
   const secret = Deno.env.get('CRON_SECRET')
-  if (!secret || req.headers.get('x-cron-secret') !== secret) return new Response('Unauthorized', { status: 401 })
+  if (!secret || !(await geheimGelijk(req.headers.get('x-cron-secret'), secret))) return new Response('Unauthorized', { status: 401 })
   const supa = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
   const nu = Date.now(), week = 7 * 864e5
   const sinds = new Date(nu - week).toISOString(), vorige = new Date(nu - 2 * week).toISOString()

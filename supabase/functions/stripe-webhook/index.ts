@@ -59,6 +59,9 @@ Deno.serve(async (req) => {
       return event.created >= vorige
     }
     const stempel = new Date(event.created * 1000).toISOString()
+    // Dezelfde controle nog eens in de update zelf: twee leveringen tegelijk (Stripe herhaalt en
+    // levert parallel) komen anders allebei langs `nieuwer` en de oudste kan als laatste schrijven.
+    const nietOuder = `plan_event_at.is.null,plan_event_at.lte.${stempel}`
 
     if (event.type === 'checkout.session.completed') {
       const s = event.data.object as Stripe.Checkout.Session
@@ -79,7 +82,7 @@ Deno.serve(async (req) => {
           plan_renews_at: ends ? new Date(ends * 1000).toISOString() : null,
           stripe_customer_id: String(s.customer || ''),
           plan_event_at: stempel,
-        }).eq('user_id', userId)
+        }).eq('user_id', userId).or(nietOuder)
       }
     }
 
@@ -103,7 +106,7 @@ Deno.serve(async (req) => {
           plan_status: live && stopt ? 'canceling' : sub.status,
           plan_renews_at: ends ? new Date(ends * 1000).toISOString() : null,
           plan_event_at: stempel,
-        }).eq('user_id', userId)
+        }).eq('user_id', userId).or(nietOuder)
       }
     }
   } catch (e) {

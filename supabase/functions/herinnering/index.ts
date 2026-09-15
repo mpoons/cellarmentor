@@ -63,10 +63,20 @@ function mail(groepen: { titel: string; uitleg: string; wijnen: Wijn[] }[], jaar
   return { text: tekst.join('\n'), html: body }
 }
 
+// Geheim vergelijken zonder dat de duur verraadt waar het verschil zit: eerst allebei hashen
+// (dan zijn ze even lang), dan elke byte meenemen.
+async function geheimGelijk(a: string | null, b: string): Promise<boolean> {
+  if (!a) return false
+  const h = async (s: string) => new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))
+  const [x, y] = await Promise.all([h(a), h(b)])
+  let d = 0
+  for (let i = 0; i < x.length; i++) d |= x[i] ^ y[i]
+  return d === 0
+}
 Deno.serve(async (req) => {
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 })
   const secret = Deno.env.get('CRON_SECRET')
-  if (!secret || req.headers.get('x-cron-secret') !== secret) return new Response('Unauthorized', { status: 401 })
+  if (!secret || !(await geheimGelijk(req.headers.get('x-cron-secret'), secret))) return new Response('Unauthorized', { status: 401 })
   const resendKey = Deno.env.get('RESEND_API_KEY'), from = Deno.env.get('MAIL_FROM')
   if (!resendKey || !from) { console.error('RESEND_API_KEY of MAIL_FROM ontbreekt'); return new Response('Niet ingericht', { status: 500 }) }
 

@@ -3,8 +3,7 @@
 -- geen RLS-policies, dus de client kan er niet bij. Na een maand opruimen.
 create table if not exists public.wine_price_log (
   id          bigserial primary key,
-  user_id     uuid,
-  key         text,
+  key         text,                 -- bewust geen user_id (privacyverklaring); beveiliging-2sep.sql haalt hem weg waar hij nog stond
   model       text,
   status      int,
   text        text,
