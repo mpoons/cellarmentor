@@ -2113,6 +2113,8 @@ function prijsSleutel(w){
 }
 async function prijzenUitTabel(wines){
   if(!wines.length || typeof loggedIn !== 'function' || !loggedIn()) return 0;
+  /* de server kijkt naar hoogstens 100 flessen per aanroep; met meer werd de rest stil overgeslagen */
+  if(wines.length > 100){ let n = 0; for(let i = 0; i < wines.length; i += 100) n += await prijzenUitTabel(wines.slice(i, i + 100)); return n; }
   let d = {};
   try{
     const res = await fnFetch('ai', {
