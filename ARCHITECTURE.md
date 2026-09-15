@@ -30,7 +30,7 @@ Er zijn drie lagen: het apparaat van de gebruiker, de server bij Supabase, en ex
   - `stripe-webhook`: ontvangt gebeurtenissen van Stripe (betaald, opgezegd) en zet het plan in `profiles`. Geen sessiecontrole, wel een handtekeningcontrole.
   - `herinnering`: wekelijkse mail "drink binnenkort". Aangeroepen door de database-klok (*pg_cron*), niet door een gebruiker; toegang via een geheime header.
   - `kosten`: wekelijkse kostenmail naar Max, met sinds 7 sep ook het aantal mislukte AI-aanroepen per status (401 is een verlopen sleutel). Zelfde beveiliging als `herinnering`.
-- **Database-functies (SQL).** `boek_credits` boekt credits in één transactie met een slot per gebruiker, `credits_used_this_month` telt, `zet_mail_herinnering` zet de mailvoorkeur. Bestanden in `supabase/schema-fase1.sql`, `schema-fase2.sql` en `supabase/sql/`.
+- **Database-functies (SQL).** `boek_credits` boekt credits in één transactie met een slot per gebruiker, `credits_used_this_month` telt, `zet_mail_herinnering` zet de mailvoorkeur, `lees_geheim` geeft een geheim uit de Vault aan de server (alleen service role). Bestanden in `supabase/schema-fase1.sql`, `schema-fase2.sql` en `supabase/sql/`.
 
 ### 2c. Externe diensten (allemaal alleen vanaf de server, behalve waar anders staat)
 - **Anthropic** (Claude): etiketten lezen, wijnkaarten lezen, pairing, waardeschattingen, prijzen uit zoekfragmenten lezen. In de ontwikkelaarsstand kan de app met een eigen sleutel rechtstreeks naar Anthropic; buiten die stand nooit.
@@ -78,7 +78,7 @@ Er zijn drie lagen: het apparaat van de gebruiker, de server bij Supabase, en ex
 ## 5. Beveiliging in één oogopslag
 
 - **Wie mag wat.** Elke Edge Function met gebruikersverkeer eist een geldige Supabase-sessie (`verify_jwt = true`); de gebruikers-id komt uit die sessie, nooit uit wat de client stuurt. De database beschermt zichzelf met RLS. De webhook en de cron-functies staan bewust zonder sessiecontrole en hebben elk hun eigen geheim.
-- **Geheimen.** Alle sleutels staan als Supabase-secret. In de code staat alleen de publishable key van Supabase, die publiek mag zijn omdat RLS de toegang bepaalt. De eigen Anthropic-sleutel van een gebruiker werkt alleen in de ontwikkelaarsstand en verlaat het apparaat nooit.
+- **Geheimen.** Alle sleutels staan als Supabase-secret, op de Brave-sleutel na: die staat sinds 15 september versleuteld in de Supabase Vault (in de database) en is alleen via een functie voor de server zelf te lezen. In de code staat alleen de publishable key van Supabase, die publiek mag zijn omdat RLS de toegang bepaalt. De eigen Anthropic-sleutel van een gebruiker werkt alleen in de ontwikkelaarsstand en verlaat het apparaat nooit.
 - **Invoer van buiten.** AI-antwoorden, back-ups, het cloud-document en CSV-bestanden gaan allemaal door een normalisatie (ids, jaartallen, getallen, links alleen http/https) voordat ze de kelder in mogen.
 - **Browser.** Een *CSP* in `head.html` staat de app alleen verbinding toe met Supabase en Anthropic; elke nieuwe externe host moet daar bij, anders wordt hij stil geblokkeerd.
 - **Geld.** Credits worden geboekt vóór de AI-aanroep, in één transactie met een slot per gebruiker. Grenzen op bodygrootte, aantal beelden en tekstlengte. Brave heeft een dagplafond. Bij Anthropic staat een uitgavenplafond.

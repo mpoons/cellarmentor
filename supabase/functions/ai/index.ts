@@ -2,7 +2,8 @@
 // Prijzen (sinds 15 sep 2026): een rij in de tabel geldt 90 dagen; daarna zoekt "Prijs opzoeken" opnieuw en
 // ververst de tabel zichzelf op de achtergrond zodra de app hem raadpleegt (alleen met BRAVE_SEARCH_KEY).
 // Uitrollen: supabase functions deploy ai --project-ref dbzgrkipcoebglacsqwe
-// Vereist secret: CAVEAU_ANTHROPIC_KEY (aparte Anthropic-sleutel voor de server).
+// Vereist secret: CAVEAU_ANTHROPIC_KEY (aparte Anthropic-sleutel voor de server). BRAVE_SEARCH_KEY als secret
+// of in de Vault (lees_geheim), zie braveSleutel().
 // "Verify JWT" laten aanstaan: alleen ingelogde CellarMentor-gebruikers kunnen deze functie aanroepen.
 // Vereist de SQL uit supabase/sql/*.sql (wine_prices, wine_price_log, boek_credits, ai_fouten).
 
@@ -80,7 +81,7 @@ const tekstVeld = (x: unknown, n = 120) => String(x ?? '').replace(/[\r\n\t]+/g,
 const promptVeld = (x: unknown, n = 120) => tekstVeld(x, n).replace(/[{}\[\]"'`\\<>]/g, ' ').replace(/\s+/g, ' ').trim()
 function prijsSleutel(w: Wijn): string {
   const n = (x: unknown) => String(x || '').slice(0, 200).toLowerCase().normalize('NFD')
-    .replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim()
+    .replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim()
   const jaar = Number(w.vintage) || 0
   return `${n(w.producer)}|${n(w.name)}|${jaar || 'nv'}`
 }
@@ -126,8 +127,23 @@ type Treffer = { title: string; url: string; desc: string }
 // Tweede vorm (zonderJaar): winkels noemen vaak alleen de jaargang die nu in het schap ligt, dus een
 // zoekopdracht mét jaargang levert soms niets terwijl de wijn gewoon te koop is. De leesbeurt weet dan
 // dat een andere jaargang "middel" is.
-async function braveZoek(w: Wijn, zonderJaar = false): Promise<Treffer[]> {
-  const key = Deno.env.get('BRAVE_SEARCH_KEY')
+// De Brave-sleutel staat als omgevingsvariabele (supabase secrets set) of, sinds 15 sep, versleuteld in de
+// Supabase Vault, te lezen via de SQL-functie lees_geheim (supabase/sql/geheim-15sep.sql; alleen de service
+// role mag die aanroepen). Eén keer per instantie ophalen; zonder sleutel doet de zware agent het werk.
+let braveSleutelCache: string | null | undefined
+// deno-lint-ignore no-explicit-any
+async function braveSleutel(supa: any): Promise<string> {
+  const env = Deno.env.get('BRAVE_SEARCH_KEY')
+  if (env) return env
+  if (braveSleutelCache !== undefined) return braveSleutelCache || ''
+  try {
+    const { data, error } = await supa.rpc('lees_geheim', { p_naam: 'BRAVE_SEARCH_KEY' })
+    if (error) console.error('lees_geheim', String(error.message || '').slice(0, 120))
+    braveSleutelCache = typeof data === 'string' && data.trim() ? data.trim() : null
+  } catch (_) { braveSleutelCache = null }
+  return braveSleutelCache || ''
+}
+async function braveZoek(w: Wijn, key: string, zonderJaar = false): Promise<Treffer[]> {
   if (!key) return []
   const q = [tekstVeld(w.producer), tekstVeld(w.name), zonderJaar ? '' : (Number(w.vintage) || '')].filter(Boolean).join(' ') + (zonderJaar ? ' wijn kopen' : ' prijs')
   const u = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(q)}&count=10&country=NL&search_lang=nl&text_decorations=false&extra_snippets=true`
@@ -199,7 +215,8 @@ function achtergrond(p: Promise<unknown>) {
 type PrijsRij = { key: string; name?: string | null; producer?: string | null; vintage?: number | null; value?: number | null }
 // deno-lint-ignore no-explicit-any
 async function versPrijzen(supa: any, rijen: PrijsRij[]) {
-  if (!rijen.length || !Deno.env.get('BRAVE_SEARCH_KEY')) return
+  const key = rijen.length ? await braveSleutel(supa) : ''
+  if (!key) return
   const dag = new Date(); dag.setUTCHours(0, 0, 0, 0)
   const { count } = await supa.from('wine_price_log').select('*', { count: 'exact', head: true }).gte('created_at', dag.toISOString()).like('model', '%vers%')
   let ruimte = Math.min(VERS_PER_AANROEP, VERS_DAG_MAX - (count || 0))
@@ -213,8 +230,8 @@ async function versPrijzen(supa: any, rijen: PrijsRij[]) {
     if (geprobeerd.has(row.key)) continue
     ruimte--
     const w: Wijn = { name: row.name, producer: row.producer, vintage: row.vintage }
-    let treffers = await braveZoek(w)
-    if (!treffers.length && Number(w.vintage)) treffers = await braveZoek(w, true)
+    let treffers = await braveZoek(w, key)
+    if (!treffers.length && Number(w.vintage)) treffers = await braveZoek(w, key, true)
     const log = { key: row.key, model: model + '+brave+vers', status: 200, text: '', value: null as number | null, error: null as string | null, tokens_in: 0, tokens_out: 0 }
     if (!treffers.length) { await supa.from('wine_price_log').insert({ ...log, status: 204, error: 'geen zoekresultaten' }); continue }
     const r = await anthropic({ model, max_tokens: 1000, messages: [{ role: 'user', content: [{ type: 'text', text: leesPrompt(w, treffers) }] }] })
@@ -408,10 +425,11 @@ Deno.serve(async (req) => {
     // valt 'prijs' terug op de zware agent, zodat de app blijft werken.
     let treffers: Treffer[] = []
     let viaBrave = false, zonderJaar = false
-    if (wijn && kind === 'prijs' && Deno.env.get('BRAVE_SEARCH_KEY')) {
+    const bkey = wijn && kind === 'prijs' ? await braveSleutel(supa) : ''
+    if (wijn && kind === 'prijs' && bkey) {
       if (await braveTel(supa) < BRAVE_DAG_MAX) {
-        treffers = await braveZoek(wijn)
-        if (!treffers.length && Number(wijn.vintage)) { zonderJaar = true; treffers = await braveZoek(wijn, true) }
+        treffers = await braveZoek(wijn, bkey)
+        if (!treffers.length && Number(wijn.vintage)) { zonderJaar = true; treffers = await braveZoek(wijn, bkey, true) }
         if (treffers.length) { viaBrave = true; messages = [{ role: 'user', content: [{ type: 'text', text: leesPrompt(wijn, treffers) }] }] }
         else {
           // niets gevonden bij Brave: geen AI-aanroep, credit terug, en dat melden
@@ -486,7 +504,7 @@ Deno.serve(async (req) => {
     // (tweede Brave-zoekopdracht plus tweede leesbeurt, samen rond een cent). Pas daarna is het een miss.
     let brave2 = false
     if (wijn && viaBrave && !zonderJaar && Number(wijn.vintage) && !(p && Number(p.value) > 0)) {
-      const t2 = await braveZoek(wijn, true)
+      const t2 = await braveZoek(wijn, bkey, true)
       if (t2.length) {
         const r2 = await anthropic({ ...payload, messages: [{ role: 'user', content: [{ type: 'text', text: leesPrompt(wijn, t2) }] }] })
         if (r2.ok) {
