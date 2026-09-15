@@ -91,7 +91,7 @@ Er zijn drie lagen: het apparaat van de gebruiker, de server bij Supabase, en ex
 - **Account zelf verwijderen** kan de gebruiker nog niet; het gaat per mail.
 - **De SQL voor `cellars` en `photos` staat niet in de repo.** Die tabellen zijn via het dashboard gemaakt; alleen latere tabellen staan als bestand. Bij een herbouw van het project ontbreekt dus een stuk.
 - **Geen down-migraties.** SQL-bestanden zijn "vooruit" en worden met de hand gedraaid.
-- **Supabase staat op het gratis plan** en pauzeert na zeven dagen zonder verkeer; dagelijkse back-ups horen bij Pro.
+- **Supabase staat op het Pro-plan** (sinds 15 sep 2026, per organisatie): het project pauzeert niet meer en er zijn dagelijkse back-ups van de database (zeven dagen bewaard). Foto's staan in de database (`photos`), dus die zitten in de back-up; Supabase Storage wordt niet gebruikt.
 - **De Anthropic-serversleutel verloopt 31 december 2026.**
 
 ## Woordenlijst

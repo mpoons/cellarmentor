@@ -73,3 +73,6 @@ Een mislukte aanroep verwijdert zijn eigen verbruiksregel, dus de kostenmail zag
 
 ## 7 sep 2026 · De soort AI-aanroep is een vaste lijst
 `kind` was vrije tekst van de client en kwam in de database en in de kostenmail. Nu `KINDS` op de server, anders 400; de test controleert dat elke soort die de app stuurt erin staat. Afgewezen: alleen escapen in de mail (dan blijft de database vrije tekst).
+
+## 15 sep 2026 · Supabase Pro per organisatie, op naam van de BV
+De organisatie "Ponsen Polutropon BV" staat op Pro ($25/mnd, spend cap aan). Reden: gratis projecten pauzeren na zeven dagen zonder verkeer en hebben geen back-ups; met betalende gebruikers in zicht is dat geen fundament. Het plan hangt aan de organisatie, dus alles wat Max later host komt als extra project in dezelfde organisatie onder dezelfde factuur (± $10/mnd per extra Micro-instantie). Afgewezen: een keep-alive-ping vanuit een GitHub Action (houdt alleen het pauzeren tegen, geen back-ups, 500 MB-grens, hangt aan een regel die Supabase kan aanscherpen) en een tweede organisatie per toepassing (dubbele vaste kosten).
