@@ -1,4 +1,4 @@
-// Caveau Fase 2 — abonnement starten en beheren (Stripe Checkout + klantportaal)
+// CellarMentor Fase 2 — abonnement starten en beheren (Stripe Checkout + klantportaal)
 // Plaatsen via: Supabase dashboard → Edge Functions → Deploy new function
 //   → naam: billing   → deze code plakken → Deploy
 // "Verify JWT" LAAT AANSTAAN: alleen ingelogde gebruikers mogen dit aanroepen.
@@ -6,7 +6,7 @@
 // Vereiste secrets (Edge Functions → Secrets):
 //   STRIPE_SECRET_KEY   = sk_live_... (of sk_test_... om te proberen)
 //   STRIPE_PRICE_PLUS   = price_...   (het €2,99/maand-abonnement uit Stripe → Products)
-//   CAVEAU_APP_URL      = https://mpoons.github.io/caveau/   (waar Stripe naartoe terugstuurt)
+//   CAVEAU_APP_URL      = https://mpoons.github.io/cellarmentor/   (waar Stripe naartoe terugstuurt)
 
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import Stripe from 'npm:stripe@17'
@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   try {
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2025-10-29.clover' })
-    const appUrl = Deno.env.get('CAVEAU_APP_URL') || 'https://mpoons.github.io/caveau/'
+    const appUrl = Deno.env.get('CAVEAU_APP_URL') || 'https://mpoons.github.io/cellarmentor/'
     const supa = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
 
     const jwt = (req.headers.get('authorization') || '').replace('Bearer ', '')
@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
       prof = ins.data
     }
 
-    // Eén Stripe-klant per Caveau-account, zodat opzeggen en opnieuw starten blijft kloppen.
+    // Eén Stripe-klant per CellarMentor-account, zodat opzeggen en opnieuw starten blijft kloppen.
     let customerId: string | null = prof?.stripe_customer_id || null
     if (!customerId) {
       const customer = await stripe.customers.create({

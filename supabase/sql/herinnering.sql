@@ -1,4 +1,4 @@
--- Caveau: herinnering per mail (3 sep 2026). Draaien in de SQL-editor van het dashboard.
+-- CellarMentor: herinnering per mail (3 sep 2026). Draaien in de SQL-editor van het dashboard.
 -- Hoort bij supabase/functions/herinnering/index.ts en het vinkje "Mail mij" in Instellingen.
 
 alter table public.profiles add column if not exists mail_herinnering boolean not null default false;

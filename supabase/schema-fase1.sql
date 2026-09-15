@@ -1,4 +1,4 @@
--- Caveau Fase 1: profielen (plan/tegoed) + AI-verbruiksregistratie
+-- CellarMentor Fase 1: profielen (plan/tegoed) + AI-verbruiksregistratie
 -- Plakken in: Supabase dashboard → SQL Editor → New query → Run
 
 create table if not exists public.profiles (

@@ -1,5 +1,5 @@
-// Tests voor de pure regels van Caveau, zonder browser en zonder framework: node --test tests/*.test.js
-// (aangeroepen door check.sh). Laadt scriptblok 1, 2, 3 en 5 uit caveau.html in een minimale
+// Tests voor de pure regels van CellarMentor, zonder browser en zonder framework: node --test tests/*.test.js
+// (aangeroepen door check.sh). Laadt scriptblok 1, 2, 3 en 5 uit cellarmentor.html in een minimale
 // browserstub, zodat de functies zelf onder test staan en niet een kopie ervan.
 //
 // De stub is de zwakke plek: voegt een blok op topniveau iets toe dat de DOM aanraakt, dan
@@ -11,9 +11,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const bron = fs.readFileSync(path.join(__dirname, '..', 'caveau.html'), 'utf8');
+const bron = fs.readFileSync(path.join(__dirname, '..', 'cellarmentor.html'), 'utf8');
 const blokken = [...bron.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
-assert.equal(blokken.length, 6, 'caveau.html hoort zes scriptblokken te hebben');
+assert.equal(blokken.length, 6, 'cellarmentor.html hoort zes scriptblokken te hebben');
 
 /* ---- browserstub ---- */
 const opslag = new Map();
@@ -41,7 +41,7 @@ const ctx = {
 };
 ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
-for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `caveau.html blok ${i + 1}` });
+for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
 const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, matchWine, foodCats, windowStatus, estimateWindow, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, DB_KEY, YR, uid })', ctx);
 

@@ -1,4 +1,4 @@
-<title>Caveau, je wijnkelder</title>
+<title>CellarMentor, je wijnkelder</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F4EFE6">
 <style>
@@ -513,6 +513,9 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
 /* ================= basis ================= */
 const YR = () => new Date().getFullYear();
 const IN_SANDBOX = /claudeusercontent\.com$/i.test(location.hostname) || !!window.claude;
+/* De opslagsleutels (caveau_v1, caveau_backup_*, caveau_photos, caveau_cam) dragen bewust nog de oude
+   naam: de app heet sinds 15 september 2026 CellarMentor, maar een andere sleutel zou de kelder van
+   bestaande gebruikers onzichtbaar maken. Nooit hernoemen zonder migratie (zie DECISIONS.md). */
 const DB_KEY = 'caveau_v1';
 
 const DEFAULTS = () => ({ v:1, wines:[], history:[], wishlist:[], locations:[], pairCache:[], recipeCache:[], tonight:[], menuLast:null,
@@ -574,7 +577,7 @@ function schrijfState(){
 
 /* tegoed: moet gelijk blijven aan FREE_CREDITS / PLUS_CREDITS in supabase/functions/ai/index.ts */
 const FREE_CREDITS = 20, PLUS_CREDITS = 300, PLUS_PRIJS = '€ 2,99 per maand';
-/* Wie Caveau aanbiedt: de holding van Max. Staat hier op één plek; deze gegevens
+/* Wie CellarMentor aanbiedt: de holding van Max. Staat hier op één plek; deze gegevens
    staan op de openbare pagina's (privacy en voorwaarden). Het vestigingsadres
    hoort er wettelijk bij zodra er betaald wordt; leeg = nog niet getoond. */
 /* Staat Plus te koop? Zolang Stripe in testmodus draait moet dit uit: een
@@ -1161,7 +1164,7 @@ function dishesForWine(w){
 /* ================= AI-laag (buiten de sandbox, met eigen API-sleutel) ================= */
 /* Een eigen Anthropic-sleutel is geen productfunctie meer: hij bestaat alleen nog
    in de ontwikkelaarsstand (zeven tikken op de titel in Instellingen). Zonder die
-   stand wordt een opgeslagen sleutel genegeerd en loopt alles via de Caveau-server,
+   stand wordt een opgeslagen sleutel genegeerd en loopt alles via de CellarMentor-server,
    waar het tegoed geldt. Volledig dichttimmeren kan niet: dit is een app die in de
    browser draait, dus wie zelf code aanpast kan altijd zijn eigen sleutel gebruiken.
    Wat dit wél doet: het uit het product halen, zodat niemand het tegenkomt. */
@@ -1178,7 +1181,7 @@ function zonderAiHtml(reden){
 function aiReady(){
   if(IN_SANDBOX) return false;
   if(ownKey()) return true;
-  return typeof loggedIn === 'function' && loggedIn(); /* ingelogd → AI via de Caveau-server */
+  return typeof loggedIn === 'function' && loggedIn(); /* ingelogd → AI via de CellarMentor-server */
 }
 
 /* Antwoordstijl (instelbaar in Instellingen): bepaalt de toon van alle AI-teksten */
@@ -1209,7 +1212,7 @@ function creditCost(kind, images){
 }
 
 /* Routering: eigen sleutel gaat vóór (rechtstreeks naar Anthropic, onbeperkt);
-   anders via de Caveau-serverfunctie met het account-tegoed.
+   anders via de CellarMentor-serverfunctie met het account-tegoed.
    onText (optioneel) maakt er een stroom van: die wordt bij elk stukje antwoord
    aangeroepen met alles wat er tot dan toe staat, zodat het scherm meeleest. */
 async function callClaude(content, maxTokens, kind, onText, opts){
@@ -1589,7 +1592,7 @@ const IK = {
 const ik = (n, size) => `<svg class="ik" width="${size||15}" height="${size||15}" viewBox="0 0 24 24" aria-hidden="true">${IK[n]||''}</svg>`;
 
 function brandRow(sub){
-  return `<div class="hdr"><div><div class="brand">Caveau<span class="dot">.</span></div></div><div class="hdr-sub tnum">${sub||''}</div></div>`;
+  return `<div class="hdr"><div><div class="brand">CellarMentor<span class="dot">.</span></div></div><div class="hdr-sub tnum">${sub||''}</div></div>`;
 }
 const bottleCount = () => S.wines.reduce((n,w) => n + (w.qty||0), 0);
 const cellarValue = () => S.wines.reduce((n,w) => n + (w.qty||0) * bronWaarde(w), 0);
@@ -1978,7 +1981,7 @@ function waardeSub(w){
     const oud = w.valueAt && (Date.now() - new Date(w.valueAt).getTime()) > 365 * 864e5;
     const link = safeUrl(w.valueBron.url);
     bron = (link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${naam}</a>` : naam) + jr + (dat ? ', gegevens van ' + dat : '') + (oud ? ' (ouder dan een jaar)' : '');
-  } else if(w.valueSrc === 'samen' && w.valueBron) bron = `wat ${w.valueBron.n || 2} Caveau-gebruikers betaalden`;
+  } else if(w.valueSrc === 'samen' && w.valueBron) bron = `wat ${w.valueBron.n || 2} CellarMentor-gebruikers betaalden`;
   else if(w.value != null) bron = (w.valueVia === 'aankoop' ? 'aankoopprijs' : 'zelf ingevuld') + (dat ? ', ' + dat : '');
   else bron = 'je aankoopprijs';
   return `<div class="small tnum">${money(lo)} – ${money(hi)}</div>${bron ? `<div class="small">${bron}</div>` : ''}`;
@@ -2000,7 +2003,7 @@ function waardeBlok(w){
   const b = bronWaarde(w), ind = indicatie(w);
   const dat = w.valueAt ? new Date(w.valueAt).toLocaleDateString(LOCALE(), {month:'short', year:'numeric'}) : '';
   const koop = w.price ? `gekocht voor ${money(w.price)}` : '';
-  const samen = (w.samen && w.samen.n >= 2 && w.valueSrc !== 'samen') ? `<div class="small">${w.samen.n} Caveau-gebruikers betaalden ${money(w.samen.low)} tot ${money(w.samen.high)}</div>` : '';
+  const samen = (w.samen && w.samen.n >= 2 && w.valueSrc !== 'samen') ? `<div class="small">${w.samen.n} CellarMentor-gebruikers betaalden ${money(w.samen.low)} tot ${money(w.samen.high)}</div>` : '';
   /* geen bron: geen groot getal. De schatting van het model staat klein en heet wat hij is. */
   if(!b) return `<div class="waarde"><span>Nog geen prijs met bron.${ind ? ` Indicatie van de sommelier: ${money(ind.low)} tot ${money(ind.high)}, geen echte prijs.` : ''}</span>${samen}</div>`;
   const oud = w.vintage && (YR() - w.vintage) >= 8;
@@ -2011,7 +2014,7 @@ function waardeBlok(w){
     const jr = w.valueBron.vintage && w.vintage && w.valueBron.vintage !== w.vintage ? `, jaargang ${w.valueBron.vintage}` : '';
     const teOud = w.valueAt && (Date.now() - new Date(w.valueAt).getTime()) > 365 * 864e5;
     regel = `marktwaarde, ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${naam}</a>` : naam}${jr}${dat ? ', gegevens van ' + dat : ''}${teOud ? ' (ouder dan een jaar)' : ''}`;
-  } else if(w.valueSrc === 'samen' && w.valueBron) regel = `wat ${w.valueBron.n || 2} Caveau-gebruikers betaalden, ${money(lo)} tot ${money(hi)}${dat ? ', ' + dat : ''}`;
+  } else if(w.valueSrc === 'samen' && w.valueBron) regel = `wat ${w.valueBron.n || 2} CellarMentor-gebruikers betaalden, ${money(lo)} tot ${money(hi)}${dat ? ', ' + dat : ''}`;
   else if(w.value != null) regel = `${w.valueVia === 'aankoop' ? 'aankoopprijs' : 'zelf ingevuld'}${dat ? ', ' + dat : ''}`;
   else regel = 'je aankoopprijs';
   return `<div class="waarde"><b class="tnum">${money(b)}</b><span>${regel}${koop && w.valueVia !== 'aankoop' && w.value != null ? '<br>' + koop : ''}</span>${samen}</div>`;
@@ -2061,7 +2064,7 @@ async function prijzenUitTabel(wines){
       w.samen = {n: Math.round(b.n), low: getalOk(b.low), high: getalOk(b.high), med: getalOk(b.med), at: tekstOk(b.at, 40)}; gewijzigd = true;
       /* geen echte prijs? dan geldt wat anderen betaalden, met de spreiding als band; pas vanaf drie
          mensen, bij twee staat het alleen ter info in het detail */
-      if(!metBron(w) && b.n >= 3){ w.value = Math.round(b.med); w.valueLow = Math.round(b.low); w.valueHigh = Math.round(b.high); w.valueSrc = 'samen'; w.valueAt = vandaag(); w.valueBron = {name:'Caveau-gebruikers', n: Math.round(b.n)}; n++; }
+      if(!metBron(w) && b.n >= 3){ w.value = Math.round(b.med); w.valueLow = Math.round(b.low); w.valueHigh = Math.round(b.high); w.valueSrc = 'samen'; w.valueAt = vandaag(); w.valueBron = {name:'CellarMentor-gebruikers', n: Math.round(b.n)}; n++; }
     }
   }
   if(n || gewijzigd){ save(); renderTenzijFormulier(); }
@@ -2072,7 +2075,7 @@ async function prijzenUitTabel(wines){
 async function prijsNaScan(w){
   try{
     const n = await prijzenUitTabel([w]);
-    if(n){ toast(`Prijs uit de Caveau-prijstabel: ${money(w.value)}${w.valueBron && w.valueBron.name ? ' · ' + w.valueBron.name : ''}`, null, null, 5000); return; }
+    if(n){ toast(`Prijs uit de CellarMentor-prijstabel: ${money(w.value)}${w.valueBron && w.valueBron.name ? ' · ' + w.valueBron.name : ''}`, null, null, 5000); return; }
   }catch(_){}
   if(!aiReady() || metBron(w)) return;
   /* elke fles een echte prijs: standaard meteen zoeken (1 credit); uit te zetten in Instellingen */
@@ -2105,7 +2108,7 @@ async function prijsTabelRonde(){
   if(!targets.length) return;
   const n = await prijzenUitTabel(targets);
   S.settings.prijsRondeOp = dag; save(true);
-  if(n) toast(`${n} ${plur(n, 'prijs', 'prijzen')} uit de Caveau-prijstabel overgenomen`, null, null, 5000);
+  if(n) toast(`${n} ${plur(n, 'prijs', 'prijzen')} uit de CellarMentor-prijstabel overgenomen`, null, null, 5000);
 }
 
 /* ---- zoekagent: echte prijs met bron en datum ---- */
@@ -2165,7 +2168,7 @@ ACT.prijsZoek = async el => {
         toast('Geen prijs bij de wijnhandels in de zoeklaag. Dieper zoeken kijkt ook op veilingen en buitenlandse sites', null, null, 7000); return; }
       toast(r && r.note ? 'Geen prijs gevonden: ' + String(r.note).slice(0, 120) : 'Geen prijs gevonden', null, null, 8000); el.innerHTML = ik('zoek') + ' Opnieuw proberen'; el.style.pointerEvents = ''; return; }
     save(); closeSheet(); render(); openDetail(w.id);
-    toast(`${money(w.value)}${w.valueBron.name ? ' · ' + w.valueBron.name : ''}${r.cached ? ' (uit de Caveau-prijstabel)' : ''}`, null, null, 5000);
+    toast(`${money(w.value)}${w.valueBron.name ? ' · ' + w.valueBron.name : ''}${r.cached ? ' (uit de CellarMentor-prijstabel)' : ''}`, null, null, 5000);
   }catch(e){ toast('Opzoeken mislukte: ' + String(e.message || e).slice(0, 120), null, null, 8000); el.innerHTML = ik('zoek') + ' Prijs opzoeken'; el.style.pointerEvents = ''; }
 };
 ACT.prijsBulk = () => {
@@ -2173,7 +2176,7 @@ ACT.prijsBulk = () => {
   const targets = S.wines.filter(w => (w.qty || 0) > 0 && !metBron(w));
   if(!targets.length){ toast('Elke fles op voorraad heeft al een prijs met bron'); return; }
   const n = targets.length;
-  confirmSheet('Prijzen opzoeken?', `Voor <b>${n}</b> ${plur(n, 'fles', 'flessen')} zonder prijs met bron zoekt de sommelier de marktprijs op bij wijnhandels, met bron en datum.${ownKey() ? '' : ` Kost hoogstens ${n} credits; staat een wijn al in de Caveau-prijstabel, dan is die gratis.`}`, 'Zoek op', async () => {
+  confirmSheet('Prijzen opzoeken?', `Voor <b>${n}</b> ${plur(n, 'fles', 'flessen')} zonder prijs met bron zoekt de sommelier de marktprijs op bij wijnhandels, met bron en datum.${ownKey() ? '' : ` Kost hoogstens ${n} credits; staat een wijn al in de CellarMentor-prijstabel, dan is die gratis.`}`, 'Zoek op', async () => {
     let ok = 0, i = 0;
     toast(`Bezig: 0 van ${n}…`, null, null, 60000);
     try{ ok += await prijzenUitTabel(targets); }catch(_){}
@@ -3560,7 +3563,7 @@ function viewMenu(){
   if(!menuOut && S.menuLast && Date.now() - (S.menuLast.at||0) < 12*3600*1000) menuOut = menuResultHtml(S.menuLast);
   return `${brandRow('')}<div class="eyebrow">Uit eten</div><h2 class="h2">De wijnkaart lezen</h2>${pairToggle()}
     <p class="small mb8">Fotografeer de kaart, zeg wat je eet. De sommelier kiest de beste flessen ván die kaart, met een oordeel over de prijs.</p>
-    ${aiReady() ? '' : `<div class="banner"><span>${ik('info')}</span><span><b>Hiervoor moet je ingelogd zijn</b>. Het lezen van de kaart gebeurt op de Caveau-server. <button class="linkbtn" data-act="goAccount">Account aanmaken</button> geeft je ${FREE_CREDITS} gratis credits per maand. Zonder account krijg je hieronder de kaartgids: waar je bij dit gerecht op de kaart naar zoekt.</span></div>`}
+    ${aiReady() ? '' : `<div class="banner"><span>${ik('info')}</span><span><b>Hiervoor moet je ingelogd zijn</b>. Het lezen van de kaart gebeurt op de CellarMentor-server. <button class="linkbtn" data-act="goAccount">Account aanmaken</button> geeft je ${FREE_CREDITS} gratis credits per maand. Zonder account krijg je hieronder de kaartgids: waar je bij dit gerecht op de kaart naar zoekt.</span></div>`}
     <div class="panel" style="margin-bottom:12px">
       <div class="eyebrow mb8">1 · De wijnkaart</div>
       ${shotStrip(menu.shots, 'ms', 'menuDel', 'menuCam', MENU_MAX, 'kaart')}
@@ -3815,8 +3818,8 @@ function viewMeer(){
       <button class="mitem" data-act="meerGo" data-p="import">${ic('<path d="M4 7.5h11M4 12h11M4 16.5h7"/><path d="M18 9v7M14.5 12.5 18 16l3.5-3.5"/>')}<span class="grow">Meerdere flessen tegelijk</span><span class="chev">›</span></button>
       <button class="mitem" data-act="meerGo" data-p="recipes">${ic('<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5V5.5Z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/>')}<span class="grow">Recepten</span><span class="cnt">${(S.recipeCache||[]).length}</span><span class="chev">›</span></button>
       <button class="mitem" data-act="meerGo" data-p="settings">${ic('<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>')}<span class="grow">Instellingen & back-up</span><span class="chev">›</span></button>
-      <button class="mitem" data-act="overSheet">${ic('<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><circle cx="12" cy="7.6" r=".4" fill="currentColor"/>')}<span class="grow">Over Caveau</span><span class="chev">›</span></button>
-      <button class="mitem" data-act="installSheet">${ic('<rect x="6.5" y="2.8" width="11" height="18.4" rx="2.4"/><path d="M11 18.6h2"/>')}<span class="grow">Caveau op je beginscherm</span><span class="cnt">${isStandalone()?'':'<span class="todo">nog niet</span>'}</span><span class="chev">›</span></button>
+      <button class="mitem" data-act="overSheet">${ic('<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><circle cx="12" cy="7.6" r=".4" fill="currentColor"/>')}<span class="grow">Over CellarMentor</span><span class="chev">›</span></button>
+      <button class="mitem" data-act="installSheet">${ic('<rect x="6.5" y="2.8" width="11" height="18.4" rx="2.4"/><path d="M11 18.6h2"/>')}<span class="grow">CellarMentor op je beginscherm</span><span class="cnt">${isStandalone()?'':'<span class="todo">nog niet</span>'}</span><span class="chev">›</span></button>
       <button class="mitem" data-act="feedback">${ic('<path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-5 4v-4H6.5A2.5 2.5 0 0 1 4 13.5v-7Z"/>')}<span class="grow">Iets werkt niet, of een idee?</span><span class="cnt">mail</span><span class="chev">›</span></button>
       <button class="mitem" data-act="meerGo" data-p="voorwaarden">${ic('<path d="M6 3.5h8.5L19 8v12.5H6z"/><path d="M14 3.5V8h5"/><path d="M9 12.5h7M9 16h5"/>')}<span class="grow">Voorwaarden</span><span class="chev">›</span></button>
       <button class="mitem" data-act="meerGo" data-p="privacy">${ic('<path d="M12 3.2l6.5 2.6v5.4c0 4.2-2.7 7.4-6.5 8.6-3.8-1.2-6.5-4.4-6.5-8.6V5.8z"/><path d="M9.4 12.1l1.9 1.9 3.4-3.6"/>')}<span class="grow">Privacy</span><span class="chev">›</span></button>
@@ -3824,7 +3827,7 @@ function viewMeer(){
 }
 ACT.feedback = () => {
   const info = `${bottleCount()} flessen, ${loggedIn() ? 'ingelogd' : 'zonder account'}, ${isStandalone() ? 'op het beginscherm' : 'in de browser'}, ${navigator.userAgent.slice(0, 80)}`;
-  location.href = `mailto:${CONTACT_MAIL}?subject=${encodeURIComponent('Caveau: ')}&body=${encodeURIComponent('\n\n\n(Laat dit staan, dan weet Max wat je gebruikt: ' + info + ')')}`;
+  location.href = `mailto:${CONTACT_MAIL}?subject=${encodeURIComponent('CellarMentor: ')}&body=${encodeURIComponent('\n\n\n(Laat dit staan, dan weet Max wat je gebruikt: ' + info + ')')}`;
 };
 ACT.meerGo = el => { UI.meerPage = el.dataset.p; render(); if(el.dataset.p === 'account' && typeof fetchQuota === 'function') fetchQuota(); };
 const backRow = `<button class="backrow" data-act="meerBack">‹ Terug</button>`;
@@ -4064,8 +4067,8 @@ ACT.devTap = () => {
 };
 function viewSettings(){
   const ai = IN_SANDBOX
-    ? `<div class="banner"><span>${ik('slot')}</span><span><b>AI-scannen in deze omgeving:</b> de app draait hier in een beveiligde sandbox zonder externe verbindingen. Alles werkt: foto's, voorraad, regels voor venster & pairing. Wil je dat de sommelier etiketten leest? Gebruik Caveau dan via <b>mpoons.github.io/caveau</b>.</span></div>`
-    : `<div class="banner"><span>${ik('wolk')}</span><span>${(typeof loggedIn==='function'&&loggedIn())?'<b>Ingelogd:</b> AI werkt automatisch via de Caveau-server, met je maandtegoed (zie Meer → Account).':`<b>Log in via Meer → Account</b> en de sommelier werkt meteen. Je krijgt ${FREE_CREDITS} gratis credits per maand.`}</span></div>
+    ? `<div class="banner"><span>${ik('slot')}</span><span><b>AI-scannen in deze omgeving:</b> de app draait hier in een beveiligde sandbox zonder externe verbindingen. Alles werkt: foto's, voorraad, regels voor venster & pairing. Wil je dat de sommelier etiketten leest? Gebruik CellarMentor dan via <b>mpoons.github.io/cellarmentor</b>.</span></div>`
+    : `<div class="banner"><span>${ik('wolk')}</span><span>${(typeof loggedIn==='function'&&loggedIn())?'<b>Ingelogd:</b> AI werkt automatisch via de CellarMentor-server, met je maandtegoed (zie Meer → Account).':`<b>Log in via Meer → Account</b> en de sommelier werkt meteen. Je krijgt ${FREE_CREDITS} gratis credits per maand.`}</span></div>
       <div class="field"><label>Antwoordstijl sommelier</label><div class="seg" id="styleSeg">${[['simpel','Simpel'],['kenner','Kenner'],['sommelier','Sommelier']].map(([k,l])=>`<button type="button" data-act="aiStyle" data-s="${k}" class="${(S.settings.aiStyle||'kenner')===k?'on':''}">${l}</button>`).join('')}</div>
        <div class="small mt8">Bepaalt de toon van pairing-redenen, karakterschetsen en antwoorden, van jip-en-janneke tot sommeliers onder elkaar.</div></div>
       <hr class="sep">
@@ -4082,7 +4085,7 @@ function viewSettings(){
       ${S.settings.devMode ? `<hr class="sep">
       <div class="eyebrow mb8">Ontwikkelaarsstand</div>
       <div class="field"><label>Eigen Anthropic API-sleutel</label><input class="inp" type="password" value="${esc(S.settings.apiKey)}" data-in="setKey" placeholder="sk-ant-…" autocomplete="off">
-       <div class="small mt8">Draait op je eigen Anthropic-tegoed en gaat vóór het Caveau-tegoed. Blijft op dit apparaat: nooit in een back-up, nooit naar de cloud. Zet je de ontwikkelaarsstand uit, dan wordt hij gewist.</div></div>
+       <div class="small mt8">Draait op je eigen Anthropic-tegoed en gaat vóór het CellarMentor-tegoed. Blijft op dit apparaat: nooit in een back-up, nooit naar de cloud. Zet je de ontwikkelaarsstand uit, dan wordt hij gewist.</div></div>
       <div class="field"><label>Model (bij eigen sleutel)</label><input class="inp" value="${esc(S.settings.model)}" data-in="setModel"></div>` : ''}`;
   return `${brandRow('')}${backRow}<div class="eyebrow">Instellingen</div><h2 class="h2" data-act="devTap">Instellingen & back-up</h2>
     <div class="field"><label>Naam van je kelder</label><input class="inp" value="${esc(S.settings.cellarName)}" data-in="setName"></div>
@@ -4108,7 +4111,7 @@ function viewSettings(){
       return `<hr class="sep"><div class="eyebrow mb8">Automatische reservekopieën (dit apparaat)</div>
         <div class="panel">${rows.map(r=>`<div class="rowline"><span class="a"><div class="t" style="font-family:var(--sans);font-size:13.5px">${r.l}</div><div class="u tnum">${r.n} wijnen · ${new Date(r.at).toLocaleString(LOCALE(),{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div></span><span class="z"><button class="btn sm plain" data-act="restoreBackup" data-k="${r.k}">Terugzetten</button></span></div>`).join('')}</div>`; })()}
     <hr class="sep"><button class="btn danger" data-act="wipe">Alles wissen</button>
-    <p class="small center mt14">Caveau v1 · ${bottleCount()} flessen · gemaakt met Claude</p>`;
+    <p class="small center mt14">CellarMentor v1 · ${bottleCount()} flessen · gemaakt met Claude</p>`;
 }
 ACT.setTheme = el => { S.settings.theme = el.dataset.v || ''; applyTheme(); save(true); render(); };
 /* De voorkeur staat in profiles (mail_herinnering) en wordt gezet via de SQL-functie zet_mail_herinnering,
@@ -4167,7 +4170,7 @@ INP.setName = el => { S.settings.cellarName = el.value.slice(0, 60); save(true);
 INP.setKey = el => { S.settings.apiKey = el.value; save(); };
 INP.setModel = el => { S.settings.model = el.value; save(); };
 
-/* ================= Caveau op je beginscherm ================= */
+/* ================= CellarMentor op je beginscherm ================= */
 /* Chrome en Edge bieden zelf een installatieknop aan; die vangen we op zodat we
    hem op ons eigen moment kunnen tonen. Safari op de iPhone kent dat niet, dus daar
    kan het alleen met de hand, dus daar leggen we het uit in plaats van te knoppen. */
@@ -4202,14 +4205,14 @@ function installBanner(){
   if(!toonInstallTip()) return '';
   return `<div class="banner" style="align-items:center">
     <span>${ik('telefoon')}</span>
-    <span style="flex:1"><b>Zet Caveau eerst op je beginscherm</b>. Dan heb je hem bij de hand in de winkel en het restaurant, opent hij als een app, en werkt je kelder ook zonder bereik.</span>
+    <span style="flex:1"><b>Zet CellarMentor eerst op je beginscherm</b>. Dan heb je hem bij de hand in de winkel en het restaurant, opent hij als een app, en werkt je kelder ook zonder bereik.</span>
     <button class="btn sm" data-act="installSheet" style="flex:none">Hoe?</button>
     <button class="xbtn" data-act="installWeg" aria-label="Niet meer tonen">✕</button></div>`;
 }
 ACT.installWeg = () => { S.settings.installWeg = true; save(true); render(); toast('Staat onder Meer als je hem toch wilt'); };
 ACT.installSheet = () => {
   const uitleg = installPrompt
-    ? `<p style="font-size:14px;color:var(--ink2);line-height:1.6">Je browser kan Caveau in één tik installeren.</p>
+    ? `<p style="font-size:14px;color:var(--ink2);line-height:1.6">Je browser kan CellarMentor in één tik installeren.</p>
        <button class="btn" data-act="installNow">Op mijn beginscherm zetten</button>`
     : isApple()
       ? `<ol style="font-size:14px;color:var(--ink2);line-height:1.7;margin-left:18px">
@@ -4223,8 +4226,8 @@ ACT.installSheet = () => {
            <li>Kies <b>"App installeren"</b> of <b>"Toevoegen aan startscherm"</b>.</li>
            <li>Bevestigen.</li>
          </ol>`;
-  openSheet(`${sheetHead('Caveau als app')}
-    <p style="font-size:14px;color:var(--ink2);line-height:1.6;margin-bottom:12px">Caveau is een website die zich als app gedraagt. Zet je hem op je beginscherm, dan krijg je een eigen icoon, geen adresbalk, en blijft je kelder ook zonder bereik gewoon werken, handig in een kelder of een restaurant.</p>
+  openSheet(`${sheetHead('CellarMentor als app')}
+    <p style="font-size:14px;color:var(--ink2);line-height:1.6;margin-bottom:12px">CellarMentor is een website die zich als app gedraagt. Zet je hem op je beginscherm, dan krijg je een eigen icoon, geen adresbalk, en blijft je kelder ook zonder bereik gewoon werken, handig in een kelder of een restaurant.</p>
     <p class="small mb8">Doe dit bij voorkeur vóór je flessen toevoegt: op de iPhone bewaart de app op je beginscherm zijn gegevens soms apart van Safari. Log je in, dan maakt het niet uit, want dan staat je kelder in de cloud.</p>
     ${uitleg}`);
 };
@@ -4494,12 +4497,12 @@ ACT.impAdd = async () => {
 function legalNote(html){ return taal() === 'en' ? html.replace('</h2>', `</h2><div class="banner"><span>${ik('info')}</span><span>De juridische teksten hieronder zijn in het Nederlands; die versie is bindend. Vragen? Mail gerust.</span></div>`) : html; }
 function viewPrivacy(){ return legalNote(viewPrivacyNL()); }
 function viewPrivacyNL(){
-  return `${brandRow('')}${backRow}<div class="eyebrow">Privacy</div><h2 class="h2">Wat Caveau van je bewaart</h2>
+  return `${brandRow('')}${backRow}<div class="eyebrow">Privacy</div><h2 class="h2">Wat CellarMentor van je bewaart</h2>
   <div class="legal">
-    <p>Caveau wordt aangeboden door ${aanbieder()}. Vragen of een verzoek over je gegevens? Mail <a href="mailto:${esc(CONTACT_MAIL)}" style="color:var(--acc-ink);font-weight:600">${esc(CONTACT_MAIL)}</a>.</p>
+    <p>CellarMentor wordt aangeboden door ${aanbieder()}. Vragen of een verzoek over je gegevens? Mail <a href="mailto:${esc(CONTACT_MAIL)}" style="color:var(--acc-ink);font-weight:600">${esc(CONTACT_MAIL)}</a>.</p>
 
     <h3>Zonder account gaat er niets weg</h3>
-    <p>Gebruik je Caveau zonder in te loggen, dan staat je hele kelder (flessen, notities, foto's) alleen op dit apparaat, in de opslag van je browser. Er gaat niets naar een server. Wis je de app-gegevens of je browser, dan is het weg; maak dus af en toe een back-up via Instellingen.</p>
+    <p>Gebruik je CellarMentor zonder in te loggen, dan staat je hele kelder (flessen, notities, foto's) alleen op dit apparaat, in de opslag van je browser. Er gaat niets naar een server. Wis je de app-gegevens of je browser, dan is het weg; maak dus af en toe een back-up via Instellingen.</p>
 
     <h3>Met een account</h3>
     <p>Log je in, dan bewaren we bij onze hostingpartij <b>Supabase</b>, op servers in <b>Ierland</b>:</p>
@@ -4513,14 +4516,14 @@ function viewPrivacyNL(){
     <p>Alleen jij kunt bij je eigen kelder; dat is op databaseniveau afgedwongen.</p>
 
     <h3>Wat de sommelier te zien krijgt</h3>
-    <p>Laat je een etiket of wijnkaart lezen, of vraag je om een pairing, dan gaat die foto of vraag naar <b>Anthropic</b> in de Verenigde Staten, die het antwoord maakt. Anthropic gebruikt wat er via deze weg binnenkomt niet om modellen mee te trainen. Caveau bewaart het antwoord in jouw kelder en verder alleen de telling van je verbruik.</p>
+    <p>Laat je een etiket of wijnkaart lezen, of vraag je om een pairing, dan gaat die foto of vraag naar <b>Anthropic</b> in de Verenigde Staten, die het antwoord maakt. Anthropic gebruikt wat er via deze weg binnenkomt niet om modellen mee te trainen. CellarMentor bewaart het antwoord in jouw kelder en verder alleen de telling van je verbruik.</p>
     <p>Foto's van een <b>wijnkaart in een restaurant</b> zijn een uitzondering: die blijven in het geheugen van je telefoon zolang je ernaar kijkt en worden nooit opgeslagen, op je apparaat niet en in de cloud niet.</p>
 
     <h3>Prijzen opzoeken</h3>
     <p>Vraag je om de prijs van een fles precies op te zoeken, dan zoekt de sommelier op internet bij wijnhandels en veilingsites. Daarvoor gaat alleen de naam, de producent en de jaargang van die fles naar Anthropic, dat de zoekopdracht uitvoert; niet wie het vraagt en niet wat er verder in je kelder ligt. Een gevonden prijs bewaren we in een gedeelde prijstabel (naam, jaargang, prijs, bron en datum), zodat de volgende die dezelfde fles scant hem gratis krijgt. De zoekopdracht zelf loopt via de zoekmachine van Brave (alleen naam, producent en jaargang), de leesbeurt via Anthropic. Zet je in Instellingen aan dat je deelt wat je betaalde, dan bewaren we je aankoopprijs bij naam en jaargang van de wijn, gekoppeld aan je account zodat je hem later kunt laten verwijderen; andere gebruikers zien alleen samengevoegde bedragen van minstens twee mensen, nooit wie wat betaalde. Uitzetten stopt het delen. Wie een prijs opzocht, staat er alleen bij als intern kenmerk, om misbruik te kunnen herleiden; het is voor niemand zichtbaar. Van elke zoekopdracht bewaren we dertig dagen het letterlijke antwoord van het model, zonder gebruikersgegevens, om fouten te kunnen opsporen.</p>
 
     <h3>Betalen</h3>
-    <p>Betalingen lopen via <b>Stripe</b>. Je kaartgegevens gaan rechtstreeks naar Stripe; Caveau ziet ze niet en bewaart ze niet. Wat wij wél bewaren is een klantnummer van Stripe en de status van je abonnement, zodat we weten hoeveel tegoed je hebt.</p>
+    <p>Betalingen lopen via <b>Stripe</b>. Je kaartgegevens gaan rechtstreeks naar Stripe; CellarMentor ziet ze niet en bewaart ze niet. Wat wij wél bewaren is een klantnummer van Stripe en de status van je abonnement, zodat we weten hoeveel tegoed je hebt.</p>
 
     <h3>Wat we níét doen</h3>
     <p>Geen advertenties. Geen volgcookies, geen bezoekersstatistieken, geen partij die meekijkt. We verkopen of delen je gegevens met niemand, en we lezen niet mee in je kelder. De gedeelde prijstabel bevat alleen wijnen en prijzen, geen kelders en geen namen van mensen.</p>
@@ -4537,11 +4540,11 @@ function viewVoorwaarden(){ return legalNote(viewVoorwaardenNL()); }
 function viewVoorwaardenNL(){
   return `${brandRow('')}${backRow}<div class="eyebrow">Voorwaarden</div><h2 class="h2">De afspraken</h2>
   <div class="legal">
-    <p>Caveau is een app om je eigen wijnkelder bij te houden, aangeboden door ${aanbieder()}. Door hem te gebruiken ga je met het onderstaande akkoord.</p>
+    <p>CellarMentor is een app om je eigen wijnkelder bij te houden, aangeboden door ${aanbieder()}. Door hem te gebruiken ga je met het onderstaande akkoord.</p>
 
     <h3>Gratis, en Plus</h3>
     <p>Het bijhouden van je kelder is gratis en blijft dat: flessen, voorraad, locaties, foto's, back-ups, en de ingebouwde regels voor drinkvenster en pairing werken zonder account en zonder te betalen.</p>
-    <p>Wat de sommelier doet (etiketten lezen, wijnkaarten lezen, pairing en recepten) kost credits. Ingelogd krijg je er <b>${FREE_CREDITS} per maand gratis</b>. Met <b>Caveau Plus</b> (${esc(PLUS_PRIJS)}) worden dat er <b>${PLUS_CREDITS}</b>.</p>
+    <p>Wat de sommelier doet (etiketten lezen, wijnkaarten lezen, pairing en recepten) kost credits. Ingelogd krijg je er <b>${FREE_CREDITS} per maand gratis</b>. Met <b>CellarMentor Plus</b> (${esc(PLUS_PRIJS)}) worden dat er <b>${PLUS_CREDITS}</b>.</p>
 
     <h3>Wat credits kosten</h3>
     <ul>
@@ -4559,34 +4562,34 @@ function viewVoorwaardenNL(){
     <p>Je hebt veertien dagen bedenktijd. Omdat Plus meteen ingaat, vraag je bij het afrekenen uitdrukkelijk om die directe levering. In de praktijk houd ik het simpel: <b>heb je binnen veertien dagen nog geen credits gebruikt en wil je ervanaf, dan krijg je je geld terug.</b> Mail me even. Heb je al credits gebruikt, dan verrekenen we naar rato van wat je hebt verbruikt.</p>
 
     <h3>De sommelier is een adviseur, geen orakel</h3>
-    <p>Drinkvensters, waarde-inschattingen en pairings zijn schattingen, gemaakt door een AI en soms door vaste regels als de AI er niet bij kan. Ze zijn bedoeld om je te helpen kiezen, niet om op te vertrouwen bij verzekeren, verkopen of investeren. Een waarde in Caveau is geen taxatie. Wat je met een fles doet, blijft jouw beslissing.</p>
+    <p>Drinkvensters, waarde-inschattingen en pairings zijn schattingen, gemaakt door een AI en soms door vaste regels als de AI er niet bij kan. Ze zijn bedoeld om je te helpen kiezen, niet om op te vertrouwen bij verzekeren, verkopen of investeren. Een waarde in CellarMentor is geen taxatie. Wat je met een fles doet, blijft jouw beslissing.</p>
 
     <h3>Beschikbaarheid</h3>
-    <p>Ik doe mijn best om Caveau te laten draaien, maar ik kan geen ononderbroken beschikbaarheid beloven. Valt de server uit, dan blijft je kelder op je eigen apparaat gewoon werken. Alleen synchroniseren en de sommelier liggen er dan uit. Duurt een storing lang en heb je Plus, mail me dan; dan zoeken we het samen op.</p>
+    <p>Ik doe mijn best om CellarMentor te laten draaien, maar ik kan geen ononderbroken beschikbaarheid beloven. Valt de server uit, dan blijft je kelder op je eigen apparaat gewoon werken. Alleen synchroniseren en de sommelier liggen er dan uit. Duurt een storing lang en heb je Plus, mail me dan; dan zoeken we het samen op.</p>
 
     <h3>Je gegevens blijven van jou</h3>
     <p>Je kelder is van jou. Je kunt hem op elk moment volledig exporteren en meenemen, ook als je stopt met Plus of je account opheft. Hoe we met je gegevens omgaan staat in de <button class="linkbtn" data-act="meerGo" data-p="privacy">privacyverklaring</button>.</p>
 
     <h3>Fatsoenlijk gebruik</h3>
-    <p>Caveau is bedoeld voor je eigen wijnkelder. Geautomatiseerd gebruik, doorverkopen van het tegoed of pogingen om de limieten te omzeilen mag ik afsluiten. Bij misbruik krijg je het ongebruikte deel van je maand terug.</p>
+    <p>CellarMentor is bedoeld voor je eigen wijnkelder. Geautomatiseerd gebruik, doorverkopen van het tegoed of pogingen om de limieten te omzeilen mag ik afsluiten. Bij misbruik krijg je het ongebruikte deel van je maand terug.</p>
 
     <h3>Als er iets verandert</h3>
     <p>Verandert de prijs of het aantal credits, dan hoor je dat vooraf en kun je opzeggen voordat het ingaat. Wijzigingen in deze voorwaarden zet ik op deze pagina, met de datum eronder.</p>
 
     <h3>Verder</h3>
-    <p>Caveau gaat over wijn en is bedoeld voor volwassenen. Op deze voorwaarden is Nederlands recht van toepassing. Iets onduidelijk of oneens? Mail <a href="mailto:${esc(CONTACT_MAIL)}" style="color:var(--acc-ink);font-weight:600">${esc(CONTACT_MAIL)}</a>. Dat werkt bijna altijd sneller dan de formele weg.</p>
+    <p>CellarMentor gaat over wijn en is bedoeld voor volwassenen. Op deze voorwaarden is Nederlands recht van toepassing. Iets onduidelijk of oneens? Mail <a href="mailto:${esc(CONTACT_MAIL)}" style="color:var(--acc-ink);font-weight:600">${esc(CONTACT_MAIL)}</a>. Dat werkt bijna altijd sneller dan de formele weg.</p>
 
     <p class="upd">Laatst bijgewerkt op ${esc(LEGAL_DATUM)}.</p>
   </div>`;
 }
 
-ACT.overSheet = () => openSheet(`${sheetHead('Over Caveau')}
-  <p style="font-size:14px;color:var(--ink2);line-height:1.65">Caveau is je persoonlijke wijnkelder: scan etiketten, houd voorraad en locaties bij, zie wanneer elke fles op dronk is, en laat de sommelier het perfecte glas bij je gerecht kiezen, of andersom. Zonder account blijft alles op je eigen apparaat; met een account synct je kelder tussen je apparaten. Deel de link gerust, iedereen krijgt zijn eigen kelder.</p>
+ACT.overSheet = () => openSheet(`${sheetHead('Over CellarMentor')}
+  <p style="font-size:14px;color:var(--ink2);line-height:1.65">CellarMentor is je persoonlijke wijnkelder: scan etiketten, houd voorraad en locaties bij, zie wanneer elke fles op dronk is, en laat de sommelier het perfecte glas bij je gerecht kiezen, of andersom. Zonder account blijft alles op je eigen apparaat; met een account synct je kelder tussen je apparaten. Deel de link gerust, iedereen krijgt zijn eigen kelder.</p>
   <p class="small mt14">Drinkvensters en pairing zijn schattingen. Jouw smaak wint altijd. Santé!</p>`);
 
 /* export / import / wissen */
 async function buildExport(withPhotos){
-  const data = { app:'caveau', v:1, exportedAt:new Date().toISOString(), cellarName:S.settings.cellarName,
+  const data = { app:'cellarmentor', v:1, exportedAt:new Date().toISOString(), cellarName:S.settings.cellarName,
     wines:S.wines, history:S.history, wishlist:S.wishlist, locations:S.locations||[] };
   if(withPhotos){
     const photos = {};
@@ -4617,12 +4620,12 @@ async function saveFile(name, text){
   }
 }
 const stamp = () => new Date().toISOString().slice(0,10);
-ACT.expFull = async () => saveFile(`caveau-backup-${stamp()}.json`, await buildExport(true));
-ACT.expLite = async () => saveFile(`caveau-backup-${stamp()}.json`, await buildExport(false));
+ACT.expFull = async () => saveFile(`cellarmentor-backup-${stamp()}.json`, await buildExport(true));
+ACT.expLite = async () => saveFile(`cellarmentor-backup-${stamp()}.json`, await buildExport(false));
 ACT.impGo = () => document.getElementById('fImport').click();
 async function doImport(text){
   let d; try{ d = JSON.parse(text); }catch(e){ toast('Geen geldig back-upbestand'); return; }
-  if(!d || d.app !== 'caveau' || !Array.isArray(d.wines)){ toast('Dit is geen Caveau-back-up'); return; }
+  if(!d || (d.app !== 'cellarmentor' && d.app !== 'caveau') || !Array.isArray(d.wines)){ toast('Dit is geen CellarMentor-back-up'); return; }
   openSheet(`${sheetHead('Back-up inlezen')}
     <p style="font-size:14px;color:var(--ink2)">Gevonden: <b>${d.wines.length}</b> wijnen, ${(d.history||[]).length} historie-regels, ${(d.wishlist||[]).length} wensen${d.photos?`, ${Object.keys(d.photos).length} foto's`:''}.</p>
     <div class="btnrow mt14"><button class="btn ghost" id="impMerge">Samenvoegen</button><button class="btn" id="impReplace">Vervangen</button></div>
@@ -5067,7 +5070,7 @@ async function cloudWis(){
   return rev;
 }
 
-/* ---- AI via de Caveau-serverfunctie (Fase 1) ---- */
+/* ---- AI via de CellarMentor-serverfunctie (Fase 1) ---- */
 async function sbAI(content, maxTokens, kind, onText, opts){
   const stream = !!onText && CAN_STREAM;
   let res;
@@ -5077,7 +5080,7 @@ async function sbAI(content, maxTokens, kind, onText, opts){
       headers:{ 'content-type':'application/json' },
       body: JSON.stringify({ kind: kind||'ai', max_tokens: maxTokens||2000, stream, messages:[{role:'user', content}], ...(opts && opts.web ? {web:true, wine:opts.wine||null, refresh:!!opts.refresh} : {}) })
     });
-  }catch(e){ if(e && e.sessie) throw e; throw new Error('Geen verbinding met de Caveau-server. Probeer het zo nog eens'); }
+  }catch(e){ if(e && e.sessie) throw e; throw new Error('Geen verbinding met de CellarMentor-server. Probeer het zo nog eens'); }
   if(res.ok && stream && res.body && (res.headers.get('content-type')||'').includes('event-stream'))
     return readSSE(res, onText);
   const d = await res.json().catch(() => ({}));
@@ -5102,7 +5105,7 @@ function planBoxHtml(){
     const stopt = quota.status === 'canceling';
     const gedoe = quota.status && quota.status !== 'active' && !stopt;
     return `<div class="panel" style="margin-top:12px">
-      <div class="eyebrow mb8">Caveau Plus</div>
+      <div class="eyebrow mb8">CellarMentor Plus</div>
       <p style="font-size:14px;margin-bottom:8px">${quota.limit} credits per maand${t?` · ${stopt?'loopt af':'verlengt'} op ${esc(t)}`:''}.
       ${gedoe?`<br><b>Let op:</b> de betaling is niet gelukt (${esc(quota.status)}). Werk je betaalmethode bij om Plus te houden.`:''}</p>
       <button class="btn plain" data-act="acPortal">Abonnement beheren</button></div>`;
@@ -5113,7 +5116,7 @@ function planBoxHtml(){
     <p style="font-size:14px;margin-bottom:8px">Je hebt nog <b>${over} van de ${quota.limit} credits</b> deze maand. Elke maand begint de teller opnieuw.</p>
     <p class="small">Een etiketscan of pairing kost 1 credit; een wijnkaart 2 per gefotografeerde pagina. Kom je tekort? Laat het even weten, dan zet ik je tegoed hoger.</p></div>`;
   return `<div class="panel" style="margin-top:12px">
-    <div class="eyebrow mb8">Caveau Plus · ${PLUS_PRIJS}</div>
+    <div class="eyebrow mb8">CellarMentor Plus · ${PLUS_PRIJS}</div>
     <p style="font-size:14px;margin-bottom:8px">Je hebt nog <b>${over} van de ${quota.limit} gratis credits</b> deze maand. Met Plus krijg je er <b>${PLUS_CREDITS} per maand</b>, genoeg voor zo'n 35 wijnkaarten in een restaurant, of honderden etiketten.</p>
     <p class="small mb8">Een etiketscan of pairing kost 1 credit; een wijnkaart 2 per gefotografeerde pagina. Maandelijks opzegbaar.</p>
     <button class="btn" data-act="acUpgrade">Plus nemen</button></div>`;
@@ -5122,7 +5125,7 @@ async function sbFn(name, body){
   let res;
   try{
     res = await fnFetch(name, { method:'POST', headers:{ 'content-type':'application/json' }, body: JSON.stringify(body||{}) });
-  }catch(e){ if(e && e.sessie) throw e; throw new Error('Geen verbinding met de Caveau-server. Probeer het zo nog eens'); }
+  }catch(e){ if(e && e.sessie) throw e; throw new Error('Geen verbinding met de CellarMentor-server. Probeer het zo nog eens'); }
   const d = await res.json().catch(() => ({}));
   if(!res.ok) throw new Error(d.error || (res.status === 404 ? 'De betaalfunctie is nog niet geplaatst' : 'Serverfout ' + res.status));
   return d;
@@ -5137,7 +5140,7 @@ async function billingGo(action, el){
 /* Voor het afrekenen: wat je koopt, wat het kost, en het vinkje. Dat vinkje is
    geen formaliteit: bij een dienst die meteen begint moet je daar uitdrukkelijk
    om vragen, anders klopt de bedenktijd van veertien dagen niet. */
-ACT.acUpgrade = () => openSheet(`${sheetHead('Caveau Plus')}
+ACT.acUpgrade = () => openSheet(`${sheetHead('CellarMentor Plus')}
   <p style="font-size:14px;color:var(--ink2);line-height:1.6;margin-bottom:6px"><b>${PLUS_CREDITS} credits per maand</b> voor ${esc(PLUS_PRIJS)}, btw inbegrepen.</p>
   <p class="small mb8">Genoeg voor zo'n 35 wijnkaarten in een restaurant, of honderden etiketten. Maandelijks opzegbaar. Je houdt Plus tot het einde van de periode die je betaald hebt.</p>
   <label style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--ink2);line-height:1.55;margin:14px 0 10px">
@@ -5154,7 +5157,7 @@ ACT.plusGo = el => {
 ACT.acPortal = el => billingGo('portal', el);
 
 /* Directe adressen voor de twee openbare pagina's, zodat je ze kunt delen en
-   in Stripe kunt opgeven: .../caveau/#voorwaarden en .../caveau/#privacy */
+   in Stripe kunt opgeven: .../cellarmentor/#voorwaarden en .../cellarmentor/#privacy */
 (function(){
   const naar = () => {
     const h = (location.hash||'').replace('#','').toLowerCase();
@@ -5174,7 +5177,7 @@ ACT.acPortal = el => billingGo('portal', el);
   setTimeout(() => {
     if(q === 'ok'){
       UI.tab = 'meer'; UI.meerPage = 'account'; render(); fetchQuota();
-      toast('Welkom bij Caveau Plus. Je tegoed staat klaar', null, null, 6000);
+      toast('Welkom bij CellarMentor Plus. Je tegoed staat klaar', null, null, 6000);
     } else toast('Afgebroken, er is niets afgeschreven');
   }, 400);
 })();
@@ -5196,7 +5199,7 @@ async function fetchQuota(){
       used:(used||[]).reduce((n,r) => n + (r.cost_units || 1), 0) };
     quota.limit = quota.plan === 'plus' ? PLUS_CREDITS : FREE_CREDITS + quota.bonus;
     let txt = quota.plan === 'unlimited' ? `AI: onbeperkt · ${quota.used} credits deze maand`
-      : quota.plan === 'plus' ? `Caveau Plus · ${quota.used} van ${quota.limit} credits deze maand`
+      : quota.plan === 'plus' ? `CellarMentor Plus · ${quota.used} van ${quota.limit} credits deze maand`
       : `Gratis tegoed: ${Math.max(0, quota.limit - quota.used)} van ${quota.limit} credits over deze maand`;
     if(ownKey()) txt += ' · eigen sleutel actief (telt niet mee)';
     el.textContent = txt;
@@ -5217,7 +5220,7 @@ function viewAccount(){
   const c = cloud();
   if(!CLOUD_OK)
     return `${brandRow('')}${backRow}<div class="eyebrow">Account</div><h2 class="h2">Cloud-sync</h2>
-      <div class="banner"><span>${ik('slot')}</span><span>Sync is niet beschikbaar in deze omgeving. Gebruik de app via <b>mpoons.github.io/caveau</b>.</span></div>`;
+      <div class="banner"><span>${ik('slot')}</span><span>Sync is niet beschikbaar in deze omgeving. Gebruik de app via <b>mpoons.github.io/cellarmentor</b>.</span></div>`;
   if(!loggedIn()){
     return `${brandRow('')}${backRow}<div class="eyebrow">Account</div><h2 class="h2">Cloud-sync aanzetten</h2>
       <p class="small mb8">Log in en je kelder synchroniseert automatisch tussen al je apparaten. Nog geen account? Kies een wachtwoord en tik op "Account aanmaken".</p>
@@ -5351,8 +5354,8 @@ const EN = {
   'Instellingen':'Settings', 'Instellingen & back-up':'Settings & backup', 'Account':'Account', 'Account & cloud-sync':'Account & cloud sync',
   'Locaties':'Locations', 'Locaties & rekken':'Locations & racks', 'Rekken & plekken':'Racks & places', 'Historie':'History', 'Drink-historie':'Drinking history',
   'Verlanglijst':'Wishlist', 'Op de verlanglijst':'On the wishlist', 'Nog te kopen':'Still to buy', 'Recepten':'Recipes', 'Receptenboek':'Recipe book',
-  'Jouw smaak':'Your taste', 'Waar je van houdt':'What you love', 'Over Caveau':'About Caveau', 'Voorwaarden':'Terms', 'Privacy':'Privacy',
-  'Caveau als app':'Caveau as an app', 'Caveau op je beginscherm':'Caveau on your home screen', 'Meerdere tegelijk':'Several at once', 'Meerdere flessen tegelijk':'Several bottles at once',
+  'Jouw smaak':'Your taste', 'Waar je van houdt':'What you love', 'Over CellarMentor':'About CellarMentor', 'Voorwaarden':'Terms', 'Privacy':'Privacy',
+  'CellarMentor als app':'CellarMentor as an app', 'CellarMentor op je beginscherm':'CellarMentor on your home screen', 'Meerdere tegelijk':'Several at once', 'Meerdere flessen tegelijk':'Several bottles at once',
   'Etiket scannen':'Scan a label', 'Scan etiket':'Scan label', 'Scan een fles':'Scan a bottle', 'Scan je eerste fles':'Scan your first bottle',
   'Geavanceerd':'Advanced', 'Ontwikkelaarsstand':'Developer mode', 'Weergave':'Appearance', 'Stijl':'Style', 'Kleur':'Colour', 'Streken':'Regions', 'Druiven':'Grapes',
   '‹ Terug':'‹ Back', '‹ Annuleer':'‹ Cancel', 'Terug':'Back', 'Sluiten':'Close', 'Annuleer':'Cancel', 'Later':'Later', 'Verder':'Continue', 'Bewaren':'Save', 'Bewerken':'Edit',
@@ -5467,7 +5470,7 @@ const EN = {
   'Lijst plakken':'Paste a list', 'Lijst met flessen':'List of bottles', 'Bijvoorbeeld een kolom uit een spreadsheet, een notitie of de bevestiging van je wijnhandel. Eén fles per regel werkt het beste.':'For example a spreadsheet column, a note or your wine merchant’s confirmation. One bottle per line works best.',
   'Of een CSV-bestand':'Or a CSV file', 'Gratis en zonder AI. Je koppelt eerst de kolommen, daarna zie je dezelfde controlelijst als bij een foto, met drinkvensters erbij als ze in het bestand staan.':'Free and without AI. You map the columns first, then you see the same check list as with a photo, with drinking windows if the file has them.',
   '📄 CSV kiezen (CellarTracker, Vivino of spreadsheet)':'📄 Choose CSV (CellarTracker, Vivino or spreadsheet)', 'Kolommen koppelen':'Map columns', 'Kies de kolom met de naam van de wijn':'Choose the column with the wine name',
-  'Geen tabel gevonden in dit bestand':'No table found in this file', 'Geen wijnen gevonden in deze kolommen':'No wines found in these columns', 'Dit is geen Caveau-back-up':'This is not a Caveau backup',
+  'Geen tabel gevonden in dit bestand':'No table found in this file', 'Geen wijnen gevonden in deze kolommen':'No wines found in these columns', 'Dit is geen CellarMentor-back-up':'This is not a CellarMentor backup',
   'De sommelier leest je lijst…':'The sommelier is reading your list…', 'Je ziet eerst wat hij gevonden heeft. Pas als jij aanvinkt gaat er iets je kelder in.':'You see what was found first. Nothing enters your cellar until you tick it.',
   'Vink aan wat klopt en corrigeer het aantal. Tik op een wijn om jaargang, type of locatie bij te werken. Wat je overslaat verdwijnt gewoon.':'Tick what is right and correct the count. Tap a wine to update vintage, type or location. Whatever you skip simply disappears.',
   'Locatie voor de aangevinkte':'Location for the ticked ones', 'Komt alles van één factuur maar gaat het naar twee plekken? Zet hier de plek van de meeste, en pas de rest per wijn aan.':'All from one invoice but going to two places? Set the place for most of them here and adjust the rest per wine.',
@@ -5496,7 +5499,7 @@ const EN = {
   'Terugzetten':'Restore', 'Reservekopie teruggezet':'Safety copy restored', 'Reservekopie niet leesbaar':'Safety copy unreadable', 'nog niet':'not yet',
   'Alles wissen':'Erase everything', 'Alles wissen?':'Erase everything?', 'Alles gewist':'Everything erased', 'Alles gewist, ook in de cloud':'Everything erased, in the cloud too', 'Cloud wissen…':'Erasing the cloud…', 'Dit kan niet ongedaan worden.':'This cannot be undone.',
   'Eigen Anthropic API-sleutel':'Own Anthropic API key', 'Model (bij eigen sleutel)':'Model (with own key)',
-  'Draait op je eigen Anthropic-tegoed en gaat vóór het Caveau-tegoed. Blijft op dit apparaat: nooit in een back-up, nooit naar de cloud. Zet je de ontwikkelaarsstand uit, dan wordt hij gewist.':'Runs on your own Anthropic balance and takes precedence over Caveau credits. Stays on this device: never in a backup, never to the cloud. Switching developer mode off erases it.',
+  'Draait op je eigen Anthropic-tegoed en gaat vóór het CellarMentor-tegoed. Blijft op dit apparaat: nooit in een back-up, nooit naar de cloud. Zet je de ontwikkelaarsstand uit, dan wordt hij gewist.':'Runs on your own Anthropic balance and takes precedence over CellarMentor credits. Stays on this device: never in a backup, never to the cloud. Switching developer mode off erases it.',
   '6 voorbeeldflessen geladen. Wissen kan via Instellingen':'6 sample bottles loaded. Erase them under Settings', 'De opslag van je browser is vol. Wijzigingen worden niet bewaard':'Your browser storage is full. Changes are not being saved', 'Opslaan lukt weer':'Saving works again', 'Back-up':'Backup',
   'De opslag van je browser is vol.':'Your browser storage is full.', 'Wijzigingen worden niet meer bewaard. Maak nu een back-up, en haal daarna oude notities of flessen weg.':'Changes are no longer being saved. Make a backup now, then remove old notes or bottles.',
   'Cloud-sync':'Cloud sync', 'Cloud-sync aanzetten':'Switch on cloud sync', 'Cloud-sync actief':'Cloud sync active', 'Nu synchroniseren':'Sync now', 'Gesynchroniseerd ✓':'Synced ✓', 'Ingelogd, synchroniseren…':'Logged in, syncing…', 'Ingelogd:':'Logged in:',
@@ -5509,25 +5512,25 @@ const EN = {
   'Nieuw wachtwoord':'New password', 'Wachtwoord opslaan':'Save password', 'Wachtwoord gewijzigd. Je bent ingelogd':'Password changed. You are logged in', 'De twee wachtwoorden zijn niet gelijk':'The two passwords do not match',
   'Je bent ingelogd via de herstel-link. Kies nu een nieuw wachtwoord; laat je telefoon het in de sleutelhanger bewaren.':'You are logged in via the reset link. Choose a new password now; let your phone keep it in the keychain.',
   'Deze link is verlopen of al gebruikt. Vraag een nieuwe aan':'This link has expired or was already used. Request a new one', 'Sessie verlopen. Log opnieuw in bij Meer → Account':'Session expired. Log in again under More → Account',
-  'Sessie verlopen. Log opnieuw in':'Session expired. Log in again', 'Geen verbinding met de Caveau-server. Probeer het zo nog eens':'No connection to the Caveau server. Try again shortly', 'Hiervoor moet je ingelogd zijn':'You need to be logged in for this',
+  'Sessie verlopen. Log opnieuw in':'Session expired. Log in again', 'Geen verbinding met de CellarMentor-server. Probeer het zo nog eens':'No connection to the CellarMentor server. Try again shortly', 'Hiervoor moet je ingelogd zijn':'You need to be logged in for this',
   'Log eerst in bij Meer → Account':'Log in first under More → Account', 'Log in (Meer → Account) om prijzen op te zoeken':'Log in (More → Account) to look up prices', 'Lukte niet, probeer het straks nog eens':'That failed, try again later',
   'Andere gebruiker: de vorige kelder staat als reservekopie in Instellingen':'Different user: the previous cellar is kept as a safety copy under Settings',
   'Laat je telefoon het wachtwoord in de sleutelhanger bewaren, dan is het eenmalig. Alleen jíj kunt bij je kelder; dat is op databaseniveau afgedwongen.':'Let your phone keep the password in the keychain, then it is a one-off. Only you can reach your cellar; that is enforced at database level.',
   'Elke wijziging gaat een paar seconden later automatisch naar de cloud; bij het openen wordt de nieuwste versie opgehaald. Uitloggen verwijdert niets.':'Every change goes to the cloud automatically a few seconds later; on opening, the latest version is fetched. Logging out deletes nothing.',
   'Doe dit bij voorkeur vóór je flessen toevoegt: op de iPhone bewaart de app op je beginscherm zijn gegevens soms apart van Safari. Log je in, dan maakt het niet uit, want dan staat je kelder in de cloud.':'Preferably do this before adding bottles: on iPhone the home-screen app sometimes keeps its data apart from Safari. If you log in it does not matter, because your cellar is then in the cloud.',
-  'Je tegoed':'Your credits', 'AI-tegoed: laden…':'AI credits: loading…', 'AI-tegoed: log opnieuw in':'AI credits: log in again', 'Onbeperkt tegoed op dit account.':'Unlimited credits on this account.', 'Caveau Plus':'Caveau Plus', 'Plus nemen':'Get Plus',
+  'Je tegoed':'Your credits', 'AI-tegoed: laden…':'AI credits: loading…', 'AI-tegoed: log opnieuw in':'AI credits: log in again', 'Onbeperkt tegoed op dit account.':'Unlimited credits on this account.', 'CellarMentor Plus':'CellarMentor Plus', 'Plus nemen':'Get Plus',
   'Een etiketscan of pairing kost 1 credit; een wijnkaart 2 per gefotografeerde pagina. Maandelijks opzegbaar.':'A label scan or pairing costs 1 credit; a wine list 2 per photographed page. Cancel monthly.',
   'Een etiketscan of pairing kost 1 credit; een wijnkaart 2 per gefotografeerde pagina. Kom je tekort? Laat het even weten, dan zet ik je tegoed hoger.':'A label scan or pairing costs 1 credit; a wine list 2 per photographed page. Running short? Let me know and I will raise your credits.',
-  'Abonnement beheren':'Manage subscription', 'Opzeggen':'Cancel subscription', 'Betalen':'Pay', 'Naar de betaling':'To payment', 'Welkom bij Caveau Plus. Je tegoed staat klaar':'Welcome to Caveau Plus. Your credits are ready',
+  'Abonnement beheren':'Manage subscription', 'Opzeggen':'Cancel subscription', 'Betalen':'Pay', 'Naar de betaling':'To payment', 'Welkom bij CellarMentor Plus. Je tegoed staat klaar':'Welcome to CellarMentor Plus. Your credits are ready',
   'Zet eerst het vinkje, dat hoort bij een abonnement dat meteen ingaat':'Tick the box first; that goes with a subscription that starts right away', 'Ik ga akkoord met de':'I agree to the', 'voorwaarden':'terms', 'privacyverklaring':'privacy statement', 'en de':'and the',
   'Afgebroken, er is niets afgeschreven':'Cancelled, nothing was charged', 'Staat onder Meer als je hem toch wilt':'It is under More if you want it after all', 'Niet meer tonen':'Do not show again',
-  'App installeren':'Install app', 'Toevoegen aan startscherm':'Add to home screen', 'Zet op beginscherm':'Put on home screen', 'Je browser kan Caveau in één tik installeren.':'Your browser can install Caveau in one tap.',
-  'Je browser biedt dit nu niet aan':'Your browser does not offer this right now', 'Zet Caveau eerst op je beginscherm':'Put Caveau on your home screen first', 'deel-icoon':'share icon',
+  'App installeren':'Install app', 'Toevoegen aan startscherm':'Add to home screen', 'Zet op beginscherm':'Put on home screen', 'Je browser kan CellarMentor in één tik installeren.':'Your browser can install CellarMentor in one tap.',
+  'Je browser biedt dit nu niet aan':'Your browser does not offer this right now', 'Zet CellarMentor eerst op je beginscherm':'Put CellarMentor on your home screen first', 'deel-icoon':'share icon',
   'Tik onderin Safari op het':'In Safari, tap the', ', het vierkantje met het pijltje omhoog.':', the square with the arrow pointing up.', 'Scroll in dat menu naar':'Scroll in that menu to', 'Bevestigen.':'Confirm.',
   'Open het menu van je browser (de drie puntjes).':'Open your browser menu (the three dots).', 'Tik rechtsboven op':'Tap top right on', 'Hoe?':'How?',
-  'Caveau is een website die zich als app gedraagt. Zet je hem op je beginscherm, dan krijg je een eigen icoon, geen adresbalk, en blijft je kelder ook zonder bereik gewoon werken, handig in een kelder of een restaurant.':'Caveau is a website that behaves like an app. Put it on your home screen and you get its own icon, no address bar, and your cellar keeps working without signal, handy in a cellar or a restaurant.',
+  'CellarMentor is een website die zich als app gedraagt. Zet je hem op je beginscherm, dan krijg je een eigen icoon, geen adresbalk, en blijft je kelder ook zonder bereik gewoon werken, handig in een kelder of een restaurant.':'CellarMentor is a website that behaves like an app. Put it on your home screen and you get its own icon, no address bar, and your cellar keeps working without signal, handy in a cellar or a restaurant.',
   'Lukt het niet? Dan sta je waarschijnlijk in een andere browser dan Safari. Op de iPhone kan alleen Safari dit.':'Not working? Then you are probably in a browser other than Safari. On iPhone only Safari can do this.',
-  'Caveau is je persoonlijke wijnkelder: scan etiketten, houd voorraad en locaties bij, zie wanneer elke fles op dronk is, en laat de sommelier het perfecte glas bij je gerecht kiezen, of andersom. Zonder account blijft alles op je eigen apparaat; met een account synct je kelder tussen je apparaten. Deel de link gerust, iedereen krijgt zijn eigen kelder.':'Caveau is your personal wine cellar: scan labels, track stock and locations, see when each bottle is ready, and let the sommelier pick the perfect glass for your dish, or the other way round. Without an account everything stays on your own device; with an account your cellar syncs across your devices. Share the link freely, everyone gets their own cellar.',
+  'CellarMentor is je persoonlijke wijnkelder: scan etiketten, houd voorraad en locaties bij, zie wanneer elke fles op dronk is, en laat de sommelier het perfecte glas bij je gerecht kiezen, of andersom. Zonder account blijft alles op je eigen apparaat; met een account synct je kelder tussen je apparaten. Deel de link gerust, iedereen krijgt zijn eigen kelder.':'CellarMentor is your personal wine cellar: scan labels, track stock and locations, see when each bottle is ready, and let the sommelier pick the perfect glass for your dish, or the other way round. Without an account everything stays on your own device; with an account your cellar syncs across your devices. Share the link freely, everyone gets their own cellar.',
   'Drinkvensters en pairing zijn schattingen. Jouw smaak wint altijd. Santé!':'Drinking windows and pairings are estimates. Your taste always wins. Cheers!',
   'Taal / Language':'Language',
   'De juridische teksten hieronder zijn in het Nederlands; die versie is bindend. Vragen? Mail gerust.':'The legal text below is in Dutch; that version is binding. Questions? Do email.',
@@ -5554,14 +5557,14 @@ const EN = {
   "Je hele kelder, historie, verlanglijst en foto's worden gewist, en als cloud-sync aanstaat ook in de cloud.":'Your whole cellar, history, wishlist and photos will be erased, and with cloud sync on, the cloud copy too.',
   'Het bijhouden van je kelder is gratis en blijft dat: flessen, voorraad, locaties, foto\'s, back-ups, en de ingebouwde regels voor drinkvenster en pairing werken zonder account en zonder te betalen.':'Keeping your cellar is free and stays free: bottles, stock, locations, photos, backups, and the built-in rules for drinking window and pairing work without an account and without paying.',
   'Genoeg voor zo\'n 35 wijnkaarten in een restaurant, of honderden etiketten. Maandelijks opzegbaar. Je houdt Plus tot het einde van de periode die je betaald hebt.':'Enough for some 35 restaurant wine lists, or hundreds of labels. Cancel monthly. You keep Plus until the end of the period you paid for.',
-  'Zonder account gaat er niets weg':'Without an account nothing leaves your device', 'Wat Caveau van je bewaart':'What Caveau keeps of yours', 'Wat de sommelier te zien krijgt':'What the sommelier gets to see', 'Wat we níét doen':'What we do not do',
+  'Zonder account gaat er niets weg':'Without an account nothing leaves your device', 'Wat CellarMentor van je bewaart':'What CellarMentor keeps of yours', 'Wat de sommelier te zien krijgt':'What the sommelier gets to see', 'Wat we níét doen':'What we do not do',
   'Je gegevens blijven van jou':'Your data stays yours', 'Hoe lang, en hoe je het weghaalt':'How long, and how to remove it', 'De afspraken':'The agreements', 'De sommelier is een adviseur, geen orakel':'The sommelier is an adviser, not an oracle',
   'Fatsoenlijk gebruik':'Fair use', 'Beschikbaarheid':'Availability', 'Als er iets verandert':'If something changes', 'Betalingen lopen via':'Payments run through',
   'Recept:':'Recipe:', 'Lichter':'Lighter', 'Voller':'Fuller', 'Droger':'Drier', 'Zoeter':'Sweeter', 'Frisser':'Fresher', 'Rijper':'Riper', 'Minder hout':'Less oak', 'Meer hout':'More oak', 'Soepel':'Supple',
   'Vol':'Full', 'Weinig tannine':'Little tannin', 'Veel tannine':'Lots of tannin', 'Zacht en rond':'Soft and round', 'Fris en strak':'Fresh and taut', 'Geen hout':'No oak',
   'Locatie ▾':'Location ▾', 'Zonder locatie ▾':'No location ▾',
   '. Dan heb je hem bij de hand in de winkel en het restaurant, opent hij als een app, en werkt je kelder ook zonder bereik.':'. Then it is at hand in the shop and the restaurant, it opens like an app, and your cellar works without signal too.',
-  '. Zonder inloggen werkt alles behalve het automatisch lezen.':'. Without logging in everything works except automatic reading.', '. Het lezen van de kaart gebeurt op de Caveau-server.':'. Reading the list happens on the Caveau server.',
+  '. Zonder inloggen werkt alles behalve het automatisch lezen.':'. Without logging in everything works except automatic reading.', '. Het lezen van de kaart gebeurt op de CellarMentor-server.':'. Reading the list happens on the CellarMentor server.',
   ', genoeg voor zo\'n 35 wijnkaarten in een restaurant, of honderden etiketten.':', enough for some 35 restaurant wine lists, or hundreds of labels.', ', en ik wil dat Plus meteen ingaat.':', and I want Plus to start right away.',
   'Wat de sommelier doet (etiketten lezen, wijnkaarten lezen, pairing en recepten) kost credits. Ingelogd krijg je er':'What the sommelier does (reading labels, reading wine lists, pairing and recipes) costs credits. Logged in you get',
   'een etiket lezen, een pairing of een vraag aan de sommelier: 1 credit;':'reading a label, a pairing or a question to the sommelier: 1 credit;', 'een wijnkaart lezen: 2 credits per gefotografeerde pagina;':'reading a wine list: 2 credits per photographed page;', 'een prijs opzoeken bij wijnhandels: 1 credit, en dieper zoeken op veilingen en buitenlandse sites: 5 credits;':'looking up a price at wine merchants: 1 credit, and searching deeper on auctions and foreign sites: 5 credits;', 'indicaties schatten voor flessen zonder prijs: 1 credit per 40 flessen.':'estimating indications for bottles without a price: 1 credit per 40 bottles.',
@@ -5603,8 +5606,8 @@ const EN_RE = [
   [/^(.+?)(?: uit (.+?))?: (\S+) kan hier ook, al is het niet de eerste keuze bij (.+)\.$/, (m, a, b, t, l) => `${a}${b ? ' from ' + b : ''}: ${trLaag(t)} works too, though it is not the first choice for ${trLaag(l)}.`],
   [/^(Licht|Weinig tannine|Zacht en rond|Droog|Geen hout) tot (Vol|Veel tannine|Fris en strak|Zoet|Veel hout)$/, (m, a, b) => `${EN[a]} to ${EN[b]}`],
   [/^(\d+) fles(?:sen)? zonder prijs$/, (m, n) => `${n} ${bottles(n)} without a price`],
-  [/^(\d+) Caveau-gebruikers betaalden (€\s?[\d.,]+) tot (€\s?[\d.,]+)$/, '$1 Caveau users paid $2 to $3'],
-  [/^wat (\d+) Caveau-gebruikers betaalden(, (€\s?[\d.,]+) tot (€\s?[\d.,]+))?(, (.+))?$/, (m, n, x, a, b, y, d) => `what ${n} Caveau users paid${a ? ', ' + a + ' to ' + b : ''}${d ? ', ' + d : ''}`],
+  [/^(\d+) CellarMentor-gebruikers betaalden (€\s?[\d.,]+) tot (€\s?[\d.,]+)$/, '$1 CellarMentor users paid $2 to $3'],
+  [/^wat (\d+) CellarMentor-gebruikers betaalden(, (€\s?[\d.,]+) tot (€\s?[\d.,]+))?(, (.+))?$/, (m, n, x, a, b, y, d) => `what ${n} CellarMentor users paid${a ? ', ' + a + ' to ' + b : ''}${d ? ', ' + d : ''}`],
   [/^Nog geen prijs met bron\. Indicatie van de sommelier: (€\s?[\d.,]+) tot (€\s?[\d.,]+), geen echte prijs\.$/, 'No sourced price yet. Sommelier indication: $1 to $2, not a real price.'],
   [/^indicatie (€\s?[\d.,]+) – (€\s?[\d.,]+)$/, 'indication $1 – $2'],
   [/^indicatie (\d+)$/, 'indication $1'],
@@ -5622,7 +5625,7 @@ const EN_RE = [
   [/^(\d+) wijn(?:en)? toegevoegd, samen (\d+) fles(?:sen)?$/, (m, a, b) => `${a} ${wines(a)} added, ${b} ${bottles(b)} in all`],
   [/^(\d+) wijn(?:en)? gelezen( \(de eerste 400\))?$/, (m, n, x) => `${n} ${wines(n)} read${x ? ' (the first 400)' : ''}`],
   [/^(\d+) wijnen · (.+)$/, '$1 wines · $2'],
-  [/^(\d+) prijs(?:zen)? uit de Caveau-prijstabel overgenomen$/, '$1 price(s) taken from the Caveau price table'],
+  [/^(\d+) prijs(?:zen)? uit de CellarMentor-prijstabel overgenomen$/, '$1 price(s) taken from the CellarMentor price table'],
   [/^(\d+) prijs(?:zen)? opgezocht$/, '$1 price(s) looked up'],
   [/^(\d+) regel(?:s)? gevonden\. Per veld staat de kolom die er het meest op lijkt; pas aan waar nodig\. Alleen de naam is verplicht\.$/, '$1 row(s) found. Each field shows the closest column; adjust where needed. Only the name is required.'],
   [/^Bezig: (\d+) van (\d+)…$/, 'Working: $1 of $2…'],
@@ -5644,8 +5647,8 @@ const EN_RE = [
   [/^"(.+)" staat nog op tafel\. Vergeet niet af te strepen$/, '"$1" is still on the table. Do not forget to tick it off'],
   [/^Ruwe schatting (€\s?[\d.,]+)\. Precies opzoeken\?$/, 'Rough estimate $1. Look up the exact price?'],
   [/^Prijs opgezocht: (.+)$/, 'Price found: $1'],
-  [/^Prijs uit de Caveau-prijstabel: (.+)$/, 'Price from the Caveau price table: $1'],
-  [/^(.+) \(uit de Caveau-prijstabel\)$/, '$1 (from the Caveau price table)'],
+  [/^Prijs uit de CellarMentor-prijstabel: (.+)$/, 'Price from the CellarMentor price table: $1'],
+  [/^(.+) \(uit de CellarMentor-prijstabel\)$/, '$1 (from the CellarMentor price table)'],
   [/^Geen prijs gevonden: (.+)$/, 'No price found: $1'],
   [/^Opzoeken mislukte: (.+)$/, 'Lookup failed: $1'],
   [/^Lezen mislukt: (.+)$/, 'Reading failed: $1'],
@@ -5678,8 +5681,8 @@ const EN_RE = [
   [/^(\d+) per maand gratis$/, '$1 a month free'],
   [/^(\d+) credits per maand$/, '$1 credits a month'],
   [/^(\d+) per maand$/, '$1 a month'],
-  [/^Caveau Plus · (.+)$/, 'Caveau Plus · $1'],
-  [/^Caveau v1 · (\d+) flessen · gemaakt met Claude$/, 'Caveau v1 · $1 bottles · made with Claude'],
+  [/^CellarMentor Plus · (.+)$/, 'CellarMentor Plus · $1'],
+  [/^CellarMentor v1 · (\d+) flessen · gemaakt met Claude$/, 'CellarMentor v1 · $1 bottles · made with Claude'],
   [/^Of een foto \((\d+)\/(\d+)\)$/, 'Or a photo ($1/$2)'],
   [/^Lange kaart\? Fotografeer tot (\d+) pagina's, of alleen het stuk dat je aanspreekt\.$/, 'Long list? Photograph up to $1 pages, or just the part that appeals to you.'],
   [/^Lees de kaart en kies(.*)$/, 'Read the list and choose$1'],
@@ -5770,7 +5773,7 @@ new MutationObserver(muts => {
 function applyTaal(){
   const en = taal() === 'en';
   document.documentElement.lang = en ? 'en' : 'nl';
-  document.title = en ? 'Caveau, your wine cellar' : 'Caveau, je wijnkelder';
+  document.title = en ? 'CellarMentor, your wine cellar' : 'CellarMentor, je wijnkelder';
   if(en) vertaalNode(document.body); else herstelNL(document.body);
 }
 /* eerste keer: kiezen, daarna blijft het zo (Instellingen → Taal) */

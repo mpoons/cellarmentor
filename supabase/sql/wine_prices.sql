@@ -1,4 +1,4 @@
--- Caveau-prijstabel: door de zoekagent opgezochte marktprijzen, gedeeld door alle
+-- CellarMentor-prijstabel: door de zoekagent opgezochte marktprijzen, gedeeld door alle
 -- gebruikers. Alleen de Edge Function (service role) leest en schrijft hierin;
 -- er zijn bewust geen RLS-policies, dus de client kan er niet bij.
 -- Draaien in: Supabase dashboard → SQL Editor.

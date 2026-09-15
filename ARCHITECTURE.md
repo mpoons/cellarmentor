@@ -1,19 +1,19 @@
-# Architectuur van Caveau
+# Architectuur van CellarMentor
 
 Geschreven voor de eigenaar, niet voor een programmeur. Elke term die hieronder cursief staat, wordt uitgelegd in de woordenlijst onderaan. Bijwerken in dezelfde commit als elke structurele wijziging (nieuw onderdeel, nieuwe tabel, nieuwe externe dienst, andere gegevensstroom).
 
-Stand: 7 september 2026, app-versie v74 (het versienummer staat in `sw.js`), na de fresh review van die dag (`~/Downloads/fresh-review-caveau-2026-09-07.md`).
+Stand: 15 september 2026, app-versie v75 (hernoemd van Caveau naar CellarMentor; alleen de zichtbare naam, het bronbestand en het adres veranderden). Vorige stand: 7 september 2026, v74 (het versienummer staat in `sw.js`), na de fresh review van die dag (`~/Downloads/fresh-review-caveau-2026-09-07.md`).
 
 ## 1. Wat het is
 
-Caveau is een wijnkelder-app die in de browser draait en zich op een telefoon laat installeren als app (*PWA*). Je scant een etiket, de app herkent de wijn, bewaart hem in je kelder, zegt wanneer je hem moet drinken en welke fles bij een gerecht past. Alles werkt zonder account op het apparaat zelf. Met een account synchroniseert de kelder tussen apparaten en betaalt de app de AI voor je, tegen een maandelijks tegoed (*credits*).
+CellarMentor is een wijnkelder-app die in de browser draait en zich op een telefoon laat installeren als app (*PWA*). Je scant een etiket, de app herkent de wijn, bewaart hem in je kelder, zegt wanneer je hem moet drinken en welke fles bij een gerecht past. Alles werkt zonder account op het apparaat zelf. Met een account synchroniseert de kelder tussen apparaten en betaalt de app de AI voor je, tegen een maandelijks tegoed (*credits*).
 
 ## 2. De onderdelen
 
 Er zijn drie lagen: het apparaat van de gebruiker, de server bij Supabase, en externe diensten die de server aanroept.
 
 ### 2a. Op het apparaat
-- **De app zelf: `caveau.html`.** Eén bestand met alle opmaak, alle schermen en alle programmacode (± 5.700 regels, zes scriptblokken). `head.html` en `build.sh` wikkelen het in tot `index.html`, het bestand dat GitHub Pages serveert. Er is geen framework, geen bundelaar en geen npm; niets hoeft geïnstalleerd te worden om de app te bouwen.
+- **De app zelf: `cellarmentor.html`.** Eén bestand met alle opmaak, alle schermen en alle programmacode (± 5.700 regels, zes scriptblokken). `head.html` en `build.sh` wikkelen het in tot `index.html`, het bestand dat GitHub Pages serveert. Er is geen framework, geen bundelaar en geen npm; niets hoeft geïnstalleerd te worden om de app te bouwen.
 - **De service worker: `sw.js`.** Een klein programma dat de browser installeert en dat de app offline beschikbaar houdt. Het haalt de app zelf altijd eerst van het netwerk (zodat een nieuwe versie meteen komt) en valt terug op de bewaarde kopie als er geen verbinding is. Lettertypes staan in `fonts/` en worden meegecachet.
 - **De gegevens op het apparaat.** De kelder, de historie, de verlanglijst, de locaties en de instellingen staan in één object (`S`) dat als tekst wordt bewaard in de opslag van de browser (*localStorage*, sleutel `caveau_v1`). Foto's zijn te groot daarvoor en staan in *IndexedDB*. Drie reservekopieën (`caveau_backup_daily`, `_prev` en `_prev2`) beschermen tegen een corrupte opslag of een verkeerde sync-keuze. Daarnaast staat er één losse teller `caveau_cam` (hoe vaak de camera openging, voor de iOS-wenk). Zit de opslag vol (± 5 MB), dan gaan de reservekopieën eerst weg, oudste eerst; lukt bewaren dan nog niet, dan blijft er een banner in de kelder staan tot het weer lukt.
 - **Wat er in `S` stuurt.** Behalve de kelder zelf: `rev` (revisieteller van dit apparaat), `syncedRev` en `syncedTel` (wat er bij de laatste geslaagde sync stond, voor de sync-beslissing en de krimpbewaking), en instellingen als `taal`, `theme`, `cloud` (sessie en uid), `smaak` (het smaakprofiel, alleen op dit apparaat: het synct niet mee), `prijsAuto`, `deelPrijzen`, `mailMij`, `installWeg`, `lastLocation`, `prijsRondeOp` en `devMode`.
@@ -84,7 +84,7 @@ Er zijn drie lagen: het apparaat van de gebruiker, de server bij Supabase, en ex
 
 ## 6. Wat er nog niet is (en waar de werkregels dus wringen)
 
-- **Weinig tests.** `tests/caveau.test.js` (via `check.sh`, `node --test`, geen framework) laadt de scriptblokken uit `caveau.html` zelf in een kleine browserstub en toetst de pure regels: de sync-beslissing, de krimpbewaking, de normalisatie van buiten, prijssleutel en credits gelijk aan de server, `matchWine`, gerechtherkenning, drinkvensters, het opslagquotum. Alles met een scherm, camera of netwerk wordt met de hand getest in de browser. De stub is de zwakke plek: raakt een scriptblok op topniveau iets nieuws van de browser aan, dan moet de stub mee.
+- **Weinig tests.** `tests/cellarmentor.test.js` (via `check.sh`, `node --test`, geen framework) laadt de scriptblokken uit `cellarmentor.html` zelf in een kleine browserstub en toetst de pure regels: de sync-beslissing, de krimpbewaking, de normalisatie van buiten, prijssleutel en credits gelijk aan de server, `matchWine`, gerechtherkenning, drinkvensters, het opslagquotum. Alles met een scherm, camera of netwerk wordt met de hand getest in de browser. De stub is de zwakke plek: raakt een scriptblok op topniveau iets nieuws van de browser aan, dan moet de stub mee.
 - **Geen staging.** Een push naar `main` is meteen productie.
 - **Bijna geen foutmonitoring.** Fouten in de browser van een gebruiker zijn onzichtbaar. Mislukte AI-aanroepen staan sinds 7 sep in `ai_fouten` en in de kostenmail; andere serverfouten alleen in de Supabase-logs.
 - **Geen branch-beveiliging** op GitHub en geen CI.

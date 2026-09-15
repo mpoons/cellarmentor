@@ -1,4 +1,4 @@
-// Caveau Fase 2 — Stripe-webhook: zet profiles.plan op 'plus' of terug op 'free'
+// CellarMentor Fase 2 — Stripe-webhook: zet profiles.plan op 'plus' of terug op 'free'
 // Plaatsen via: Supabase dashboard → Edge Functions → Deploy new function
 //   → naam: stripe-webhook   → deze code plakken → Deploy
 //

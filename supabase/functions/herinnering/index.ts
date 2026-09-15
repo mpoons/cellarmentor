@@ -1,8 +1,8 @@
-// Caveau herinnering: hoogstens één mail per week aan wie dat in Instellingen aanzette,
+// CellarMentor herinnering: hoogstens één mail per week aan wie dat in Instellingen aanzette,
 // en alleen als er iets te melden is (op dronk gekomen, drink binnenkort, over de piek).
 // Uitrollen: supabase functions deploy herinnering --project-ref dbzgrkipcoebglacsqwe
 // Vereist secrets: CRON_SECRET (zelfde waarde als in supabase/sql/herinnering.sql),
-//   RESEND_API_KEY (resend.com, met geverifieerd afzenderdomein), MAIL_FROM (bv. "Caveau <kelder@voorbeeld.nl>").
+//   RESEND_API_KEY (resend.com, met geverifieerd afzenderdomein), MAIL_FROM (bv. "CellarMentor <kelder@voorbeeld.nl>").
 // Optioneel: CAVEAU_APP_URL (link onderaan de mail).
 // verify_jwt staat uit (config.toml): de aanroep komt van pg_cron, niet van een gebruiker.
 // De header x-cron-secret is de toegangscontrole. Met de hand testen:
@@ -10,13 +10,13 @@
 
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
-const APP_URL = Deno.env.get('CAVEAU_APP_URL') || 'https://mpoons.github.io/caveau/'
+const APP_URL = Deno.env.get('CAVEAU_APP_URL') || 'https://mpoons.github.io/cellarmentor/'
 const WACHT_DAGEN = 6.5   // niet vaker dan dit, ook als de cron vaker zou lopen
 
 type Wijn = { name?: string; producer?: string; vintage?: number | null; qty?: number; drinkFrom?: number | null; drinkTo?: number | null; location?: string }
 type Stand = 'onb' | 'jong' | 'over' | 'nu' | 'op'
 
-// Zelfde regels als windowStatus() in caveau.html; hier apart, zodat de mail nooit iets anders zegt dan de app.
+// Zelfde regels als windowStatus() in cellarmentor.html; hier apart, zodat de mail nooit iets anders zegt dan de app.
 function stand(w: Wijn, y: number): Stand {
   const f = Number(w.drinkFrom) || 0, t = Number(w.drinkTo) || 0
   if (!f && !t) return 'onb'
@@ -51,14 +51,14 @@ function mail(groepen: { titel: string; uitleg: string; wijnen: Wijn[] }[], jaar
     if (g.wijnen.length > 12) { tekst.push(`… en nog ${g.wijnen.length - 12}`); html.push(`<div style="font-size:13px;color:#6B5F63;padding:6px 0">… en nog ${g.wijnen.length - 12}</div>`) }
     tekst.push('')
   }
-  tekst.push(`Open je kelder: ${APP_URL}`, '', 'Je krijgt deze mail omdat je dat in Caveau hebt aangezet (Meer, Instellingen, Herinnering per mail). Daar zet je hem ook weer uit.')
+  tekst.push(`Open je kelder: ${APP_URL}`, '', 'Je krijgt deze mail omdat je dat in CellarMentor hebt aangezet (Meer, Instellingen, Herinnering per mail). Daar zet je hem ook weer uit.')
   const body = `<div style="background:#F6F1E7;padding:28px 16px;font-family:-apple-system,Helvetica,Arial,sans-serif;color:#2B1E23">
   <div style="max-width:520px;margin:0 auto;background:#FFFCF6;border:1px solid #E4D8C2;padding:26px 24px">
-    <div style="font:600 13px Georgia,serif;letter-spacing:.18em;text-transform:uppercase;color:#8E3347">Caveau</div>
+    <div style="font:600 13px Georgia,serif;letter-spacing:.18em;text-transform:uppercase;color:#8E3347">CellarMentor</div>
     <h1 style="font:italic 500 24px Georgia,serif;margin:8px 0 2px">Wat er in ${jaar} om aandacht vraagt</h1>
     ${html.join('')}
     <p style="margin:24px 0 0"><a href="${esc(APP_URL)}" style="display:inline-block;background:#8E3347;color:#FFFCF6;text-decoration:none;padding:11px 18px;border-radius:8px;font-weight:600">Open je kelder</a></p>
-    <p style="font-size:12px;color:#8A7E71;margin-top:22px;line-height:1.5">Je krijgt deze mail omdat je dat in Caveau hebt aangezet (Meer, Instellingen, Herinnering per mail). Daar zet je hem ook weer uit.</p>
+    <p style="font-size:12px;color:#8A7E71;margin-top:22px;line-height:1.5">Je krijgt deze mail omdat je dat in CellarMentor hebt aangezet (Meer, Instellingen, Herinnering per mail). Daar zet je hem ook weer uit.</p>
   </div></div>`
   return { text: tekst.join('\n'), html: body }
 }

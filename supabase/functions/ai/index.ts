@@ -1,19 +1,19 @@
-// Caveau AI-proxy: gewogen credits, de zoekagent voor prijzen en de gedeelde prijstabel.
+// CellarMentor AI-proxy: gewogen credits, de zoekagent voor prijzen en de gedeelde prijstabel.
 // Uitrollen: supabase functions deploy ai --project-ref dbzgrkipcoebglacsqwe
 // Vereist secret: CAVEAU_ANTHROPIC_KEY (aparte Anthropic-sleutel voor de server).
-// "Verify JWT" laten aanstaan: alleen ingelogde Caveau-gebruikers kunnen deze functie aanroepen.
+// "Verify JWT" laten aanstaan: alleen ingelogde CellarMentor-gebruikers kunnen deze functie aanroepen.
 // Vereist de SQL uit supabase/sql/*.sql (wine_prices, wine_price_log, boek_credits, ai_fouten).
 
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
-// Welke soorten verzoeken de app kent. Alles daarbuiten is geen Caveau-verkeer en krijgt 400.
+// Welke soorten verzoeken de app kent. Alles daarbuiten is geen CellarMentor-verkeer en krijgt 400.
 // De soort komt in ai_usage.kind en in de kostenmail, dus hij mag geen vrije tekst zijn.
 const KINDS = new Set(['ai', 'scan', 'herbereken', 'pairing', 'wijnkaart', 'gerechten', 'vraag', 'waardes', 'recept', 'import', 'smaak',
   'prijs', 'prijsdiep', 'prijscache', 'betaald'])
 
 // Tegoed in CREDITS, niet in acties: een kaartscan kost nu eenmaal veel meer dan een etiketscan.
 const FREE_CREDITS = 20    // gratis credits per maand
-const PLUS_CREDITS = 300   // Caveau Plus (€2,99/mnd)
+const PLUS_CREDITS = 300   // CellarMentor Plus (€2,99/mnd)
 const DAY_CREDITS  = 60    // anti-misbruik per dag (geldt niet voor 'unlimited')
 
 // Grenzen aan wat één credit mag kosten. De client bepaalt de inhoud, dus de server
@@ -24,7 +24,7 @@ const MAX_IMAGES = 8
 const MAX_MESSAGES = 2
 const B64_PER_CREDIT = 700_000  // een etiket (1400 px) blijft 1 credit, een kaartpagina wordt 2
 
-// Wat een actie kost. Moet gelijk blijven aan creditCost() in caveau.html.
+// Wat een actie kost. Moet gelijk blijven aan creditCost() in cellarmentor.html.
 function creditsFor(kind: string, images: number): number {
   if (kind === 'wijnkaart') return Math.max(2, images * 2)
   if (kind === 'prijs') return 1          // zoeklaag: één Brave-zoekopdracht plus Haiku op de fragmenten, rond een cent

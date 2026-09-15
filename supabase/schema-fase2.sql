@@ -1,4 +1,4 @@
--- Caveau Fase 2: gewogen credits + Stripe-abonnement
+-- CellarMentor Fase 2: gewogen credits + Stripe-abonnement
 -- Plakken in: Supabase dashboard → SQL Editor → New query → Run
 -- (Fase 1 moet al gedraaid zijn; deze query is veilig opnieuw te draaien.)
 

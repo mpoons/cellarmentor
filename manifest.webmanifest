@@ -1,6 +1,6 @@
 {
-  "name": "Caveau, je wijnkelder",
-  "short_name": "Caveau",
+  "name": "CellarMentor, je wijnkelder",
+  "short_name": "CellarMentor",
   "description": "Persoonlijke wijnkelder: scan etiketten, volg drinkvensters en vind de perfecte spijs-wijncombinatie.",
   "start_url": "./",
   "scope": "./",

@@ -1,7 +1,7 @@
-// Caveau: wekelijks kostenoverzicht per mail voor de beheerder.
+// CellarMentor: wekelijks kostenoverzicht per mail voor de beheerder.
 // Loopt via pg_cron + pg_net (supabase/sql/kosten.sql), elke maandag 07:00 UTC.
 // Vereist secrets: CRON_SECRET (zelfde als in de SQL), RESEND_API_KEY, MAIL_FROM
-//   (zonder eigen domein werkt "Caveau <onboarding@resend.dev>", alleen naar het adres van het Resend-account),
+//   (zonder eigen domein werkt "CellarMentor <onboarding@resend.dev>", alleen naar het adres van het Resend-account),
 //   KOSTEN_MAIL_TO (ontvanger). Met de hand: curl -X POST .../functions/v1/kosten -H "x-cron-secret: …"
 // Zonder RESEND_API_KEY geeft de functie het overzicht als JSON terug, zodat je hem kunt testen.
 
@@ -87,9 +87,9 @@ Deno.serve(async (req) => {
   const soorten = Object.entries(perSoort).sort((a, b) => b[1].usd - a[1].usd)
   const regels = soorten.map(([k, p]) => `<tr><td>${esc(k)}</td><td align="right">${p.n}</td><td align="right">${p.credits}</td><td align="right">${usd(p.usd)}</td></tr>`).join('')
   const oordeel = perCreditUsd > 0.01 ? `Let op: een credit kost ${usd(perCreditUsd)}, boven de grens van $0,01 waarop de bundel van 300 voor ${eur(2.99)} is gerekend.` : `Een credit kost ${usd(perCreditUsd)}; dat past binnen de bundel (grens $0,01).`
-  const onderwerp = `Caveau, week ${new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}: ${d.acties} acties, ${usd(d.kostenUsd)}`
+  const onderwerp = `CellarMentor, week ${new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}: ${d.acties} acties, ${usd(d.kostenUsd)}`
   const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px;line-height:1.5;color:#2A1F24;max-width:560px">
-    <h2 style="font-weight:600">Caveau, afgelopen zeven dagen</h2>
+    <h2 style="font-weight:600">CellarMentor, afgelopen zeven dagen</h2>
     <p><b>${d.acties} AI-acties</b>${verschil(d.acties, v.acties)} door <b>${d.gebruikers} ${d.gebruikers === 1 ? 'gebruiker' : 'gebruikers'}</b>${verschil(d.gebruikers, v.gebruikers)}, samen <b>${d.credits} credits</b>${verschil(d.credits, v.credits)}.</p>
     <p>Geschatte kosten bij Anthropic: <b>${usd(d.kostenUsd)}</b> (${eur(d.kostenUsd * USD_EUR)})${v.kostenUsd ? `, vorige week ${usd(v.kostenUsd)}` : ''}. ${oordeel}</p>
     <table cellpadding="6" style="border-collapse:collapse;font-size:14px"><tr style="color:#8E867D;text-transform:uppercase;font-size:11px;letter-spacing:.06em"><td>Soort</td><td align="right">Acties</td><td align="right">Credits</td><td align="right">Kosten</td></tr>${regels || '<tr><td colspan="4">Geen acties deze week.</td></tr>'}</table>

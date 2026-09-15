@@ -1,4 +1,4 @@
--- Caveau: wekelijks kostenoverzicht (3 sep 2026). Hoort bij supabase/functions/kosten/index.ts.
+-- CellarMentor: wekelijks kostenoverzicht (3 sep 2026). Hoort bij supabase/functions/kosten/index.ts.
 -- Elke maandag 07:00 UTC (09:00 Nederlandse zomertijd). Het secret staat ook als CRON_SECRET bij de Edge Functions.
 create extension if not exists pg_cron;
 create extension if not exists pg_net;
