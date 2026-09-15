@@ -198,6 +198,7 @@ h1,h2,h3{text-wrap:balance}
 .wside{flex:none;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:6px;padding:2px 0}
 .wtap{display:flex;gap:12px;flex:1;min-width:0;align-items:stretch;text-align:left}
 .dbtn{width:36px;height:36px;border-radius:50%;background:var(--acc-soft);color:var(--acc-ink);display:flex;align-items:center;justify-content:center}
+.dbtn.leeg{opacity:.55}
 .dbtn:active{transform:scale(.92)}
 .qty{font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;color:var(--ink);background:var(--card2);border-radius:8px;padding:3px 8px}
 .wloc{font-size:11px;color:var(--ink3);max-width:104px;text-align:right;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
@@ -687,7 +688,7 @@ function schoonLoc(e){
   }
   return uit;
 }
-const schoonLijst = (arr, f, max) => Array.isArray(arr) ? arr.slice(0, max || 20000).map(f).filter(Boolean) : [];
+const schoonLijst = (arr, f, max) => Array.isArray(arr) ? arr.filter(e => e && typeof e === 'object').slice(0, max || 20000).map(f).filter(Boolean) : [];
 /* De caches en de tafel kwamen tot nu toe ongecontroleerd uit het cloud-document en de back-up.
    Een verkeerd type ("tonight":"x") liet de kelder bij elke start crashen, en score of persons
    kwamen zonder esc() op het scherm. Vaste velden, vaste types, begrensd. */
@@ -1714,7 +1715,7 @@ function wineCardHtml(w){
     <span class="wside">
       <span class="qty tnum" ${!w.qty?'style="color:var(--ink3)"':''}>×${w.qty||0}</span>
       ${w.location?`<span class="wloc">${esc(w.location)}${(()=>{ const vk = rekVakken(w.location, w.id); return vk.length ? ' · ' + vakKort(vk, 3) : ''; })()}</span>`:''}
-      ${w.qty?`<button class="dbtn" data-act="drinkOpen" data-id="${w.id}" aria-label="Drink een fles ${esc(w.name)}" title="Drink een fles"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-.6 6.2a4.4 4.4 0 0 1-8.8 0L7 3Z"/><path d="M12 13.5V20"/><path d="M8.5 21h7"/></svg></button>`:''}
+      <button class="dbtn${w.qty?'':' leeg'}" data-act="drinkOpen" data-id="${w.id}" aria-label="${w.qty?'Drink een fles':'Achteraf vastleggen:'} ${esc(w.name)}" title="${w.qty?'Drink een fles':'Achteraf vastleggen'}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-.6 6.2a4.4 4.4 0 0 1-8.8 0L7 3Z"/><path d="M12 13.5V20"/><path d="M8.5 21h7"/></svg></button>
     </span>
   </div>`;
 }
@@ -1736,6 +1737,9 @@ function viewKelder(){
   ].filter(x => x[1]);
   const chips = rij.map(x => x[1]).join('');
   const bc = bottleCount(), val = cellarValue();
+  /* wijnen op ×0 (via de min-knop, of ooit ingelezen zonder aantal) blijven anders stil in de lijst staan */
+  const nLeeg = legeWijnen().length;
+  const leegRij = (nLeeg && !UI.qGerecht) ? `<div class="small" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 10px"><span>${nLeeg} ${plur(nLeeg,'wijn','wijnen')} zonder voorraad</span><button class="linkbtn" data-act="opruimOpen" style="font-size:13px">Opruimen ›</button></div>` : '';
   let body;
   if(!S.wines.length){
     body = `<div class="empty"><div class="big">Je kelder is nog leeg</div>
@@ -1764,7 +1768,7 @@ function viewKelder(){
     <div class="search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
       <input type="search" placeholder="Zoek op naam, druif, regio, of typ een gerecht…" value="${esc(UI.q)}" data-in="q" aria-label="Zoeken">
       <button class="sortbtn" data-act="chipSort" aria-label="Sorteren: ${esc(SORTS[UI.sort])}" title="Sorteren"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20V5m0 0L4 8m3-3 3 3"/><path d="M17 4v15m0 0 3-3m-3 3-3-3"/></svg></button></div>
-    <div class="chiprow">${chips}</div>${verhuisBanner()}${opslagBanner()}${tonightBanner()}${installBanner()}${locBanner}${body}`;
+    <div class="chiprow">${chips}</div>${verhuisBanner()}${opslagBanner()}${tonightBanner()}${installBanner()}${locBanner}${leegRij}${body}`;
 }
 INP.q = el => { UI.q = el.value; refreshList(); };
 function refreshList(){ if(UI.tab==='kelder') { render(true); } }
@@ -2283,7 +2287,7 @@ function openDetail(id){
     ${(()=>{ const recs=(S.recipeCache||[]).filter(r=>r.wineId===w.id); return recs.length?`<div class="eyebrow mb8">Opgeslagen recepten</div><div class="panel" style="margin-bottom:12px;padding:6px 15px">${recs.map(r=>`<button class="rowline" style="width:100%;text-align:left" data-act="recipeOpen" data-k="${esc(r.key)}"><span class="a"><div class="t">${ik('boek')} ${esc(r.recipe.title||r.dish)}</div><div class="u">${Number(r.persons)||0} personen${r.recipe.time?' · '+esc(r.recipe.time):''}</div></span><span class="z" style="color:var(--ink3)">›</span></button>`).join('')}</div>`:''; })()}
     <div class="btnrow mb8"><button class="btn soft" data-act="wineDishes" data-id="${w.id}">Wat past erbij?</button>
       <button class="btn soft" data-act="askSomm" data-id="${w.id}">${ik('chat')} Vraag</button></div>
-    <button class="btn" data-act="drinkOpen" data-id="${w.id}" ${!w.qty?'disabled':''} style="margin-bottom:9px">Drink een fles</button>
+    <button class="btn" data-act="drinkOpen" data-id="${w.id}" style="margin-bottom:9px">${w.qty ? 'Drink een fles' : 'Achteraf vastleggen'}</button>
     ${onTable(w.id)
       ? `<button class="btn plain" data-act="tafelAf" data-id="${w.id}" style="margin-bottom:9px">✓ Staat op tafel, haal eraf</button>`
       : `<button class="btn plain" data-act="tafelOp" data-id="${w.id}" ${!w.qty?'disabled':''} style="margin-bottom:9px">${ik('glas')} Zet op tafel voor vanavond</button>`}
@@ -2318,17 +2322,65 @@ function timelineHtml(w){
 ACT.qtyPlus = el => { const w = findWine(el.dataset.id); if(!w) return; w.qty = (w.qty||0)+1; save();
   const q = document.getElementById('dQty'); if(q) q.textContent = w.qty; };
 ACT.qtyMinus = el => { const w = findWine(el.dataset.id); if(!w || !w.qty) return; w.qty--; rekBijQty(w); save();
-  const q = document.getElementById('dQty'); if(q) q.textContent = w.qty; };
+  const q = document.getElementById('dQty'); if(q) q.textContent = w.qty;
+  /* een correctie, of toch een gedronken fles? Eén tik en hij staat alsnog in de historie, zonder de voorraad nog eens te verlagen */
+  toast(`Fles eraf, voorraad ×${w.qty}`, 'Gedronken?', () => openDrink(w.id, {achteraf:true})); };
+function wijnWeg(w){
+  S.wines = S.wines.filter(x => x.id !== w.id); pDel(w.id); rekVrij(w.id, Infinity);
+  if(typeof cloudDeletePhoto === 'function') cloudDeletePhoto(w.id);
+  S.tonight = (S.tonight||[]).filter(t => t.wineId !== w.id);
+}
 ACT.wineDel = el => { const w = findWine(el.dataset.id); if(!w) return;
   confirmSheet('Verwijderen?', `<b>${esc(w.name)}</b> en de bijbehorende foto verdwijnen uit je kelder. Je drink-historie blijft bewaard.`, 'Verwijder', () => {
-    S.wines = S.wines.filter(x => x.id !== w.id); pDel(w.id); rekVrij(w.id, Infinity);
-    if(typeof cloudDeletePhoto === 'function') cloudDeletePhoto(w.id);
-    S.tonight = (S.tonight||[]).filter(t => t.wineId !== w.id);
-    save(); closeSheet(true); render(); toast('Verwijderd uit je kelder');
+    wijnWeg(w); save(); closeSheet(true); render(); toast('Verwijderd uit je kelder');
+  }, true); };
+
+/* ================= OPRUIMEN: wijnen zonder voorraad ================= */
+/* Een wijn komt op ×0 via de min-knop in het detail (zonder historie), via een ingelezen lijst
+   zonder aantal, of via een afboeking die achteraf ongedaan is gemaakt. Hier kies je per wijn:
+   alsnog als gedronken (of cadeau, verkocht, kapot) vastleggen, of uit de kelder halen. */
+const legeWijnen = () => S.wines.filter(w => !(w.qty > 0)).sort((x,y) => (x.name||'').localeCompare(y.name||'', 'nl'));
+ACT.opruimOpen = () => openOpruim();
+/* Staat de sheet al open, dan ververst hij in plaats van sluiten en opnieuw openen (elke sheet is een
+   stap in de browsergeschiedenis; zo blijft dat één stap). */
+let opruimSh = null;
+const opruimOpen = () => !!opruimSh && sheets.some(s => s.sh === opruimSh);
+function openOpruim(){
+  const leeg = legeWijnen();
+  if(!leeg.length){
+    if(opruimOpen() && sheets[sheets.length-1].sh === opruimSh) closeSheet();
+    toast('Alles opgeruimd'); return;
+  }
+  const n = leeg.length;
+  const html = `${sheetHead('Zonder voorraad')}
+    <p class="small" style="margin-bottom:10px">${n} ${plur(n,'wijn staat','wijnen staan')} op ×0. <b>Gedronken</b> zet de fles alsnog in je historie (met datum en sterren) en haalt de wijn uit je kelder; de prullenbak haalt hem er zonder regel uit. Je drink-historie blijft altijd staan. Wil je een wijn op ×0 bewaren, tik dan op de naam en laat hem staan.</p>
+    <div class="panel" style="padding:4px 15px;margin-bottom:12px">${leeg.map(w => `<div class="rowline"><button class="a" style="text-align:left;flex:1;min-width:0" data-act="detail" data-id="${w.id}">
+        <div class="t">${esc(w.name)} ${w.vintage||''}</div>
+        <div class="u">${esc([w.producer, w.location].filter(Boolean).join(' · ')) || TYPES[w.type].l}</div></button>
+      <span class="z" style="display:flex;gap:6px;align-items:center;flex:none"><button class="btn sm" data-act="opruimDrink" data-id="${w.id}">Gedronken</button><button class="btn sm plain" data-act="opruimDel" data-id="${w.id}" aria-label="Verwijder ${esc(w.name)}">${ik('prullenbak', 17)}</button></span></div>`).join('')}</div>
+    ${n > 1 ? `<button class="btn ghost" data-act="opruimAlles">Verwijder alle ${n} uit je kelder</button>` : ''}`;
+  if(opruimOpen()){ opruimSh.querySelector('.sheet-in').innerHTML = html; return; }
+  opruimSh = openSheet(html);
+}
+ACT.opruimDrink = el => openDrink(el.dataset.id, {achteraf:true, opruim:true, na:openOpruim});
+ACT.opruimDel = el => { const w = findWine(el.dataset.id); if(!w) return;
+  confirmSheet('Verwijderen?', `<b>${esc(w.name)}</b> en de bijbehorende foto verdwijnen uit je kelder. Je drink-historie blijft bewaard.`, 'Verwijder', () => {
+    wijnWeg(w); save(); render(); openOpruim(); toast('Verwijderd uit je kelder');
+  }, true); };
+ACT.opruimAlles = () => { const leeg = legeWijnen(); if(!leeg.length) return;
+  confirmSheet('Alles verwijderen?', `${leeg.length} ${plur(leeg.length,'wijn','wijnen')} zonder voorraad ${plur(leeg.length,'verdwijnt','verdwijnen')} uit je kelder, met de foto's. Je drink-historie blijft bewaard.`, 'Verwijder alles', () => {
+    leeg.forEach(wijnWeg); save(); render(); openOpruim(); toast(`${leeg.length} ${plur(leeg.length,'wijn','wijnen')} verwijderd`);
   }, true); };
 
 /* ================= DRINKEN ================= */
 let drinkRating = null; /* null = niet beoordeeld, 0..5 = expliciete score */
+/* achteraf: de fles is al weg (voorraad ×0, of net met de min-knop verlaagd); alleen de historie krijgt een regel.
+   opruim: vanuit Opruimen, dan verlaat de wijn na het vastleggen ook de kelder.
+   na: wat er na het vastleggen weer open moet (de opruimsheet). */
+let drinkAchteraf = false, drinkOpruim = false, drinkNa = null;
+/* Foto pas weg als de ongedaan-knop van de toast voorbij is; een wijn die terugkomt houdt zo zijn etiket.
+   Een foto zonder wijn gaat nooit naar de cloud (pushPhotos kijkt alleen naar S.wines), dus dit kan rustig later. */
+function fotoWegLater(id){ setTimeout(() => { if(findWine(id)) return; pDel(id); if(typeof cloudDeletePhoto === 'function') cloudDeletePhoto(id); }, 6000); }
 ACT.drinkOpen = el => openDrink(el.dataset.id);
 /* Een fles kan de kelder ook anders verlaten dan door het glas: weggegeven, verkocht,
    gebroken of een kurk. De regel blijft in de historie staan, met de reden erbij; alleen
@@ -2341,7 +2393,7 @@ function wireWeg(){
     seg.querySelectorAll('button').forEach(x => x.classList.remove('on')); b.classList.add('on');
     const weg = !!b.dataset.val;
     ['drinkStars','starLbl'].forEach(id => { const x = document.getElementById(id); if(x) x.hidden = weg; });
-    const btn = document.getElementById('drBtn'); if(btn) btn.textContent = weg ? 'Afboeken' : 'Proost, leg vast';
+    const btn = document.getElementById('drBtn'); if(btn) btn.textContent = weg ? (drinkAchteraf ? 'Leg vast' : 'Afboeken') : 'Proost, leg vast';
     const l = document.getElementById('drNoteLbl'); if(l) l.textContent = weg ? 'Notitie (optioneel)' : 'Proefnotitie (optioneel)';
     const n = document.getElementById('drNote'); if(n) n.placeholder = weg ? 'Aan wie, of wat er gebeurde' : 'Hoe smaakte hij? Bij welk gerecht?';
   });
@@ -2373,19 +2425,22 @@ ACT.proefEldersSave = el => {
     grapes:(w.grapes||[]).slice(0,4), region:w.region||'', rating:drinkRating, note });
   drinkRating = null; save(); closeSheet(); toast('Proefnotitie vastgelegd'); smaakWink();
 };
-function openDrink(id){
+function openDrink(id, opts){
   const w = findWine(id); if(!w) return;
+  opts = opts || {};
   drinkRating = null;
+  /* zonder voorraad kan er niets meer af: dan leg je achteraf vast wat er met een fles gebeurde */
+  drinkAchteraf = !!opts.achteraf || !(w.qty > 0); drinkOpruim = drinkAchteraf && !!opts.opruim; drinkNa = typeof opts.na === 'function' ? opts.na : null;
   const today = new Date().toISOString().slice(0,10);
-  openSheet(`${sheetHead('Fles afboeken')}
+  openSheet(`${sheetHead(drinkAchteraf ? 'Achteraf vastleggen' : 'Fles afboeken')}
     <div class="wsub" style="font-size:14.5px;margin-bottom:2px">${esc(w.name)} · ${w.vintage||'NV'}</div>
-    <div class="small">Voorraad gaat van ${w.qty} naar ${Math.max(0,(w.qty||0)-1)}</div>
+    <div class="small">${drinkOpruim ? 'Deze fles was al weg. Hij krijgt alsnog een regel in je historie en gaat daarna uit je kelder' : drinkAchteraf ? `Voorraad blijft ×${w.qty||0}; deze fles was al weg en krijgt alsnog een regel in je historie` : `Voorraad gaat van ${w.qty} naar ${Math.max(0,(w.qty||0)-1)}`}</div>
     <div class="seg" id="drWeg" style="margin:10px 0 6px">${[['','Gedronken'],['cadeau','Cadeau'],['verkocht','Verkocht'],['kapot','Kapot']].map(([v,l]) =>
       `<button type="button" data-val="${v}" class="${v?'':'on'}" style="min-width:0">${l}</button>`).join('')}</div>
-    ${(()=>{ const vk = rekVakken(w.location, w.id); return vk.length ? `<div class="small">Pak de fles uit vak <b>${vk[vk.length-1]}</b> van ${esc(w.location)}</div>` : ''; })()}
+    ${(()=>{ if(drinkAchteraf) return ''; const vk = rekVakken(w.location, w.id); return vk.length ? `<div class="small">Pak de fles uit vak <b>${vk[vk.length-1]}</b> van ${esc(w.location)}</div>` : ''; })()}
     <div class="stars" id="drinkStars" role="radiogroup" aria-label="Beoordeling">${[1,2,3,4,5].map(n=>`<button data-star="${n}" role="radio" aria-label="${n} sterren">★</button>`).join('')}</div>
     <div class="small center" id="starLbl" style="margin:-2px 0 10px">Tik een ster (nogmaals dezelfde = 0 sterren)</div>
-    <div class="field"><label>Datum</label><input type="date" class="inp" id="drDate" value="${today}"></div>
+    <div class="field"><label>Datum${drinkAchteraf ? ' (wanneer was het, ongeveer?)' : ''}</label><input type="date" class="inp" id="drDate" value="${today}"></div>
     <div class="field"><label id="drNoteLbl">Proefnotitie (optioneel)</label><textarea class="inp" id="drNote" placeholder="Hoe smaakte hij? Bij welk gerecht?"></textarea></div>
     <button class="btn" data-act="drinkSave" data-id="${w.id}" id="drBtn">Proost, leg vast</button>`);
   wireStars(); wireWeg();
@@ -2507,6 +2562,20 @@ ACT.drinkSave = el => {
     name:w.name, producer:w.producer||'', vintage:w.vintage||null, type:w.type, grapes:(w.grapes||[]).slice(0,4), region:w.region||'',
     rating: weg ? null : drinkRating, note:((document.getElementById('drNote')||{}).value||'').trim() };
   if(weg) entry.weg = weg;
+  if(drinkAchteraf){
+    /* de fles was al weg: alleen de historie verandert; vanuit Opruimen verlaat de wijn ook de kelder */
+    const na = drinkNa, opruim = drinkOpruim; drinkAchteraf = false; drinkOpruim = false; drinkNa = null;
+    S.history.unshift(entry);
+    if(opruim){ S.wines = S.wines.filter(x => x.id !== w.id); rekVrij(w.id, Infinity); S.tonight = (S.tonight||[]).filter(t => t.wineId !== w.id); fotoWegLater(w.id); }
+    save();
+    if(na){ closeSheet(); render(); na(); } else { closeSheet(true); render(); }
+    toast(weg ? `${WEG[weg].l}, achteraf vastgelegd` : 'Achteraf genoteerd. Santé!', 'Ongedaan', () => {
+      S.history = S.history.filter(h => h.id !== entry.id);
+      if(opruim && !findWine(w.id)) S.wines.unshift(w);
+      save(); render(); if(na && opruimOpen()) na(); });
+    if(!weg) smaakWink();
+    return;
+  }
   const prevQty = w.qty||0;
   w.qty = Math.max(0, prevQty - 1);
   const vakWeg = rekBijQty(w);
@@ -5536,6 +5605,8 @@ const EN = {
   '0 van 5, die was niks':'0 out of 5, that was nothing', 'Datum':'Date', 'Proefnotitie (optioneel)':'Tasting note (optional)', 'Notitie (optioneel)':'Note (optional)', 'Proefnotitie':'Tasting note', 'Notitie':'Note',
   'Hoe smaakte hij? Bij welk gerecht?':'How did it taste? With which dish?', 'Aan wie, of wat er gebeurde':'To whom, or what happened', 'Proost, leg vast':'Cheers, save it', 'Afboeken':'Remove',
   'Genoteerd. Santé!':'Noted. Cheers!', 'Ongedaan':'Undo',
+  'Achteraf vastleggen':'Record afterwards', 'Achteraf vastleggen:':'Record afterwards:', 'Achteraf genoteerd. Santé!':'Recorded afterwards. Cheers!', 'Gedronken?':'Drunk it?', 'Datum (wanneer was het, ongeveer?)':'Date (roughly when was it?)',
+  'Zonder voorraad':'Out of stock', 'zonder voorraad':'out of stock', 'Opruimen ›':'Tidy up ›', 'Alles opgeruimd':'All tidied up', 'Alles verwijderen?':'Delete all?', 'Verwijder alles':'Delete all',
   'Kelder koppelen?':'Link this cellar?', 'Nee, uitloggen':'No, log out', 'Ja, koppelen':'Yes, link it', 'Uitgelogd. Je kelder blijft op dit apparaat':'Logged out. Your cellar stays on this device',
   'Account bevestigd. Log hier in met je e-mailadres en wachtwoord':'Account confirmed. Log in here with your email address and password', 'Log in met je e-mailadres en wachtwoord':'Log in with your email address and password',
   'Er ging iets mis op dit scherm':'Something went wrong on this screen', 'Back-up bewaren':'Save a backup', 'Naar Meer':'Go to More', 'Reservekopieën':'Safety copies', 'Elders geproefd':'Tasted elsewhere', 'Waar? (optioneel)':'Where? (optional)', 'bv. restaurant, bij vrienden, op het domaine':'e.g. restaurant, at friends, at the estate',
