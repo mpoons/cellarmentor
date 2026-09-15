@@ -867,7 +867,7 @@ addEventListener('unhandledrejection', ev => { const nu = Date.now(); if(nu - la
 
 /* ================= sheets & toast ================= */
 const sheets = [];
-let sheetSkipPops = 0, sheetNaPop = [];
+let sheetSkipPops = 0, sheetNaPop = [], sheetPopsOnderweg = []; /* per history.go die nog niet is aangekomen: hoeveel stappen terug */
 function openSheet(html, opts={}){
   const host = document.getElementById('sheetHost');
   const ov = document.createElement('div'); ov.className = 'overlay';
@@ -898,14 +898,18 @@ function closeSheet(all, viaPop){
   /* Onderweg is er opgeslagen (voorraad +1 in het detail): de lijst erachter toont nog het oude getal */
   if(!sheets.length && renderNaSluiten) setTimeout(() => { if(renderNaSluiten && !sheets.length){ renderNaSluiten = false; renderTenzijFormulier(); } }, 0);
   if(!viaPop){
-    /* gesloten via de app zelf: de bijbehorende geschiedenisstappen weer weghalen */
+    /* gesloten via de app zelf: de bijbehorende geschiedenisstappen weer weghalen. history.go is asynchroon en
+       history.state loopt dus achter; wat een vorige aanroep al terugstuurde telt niet nog eens mee (twee sluitingen
+       vlak na elkaar, zoals bevestigen + alles dichtdoen, stuurden anders te ver terug: de app uit, of een
+       terugstap die nooit aankomt en de terugknop daarna één keer laat "slikken") */
     const st = (history.state && history.state.sheet) || 0;
-    const terug = st - sheets.length;
-    if(terug > 0){ sheetSkipPops++; try{ history.go(-terug); }catch(e){ sheetSkipPops--; } }
+    const onderweg = sheetPopsOnderweg.reduce((a, b) => a + b, 0);
+    const terug = st - onderweg - sheets.length;
+    if(terug > 0){ sheetSkipPops++; sheetPopsOnderweg.push(terug); try{ history.go(-terug); }catch(e){ sheetSkipPops--; sheetPopsOnderweg.pop(); } }
   }
 }
 addEventListener('popstate', () => {
-  if(sheetSkipPops > 0){ sheetSkipPops--; sheetNaPop.splice(0).forEach(f => f()); return; }
+  if(sheetSkipPops > 0){ sheetSkipPops--; sheetPopsOnderweg.shift(); sheetNaPop.splice(0).forEach(f => f()); return; }
   const want = (history.state && history.state.sheet) || 0;
   while(sheets.length > want) closeSheet(false, true);
 });
