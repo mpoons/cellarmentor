@@ -521,15 +521,26 @@ const DB_KEY = 'caveau_v1';
 const DEFAULTS = () => ({ v:1, wines:[], history:[], wishlist:[], locations:[], pairCache:[], recipeCache:[], tonight:[], menuLast:null,
   settings:{ cellarName:'Mijn kelder', apiKey:'', model:'claude-sonnet-5', devMode:false, installWeg:false } });
 
+let standKapot = false; /* caveau_v1 was geen leesbare JSON; de tekst staat dan onder caveau_v1_kapot */
 function loadState(){
+  let raw = null;
+  try{ raw = localStorage.getItem(DB_KEY); }catch(e){ return DEFAULTS(); }
+  if(!raw) return DEFAULTS();
   try{
-    const raw = localStorage.getItem(DB_KEY);
-    if(!raw) return DEFAULTS();
     const d = JSON.parse(raw);
+    if(!d || typeof d !== 'object') throw new Error('geen object');
     const base = DEFAULTS();
-    return { ...base, ...d, settings:{ ...base.settings, ...(d.settings||{}) },
-      wines:d.wines||[], history:d.history||[], wishlist:d.wishlist||[], locations:d.locations||[], pairCache:d.pairCache||[], recipeCache:d.recipeCache||[], tonight:d.tonight||[] };
-  }catch(e){ return DEFAULTS(); }
+    /* alleen objecten in de lijsten: één null in S.wines liet elke render gooien, en dan was ook het herstelscherm onbereikbaar */
+    const lijst = x => Array.isArray(x) ? x.filter(e => e && typeof e === 'object') : [];
+    return { ...base, ...d, settings:{ ...base.settings, ...((d.settings && typeof d.settings === 'object') ? d.settings : {}) },
+      rev: Math.max(0, Math.floor(Number(d.rev) || 0)),
+      wines:lijst(d.wines), history:lijst(d.history), wishlist:lijst(d.wishlist), locations:lijst(d.locations), pairCache:lijst(d.pairCache), recipeCache:lijst(d.recipeCache), tonight:lijst(d.tonight) };
+  }catch(e){
+    /* niet stil overschrijven: de onleesbare tekst blijft staan, en de reservekopieën blijven bereikbaar */
+    try{ localStorage.setItem(DB_KEY + '_kapot', raw); }catch(_){}
+    standKapot = true;
+    return DEFAULTS();
+  }
 }
 let S = loadState();
 /* Weergave: '' volgt de telefoon, 'light' is Maison, 'dark' is Étiquette. Het kleurtje van de
@@ -623,6 +634,10 @@ function schoonAI(d){
   return uit;
 }
 const ID_OK = /^[A-Za-z0-9_-]{1,64}$/;
+/* TYPES["constructor"] is Object.prototype.constructor en dus waar; een back-up met type of weg
+   "constructor" kwam zo door de normalisatie en liet de historiepagina crashen. Alleen eigen sleutels. */
+const eigenSleutel = (o, k) => typeof k === 'string' && Object.prototype.hasOwnProperty.call(o, k);
+const datumOk = v => { if(v == null || v === '') return undefined; const t = tekstOk(v, 40); return isNaN(Date.parse(t)) ? undefined : t; };
 /* String(undefined) is 'undefined' en dat matcht ID_OK; daarom eerst op type kijken */
 const idOk = x => typeof x === 'string' && ID_OK.test(x);
 /* een wijn uit een back-up of het cloud-document */
@@ -633,25 +648,26 @@ function schoonWijn(w){
     country: tekstOk(w.country, 100), region: tekstOk(w.region, 120), appellation: tekstOk(w.appellation, 160), score: tekstOk(w.score, 60),
     vintage: jaarOk(w.vintage), drinkFrom: jaarOk(w.drinkFrom), drinkTo: jaarOk(w.drinkTo),
     price: getalOk(w.price), value: getalOk(w.value), valueLow: getalOk(w.valueLow), valueHigh: getalOk(w.valueHigh),
-    qty: Math.max(0, Math.min(999, parseInt(w.qty, 10) || 0)), type: TYPES[w.type] ? w.type : 'rood',
-    grapes: lijstOk(w.grapes, 8, 60), pairing: lijstOk(w.pairing, 8, 120), photo: !!w.photo,
+    qty: Math.max(0, Math.min(999, parseInt(w.qty, 10) || 0)), type: eigenSleutel(TYPES, w.type) ? w.type : 'rood',
+    grapes: lijstOk(w.grapes, 8, 60), pairing: lijstOk(w.pairing, 8, 120), photo: !!w.photo, valueAt: datumOk(w.valueAt),
     valueSrc: ['ai','zoek','eigen','samen'].includes(w.valueSrc) ? w.valueSrc : (w.value != null ? 'eigen' : undefined),
     samen: (w.samen && typeof w.samen === 'object' && getalOk(w.samen.n) >= 2) ? {n: Math.min(99999, Math.round(getalOk(w.samen.n))), low: getalOk(w.samen.low), high: getalOk(w.samen.high), med: getalOk(w.samen.med), at: tekstOk(w.samen.at, 40)} : undefined,
     valueBron: (w.valueBron && typeof w.valueBron === 'object') ? {...w.valueBron, name: tekstOk(w.valueBron.name, 80), url: safeUrl(w.valueBron.url), vintage: jaarOk(w.valueBron.vintage), n: getalOk(w.valueBron.n)} : null};
 }
 function schoonHist(h){
   h = (h && typeof h === 'object') ? h : {};
-  const r = Number(h.rating);
+  /* null = niet beoordeeld; Number(null) is 0 en dat werd "0 van 5, die was niks" na elke sync */
+  const r = h.rating == null ? NaN : Number(h.rating);
   return {...h, id: idOk(h.id) ? h.id : uid(), wineId: idOk(h.wineId) ? h.wineId : null,
     name: tekstOk(h.name, 200), producer: tekstOk(h.producer, 200), place: tekstOk(h.place, 120), note: tekstOk(h.note, 2000),
-    vintage: jaarOk(h.vintage), type: TYPES[h.type] ? h.type : 'rood', rating: Number.isFinite(r) ? Math.max(0, Math.min(5, r)) : 0,
-    date: /^\d{4}-\d{2}-\d{2}$/.test(String(h.date)) ? String(h.date) : vandaagISO(), grapes: lijstOk(h.grapes, 8, 60), region: tekstOk(h.region, 120), proef: !!h.proef, elders: !!h.elders, extern: !!h.extern, weg: WEG[h.weg] ? h.weg : undefined};
+    vintage: jaarOk(h.vintage), type: eigenSleutel(TYPES, h.type) ? h.type : 'rood', rating: Number.isFinite(r) ? Math.max(0, Math.min(5, r)) : null,
+    date: /^\d{4}-\d{2}-\d{2}$/.test(String(h.date)) ? String(h.date) : vandaagISO(), grapes: lijstOk(h.grapes, 8, 60), region: tekstOk(h.region, 120), proef: !!h.proef, elders: !!h.elders, extern: !!h.extern, weg: eigenSleutel(WEG, h.weg) ? h.weg : undefined};
 }
 function schoonWens(x){
   x = (x && typeof x === 'object') ? x : {};
   return {...x, id: idOk(x.id) ? x.id : uid(), name: tekstOk(x.name, 200), producer: tekstOk(x.producer, 200),
     note: tekstOk(x.note, 1000), region: tekstOk(x.region, 120), country: tekstOk(x.country, 100), vintage: jaarOk(x.vintage),
-    type: TYPES[x.type] ? x.type : 'rood', price: getalOk(x.price), photo: !!x.photo};
+    type: eigenSleutel(TYPES, x.type) ? x.type : 'rood', price: getalOk(x.price), photo: !!x.photo};
 }
 /* een locatie (rek, kast, doos) uit een back-up of het cloud-document; met optioneel rek van rijen × kolommen */
 const VAK_RE = /^[A-Z](?:[1-9]|[1-9]\d)$/;
@@ -671,7 +687,30 @@ function schoonLoc(e){
   }
   return uit;
 }
-const schoonLijst = (arr, f) => Array.isArray(arr) ? arr.map(f) : [];
+const schoonLijst = (arr, f, max) => Array.isArray(arr) ? arr.slice(0, max || 20000).map(f).filter(Boolean) : [];
+/* De caches en de tafel kwamen tot nu toe ongecontroleerd uit het cloud-document en de back-up.
+   Een verkeerd type ("tonight":"x") liet de kelder bij elke start crashen, en score of persons
+   kwamen zonder esc() op het scherm. Vaste velden, vaste types, begrensd. */
+function schoonPair(c){
+  if(!c || typeof c !== 'object' || typeof c.key !== 'string') return null;
+  const matches = schoonLijst(c.matches, m => (m && typeof m === 'object' && idOk(m.id)) ? {id: m.id, score: Math.max(0, Math.min(10, Math.round(getalOk(m.score) || 0))), reason: tekstOk(m.reason, 300)} : null, 12);
+  return {key: tekstOk(c.key, 200), dish: tekstOk(c.dish, 200), stuur: c.stuur ? tekstOk(c.stuur, 40) : undefined, at: getalOk(c.at) || 0, matches, buyTip: c.buyTip ? tekstOk(c.buyTip, 300) : null};
+}
+function schoonRecept(r){
+  if(!r || typeof r !== 'object' || typeof r.key !== 'string') return null;
+  const rc = (r.recipe && typeof r.recipe === 'object') ? r.recipe : {};
+  return {key: tekstOk(r.key, 220), dish: tekstOk(r.dish, 200), persons: Math.max(1, Math.min(50, parseInt(r.persons, 10) || 2)), at: getalOk(r.at) || 0,
+    wineId: idOk(r.wineId) ? r.wineId : null, wineName: r.wineName ? tekstOk(r.wineName, 220) : null,
+    recipe: {...rc, title: tekstOk(rc.title, 200), time: tekstOk(rc.time, 60), ingredients: lijstOk(rc.ingredients, 40, 200), steps: lijstOk(rc.steps, 20, 600)}};
+}
+const schoonTafel = t => (t && typeof t === 'object' && idOk(t.wineId)) ? {wineId: t.wineId, at: getalOk(t.at) || 0} : null;
+/* één plek voor alles wat als document binnenkomt (cloud, back-up, reservekopie) */
+function schoonDoc(d){
+  d = (d && typeof d === 'object') ? d : {};
+  return { wines: schoonLijst(d.wines, schoonWijn, 5000), history: schoonLijst(d.history, schoonHist, 20000), wishlist: schoonLijst(d.wishlist, schoonWens, 2000),
+    locations: schoonLijst(d.locations, schoonLoc, 300), pairCache: schoonLijst(d.pairCache, schoonPair, 30), recipeCache: schoonLijst(d.recipeCache, schoonRecept, 50),
+    tonight: schoonLijst(d.tonight, schoonTafel, 20), rev: Math.max(0, Math.floor(getalOk(d.rev) || 0)), cellarName: d.cellarName ? tekstOk(d.cellarName, 60) : '' };
+}
 const vandaagISO = () => new Date().toISOString().slice(0, 10);
 const money = n => (n==null||n===''||isNaN(n)) ? '—' : '€ '+Number(n).toLocaleString(LOCALE(),{maximumFractionDigits:0});
 const plur = (n,e,m) => n===1?e:m;
@@ -698,7 +737,7 @@ function mapType(s, strikt){
   if(/oranje|orange|amber|skin contact|maceration|macerat/.test(t)) return 'oranje';
   if(/wit|white|blanc|bianco|weiss/.test(t)) return 'wit';
   if(/rood|red|rouge|rosso|tinto/.test(t)) return 'rood';
-  return TYPES[t] ? t : (strikt ? null : 'rood');
+  return eigenSleutel(TYPES, t) ? t : (strikt ? null : 'rood');
 }
 /* Kleur uit de druiven. Het model zei "wit" bij een Sangiovese uit 2024 die het niet kende;
    de druif weet het beter. Per druif wint de langste treffer (cabernet sauvignon is rood,
@@ -809,6 +848,22 @@ const pourSvg = `<svg class="pour" viewBox="0 0 22 30" aria-hidden="true">
   <path class="glass" d="M11 17.3V25M7.4 26.4h7.2"/></svg>`;
 
 const bottleSvg = `<svg width="22" height="34" viewBox="0 0 22 34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 2h4v6.5c2.2 1.2 3.5 3 3.5 5.8V29a3 3 0 0 1-3 3h-5a3 3 0 0 1-3-3V14.3c0-2.8 1.3-4.6 3.5-5.8V2Z"/></svg>`;
+
+/* Noodscherm: wat er nog kan als een view gooit (een kapot record, een fout in een nieuwe versie):
+   back-up bewaren, reservekopie terugzetten, of de ontwikkelaar mailen met de foutregel. */
+function noodScherm(e){
+  const fout = String((e && e.message) || e || '').slice(0, 160);
+  const kopieen = ['caveau_backup_daily', 'caveau_backup_prev', 'caveau_backup_prev2'].map(k => { try{ const b = JSON.parse(localStorage.getItem(k) || 'null'); return b && b.data ? {k, n: (b.data.wines||[]).length, at: b.at} : null; }catch(_){ return null; } }).filter(Boolean);
+  return `<div class="hdr"><div><div class="brand">CellarMentor<span class="dot">.</span></div></div></div>
+    <h2 class="h2">Er ging iets mis op dit scherm</h2>
+    <p style="font-size:14px;color:var(--ink2)">Je kelder staat nog gewoon op dit apparaat. Bewaar eerst een back-up, probeer dan een ander tabblad of zet een reservekopie terug.</p>
+    <p class="small" style="font-family:monospace;word-break:break-all">${esc(fout)}</p>
+    <div class="btnrow mt14"><button class="btn" data-act="expLite">Back-up bewaren</button><button class="btn ghost" data-act="tab" data-tab="meer">Naar Meer</button></div>
+    ${kopieen.length ? `<div class="eyebrow mb8 mt14">Reservekopieën</div><div class="panel">${kopieen.map(r => `<div class="rowline"><span class="a"><div class="t">${r.n} wijnen</div><div class="u">${esc(new Date(r.at||0).toLocaleString(LOCALE()))}</div></span><span class="z"><button class="btn sm" data-act="restoreBackup" data-k="${r.k}">Terugzetten</button></span></div>`).join('')}</div>` : ''}`;
+}
+let laatsteFoutToast = 0;
+addEventListener('error', ev => { const nu = Date.now(); if(nu - laatsteFoutToast < 5000) return; laatsteFoutToast = nu; try{ toast('Fout: ' + String((ev.error && ev.error.message) || ev.message || '').slice(0, 90), null, null, 6000); }catch(_){} });
+addEventListener('unhandledrejection', ev => { const nu = Date.now(); if(nu - laatsteFoutToast < 5000) return; laatsteFoutToast = nu; try{ toast('Fout: ' + String((ev.reason && ev.reason.message) || ev.reason || '').slice(0, 90), null, null, 6000); }catch(_){} });
 
 /* ================= sheets & toast ================= */
 const sheets = [];
@@ -1314,19 +1369,23 @@ function scanPartial(txt){
   return uit;
 }
 /* Zet binnengekomen velden in het formulier, behalve waar de gebruiker al typte. */
+/* Alleen het scanformulier in #view: elk formulier gebruikt dezelfde veld-ids (f_name …), en een
+   bewerkvenster dat intussen open ging zou anders het etiket van de scan over een andere fles krijgen. */
+const scanRoot = () => (UI.tab === 'scan' && scan.stage === 'confirm' && !sheets.length) ? document.getElementById('view') : null;
 function vulFormLive(d){
+  const root = scanRoot(); if(!root) return;
   const zet = (id, v) => {
     if(v === undefined || v === null || v === '') return;
     if(scanTouched.has(id)) return;
-    const el = document.getElementById(id);
+    const el = root.querySelector('#' + id);
     if(el && el.value !== String(v)) el.value = v;
   };
   zet('f_name', d.name); zet('f_producer', d.producer); zet('f_vintage', d.vintage);
   zet('f_country', d.country); zet('f_region', d.region); zet('f_app', d.appellation);
   zet('f_from', d.drink_from); zet('f_to', d.drink_to); zet('f_score', d.score_seen);
   if(d.grapes && d.grapes.length) zet('f_grapes', d.grapes.join(', '));
-  if(d.type && TYPES[d.type] && !scanTouched.has('f_type')){
-    const seg = document.getElementById('f_type');
+  if(d.type && eigenSleutel(TYPES, d.type) && !scanTouched.has('f_type')){
+    const seg = root.querySelector('#f_type');
     if(seg) seg.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.val === d.type));
   }
 }
@@ -1334,7 +1393,8 @@ function vulFormLive(d){
    antwoord. Zonder dit haalt de laatste render zijn correctie er weer af. */
 function behoudEigenInvoer(d){
   if(!scanTouched.size) return;
-  const f = readForm();
+  const root = scanRoot(); if(!root) return;
+  const f = readForm(root);
   const paar = [['f_name','name','name'], ['f_producer','producer','producer'],
     ['f_vintage','vintage','vintage'], ['f_grapes','grapes','grapes'],
     ['f_country','country','country'], ['f_region','region','region'],
@@ -2162,13 +2222,14 @@ ACT.prijsZoek = async el => {
   el.innerHTML = '<span class="pulse">' + ik('zoek') + (diep ? ' Diep zoeken bij wijnhandels en veilingen…' : ' Zoeken bij wijnhandels…') + '</span>'; el.style.pointerEvents = 'none';
   try{
     const r = await aiPrijs(w, diep);
-    if(!pasPrijsToe(w, r)){
+    const w2 = findWine(w.id); if(!w2){ toast('Deze fles ligt niet meer in je kelder'); return; }
+    if(!pasPrijsToe(w2, r)){
       if(!diep){ /* de zoeklaag vond niets: dezelfde knop wordt de zware zoekagent */
         el.dataset.diep = '1'; el.innerHTML = ik('zoek') + ' Niets gevonden. Dieper zoeken' + (ownKey() ? '' : ' · ' + creditCost('prijsdiep') + ' credits'); el.style.pointerEvents = '';
         toast('Geen prijs bij de wijnhandels in de zoeklaag. Dieper zoeken kijkt ook op veilingen en buitenlandse sites', null, null, 7000); return; }
       toast(r && r.note ? 'Geen prijs gevonden: ' + String(r.note).slice(0, 120) : 'Geen prijs gevonden', null, null, 8000); el.innerHTML = ik('zoek') + ' Opnieuw proberen'; el.style.pointerEvents = ''; return; }
-    save(); closeSheet(); render(); openDetail(w.id);
-    toast(`${money(w.value)}${w.valueBron.name ? ' · ' + w.valueBron.name : ''}${r.cached ? ' (uit de CellarMentor-prijstabel)' : ''}`, null, null, 5000);
+    save(); closeSheet(); render(); openDetail(w2.id);
+    toast(`${money(w2.value)}${w2.valueBron.name ? ' · ' + w2.valueBron.name : ''}${r.cached ? ' (uit de CellarMentor-prijstabel)' : ''}`, null, null, 5000);
   }catch(e){ toast('Opzoeken mislukte: ' + String(e.message || e).slice(0, 120), null, null, 8000); el.innerHTML = ik('zoek') + ' Prijs opzoeken'; el.style.pointerEvents = ''; }
 };
 ACT.prijsBulk = () => {
@@ -2182,7 +2243,7 @@ ACT.prijsBulk = () => {
     try{ ok += await prijzenUitTabel(targets); }catch(_){}
     for(const w of targets.filter(w => w.valueSrc !== 'zoek')){
       i++;
-      try{ const r = await aiPrijs(w); if(pasPrijsToe(w, r)) ok++; }catch(e){ if(e && (e.status === 402 || e.status === 429)){ toast(e.message, null, null, 6000); break; } }
+      try{ const r = await aiPrijs(w); const w2 = findWine(w.id); if(w2 && pasPrijsToe(w2, r)) ok++; }catch(e){ if(e && (e.status === 402 || e.status === 429)){ toast(e.message, null, null, 6000); break; } }
       save(true); toast(`Bezig: ${i} van ${n}…`, null, null, 60000);
     }
     save(); render(); toast(`${ok} ${plur(ok, 'prijs', 'prijzen')} opgezocht`, null, null, 5000);
@@ -2215,7 +2276,7 @@ function openDetail(id){
     ${plekHtml(w)}
     <div class="eyebrow mb8">Schenken</div>${serveHtml(w)}
     ${(w.pairing&&w.pairing.length)?`<div class="eyebrow mb8 mt14">Lekker bij</div><div class="grapes" style="margin-bottom:12px">${w.pairing.map(p=>`<span class="grape">${esc(p)}</span>`).join('')}</div>`:''}
-    ${(()=>{ const recs=(S.recipeCache||[]).filter(r=>r.wineId===w.id); return recs.length?`<div class="eyebrow mb8">Opgeslagen recepten</div><div class="panel" style="margin-bottom:12px;padding:6px 15px">${recs.map(r=>`<button class="rowline" style="width:100%;text-align:left" data-act="recipeOpen" data-k="${esc(r.key)}"><span class="a"><div class="t">${ik('boek')} ${esc(r.recipe.title||r.dish)}</div><div class="u">${r.persons} personen${r.recipe.time?' · '+esc(r.recipe.time):''}</div></span><span class="z" style="color:var(--ink3)">›</span></button>`).join('')}</div>`:''; })()}
+    ${(()=>{ const recs=(S.recipeCache||[]).filter(r=>r.wineId===w.id); return recs.length?`<div class="eyebrow mb8">Opgeslagen recepten</div><div class="panel" style="margin-bottom:12px;padding:6px 15px">${recs.map(r=>`<button class="rowline" style="width:100%;text-align:left" data-act="recipeOpen" data-k="${esc(r.key)}"><span class="a"><div class="t">${ik('boek')} ${esc(r.recipe.title||r.dish)}</div><div class="u">${Number(r.persons)||0} personen${r.recipe.time?' · '+esc(r.recipe.time):''}</div></span><span class="z" style="color:var(--ink3)">›</span></button>`).join('')}</div>`:''; })()}
     <div class="btnrow mb8"><button class="btn soft" data-act="wineDishes" data-id="${w.id}">Wat past erbij?</button>
       <button class="btn soft" data-act="askSomm" data-id="${w.id}">${ik('chat')} Vraag</button></div>
     <button class="btn" data-act="drinkOpen" data-id="${w.id}" ${!w.qty?'disabled':''} style="margin-bottom:9px">Drink een fles</button>
@@ -2269,7 +2330,7 @@ ACT.drinkOpen = el => openDrink(el.dataset.id);
    gebroken of een kurk. De regel blijft in de historie staan, met de reden erbij; alleen
    echt gedronken telt mee in het smaakprofiel en in "gedronken dit jaar". */
 const WEG = { cadeau:{l:'Weggegeven', i:ik('cadeau')}, verkocht:{l:'Verkocht', i:ik('euro')}, kapot:{l:'Gebroken of kurk', i:ik('gebroken')} };
-const wegLabel = h => (h.weg && WEG[h.weg]) ? `${WEG[h.weg].i} ${WEG[h.weg].l.toLowerCase()}` : '';
+const wegLabel = h => eigenSleutel(WEG, h.weg) ? `${WEG[h.weg].i} ${WEG[h.weg].l.toLowerCase()}` : '';
 function wireWeg(){
   const seg = document.getElementById('drWeg'); if(!seg) return;
   seg.querySelectorAll('button').forEach(b => b.onclick = () => {
@@ -2447,7 +2508,7 @@ ACT.drinkSave = el => {
   const vakWeg = rekBijQty(w);
   S.tonight = (S.tonight||[]).filter(t => t.wineId !== w.id);
   S.history.unshift(entry); save(); closeSheet(true); render();
-  toast(weg ? `${WEG[weg].l}, afgeboekt` : 'Genoteerd. Santé!', 'Ongedaan', () => { w.qty = prevQty; rekHerstel(vakWeg, w.id); S.history = S.history.filter(h => h.id !== entry.id); save(); render(); });
+  toast(weg ? `${WEG[weg].l}, afgeboekt` : 'Genoteerd. Santé!', 'Ongedaan', () => { const w2 = findWine(w.id); if(w2) w2.qty = prevQty; rekHerstel(vakWeg, w.id); S.history = S.history.filter(h => h.id !== entry.id); save(); render(); });
   if(!weg) smaakWink();
 };
 
@@ -3001,7 +3062,7 @@ function showRecipe(e){
     ? `<button class="linkbtn" style="font-size:13px" data-act="detail" data-id="${wijn.id}">${ik('glas')} ${esc(e.wineName||wijn.name)} →</button>`
     : (e.wineName ? `<span class="small">${ik('glas')} ${esc(e.wineName)} (niet meer in je kelder)</span>` : '');
   openSheet(`${sheetHead(esc(r.title || e.dish))}
-    <div class="small mb8" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">${e.persons} personen${r.time ? ` · ${esc(r.time)}` : ''} · <span class="srcchip">${e.cached ? 'Opgeslagen' : 'Sommelier-AI'}</span>${wijnRow}</div>
+    <div class="small mb8" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">${Number(e.persons)||0} personen${r.time ? ` · ${esc(r.time)}` : ''} · <span class="srcchip">${e.cached ? 'Opgeslagen' : 'Sommelier-AI'}</span>${wijnRow}</div>
     <div class="eyebrow mb8">Ingrediënten</div>
     <div class="panel" style="margin-bottom:14px">${lijstOk(r.ingredients, 40, 200).map(i => `<div class="rowline" style="padding:6px 0"><span class="a" style="font-size:14px">${esc(i)}</span></div>`).join('')}</div>
     <div class="eyebrow mb8">Bereiding</div>
@@ -3309,8 +3370,8 @@ async function scanLezen(){
   scan.data = d;
   scan.match = matchWine({name:d.name, producer:d.producer, vintage:d.vintage});
   /* typte de gebruiker intussen een andere jaargang dan de AI las, dan hoort de waarde daarbij */
-  const f = readForm();
-  if(scanTouched.has('f_vintage') && f.vintage && f.vintage !== d.vintage && aiReady() && d.name)
+  const root = scanRoot(), f = root ? readForm(root) : {};
+  if(root && scanTouched.has('f_vintage') && f.vintage && f.vintage !== d.vintage && aiReady() && d.name)
     setTimeout(() => { if(scan.stage === 'confirm' && !scan.busy) doRecalc(document.getElementById('recalcBtn'), false, {auto:true}); }, 400);
 }
 ACT.scanRetry = async () => {
@@ -3379,7 +3440,9 @@ ACT.scanAdd = async () => {
   if(w.valueSrc !== 'zoek') setTimeout(() => prijsNaScan(w), w.location ? 0 : 5600);
 };
 ACT.scanMerge = async () => {
-  const m = scan.match; if(!m) return;
+  /* niet scan.match zelf: na een cloud-pull op de achtergrond is dat een los object dat nergens meer in staat */
+  const m = scan.match && findWine(scan.match.id);
+  if(!m){ toast('Deze fles ligt niet meer in je kelder'); return; }
   m.qty = (m.qty||0) + formQty;
   /* gekozen vakken tellen alleen als ze bij het rek van de bestaande fles horen */
   if(formVakken.size && formVakLoc && rekVan(formVakLoc)){ if(!m.location) m.location = formVakLoc; if(m.location === formVakLoc) rekVoegToe(formVakLoc, m.id, [...formVakken]); }
@@ -3509,7 +3572,7 @@ async function runPair(dish, force, stuur){
         <div class="wname" style="font-size:16px">${esc(m.w.name)}</div>
         <div class="wsub">${esc([m.w.producer, m.w.vintage||'NV'].filter(Boolean).join(' · '))} · ×${m.w.qty}</div>
         <div class="wmeta mt8">${dotHtml(m.w.type)}<span class="badge ${st.cls}">${st.label}${st.sub?' · '+st.sub:''}</span>${topBadge(m.w)}</div></div>
-        <div class="mscore">${m.score}<small>/10</small></div></div>
+        <div class="mscore">${Number(m.score)||0}<small>/10</small></div></div>
         ${smaakHit(m.w)?'<div class="mreason" style="color:var(--acc-ink)">'+ik('hart')+' Past bij je smaak</div>':''}
         <div class="mreason">${esc(m.reason||'')}</div>
         ${urg?`<div class="mreason" style="color:var(--warn);font-weight:600">${ik('zandloper')} ${urg}</div>`:''}
@@ -3847,7 +3910,7 @@ function viewWishlist(){
   return `${brandRow('')}${backRow}<div class="eyebrow">Verlanglijst</div><h2 class="h2">Nog te kopen</h2>${body}
     <div class="center mt14"><button class="linkbtn" data-act="wishNew">+ Toevoegen</button></div>`;
 }
-ACT.wishDel = el => { S.wishlist = S.wishlist.filter(x => x.id !== el.dataset.id); pDel(el.dataset.id); save(); render(); };
+ACT.wishDel = el => { S.wishlist = S.wishlist.filter(x => x.id !== el.dataset.id); pDel(el.dataset.id); if(typeof cloudDeletePhoto === 'function') cloudDeletePhoto(el.dataset.id); save(); render(); };
 ACT.wishBuy = el => {
   const it = S.wishlist.find(x => x.id === el.dataset.id); if(!it) return;
   formQty = 1;
@@ -3869,7 +3932,7 @@ ACT.wishBuyGo = async el => {
   const w = { id:uid(), ...d, qty:formQty, pairing:[], photo:false, addedAt:Date.now() };
   if(it.photo){ const p = await pGet(it.id); if(p){ await pSet(w.id, p); w.photo = true; } }
   S.wines.unshift(w);
-  S.wishlist = S.wishlist.filter(x => x.id !== it.id); pDel(it.id);
+  S.wishlist = S.wishlist.filter(x => x.id !== it.id); pDel(it.id); if(typeof cloudDeletePhoto === 'function') cloudDeletePhoto(it.id);
   save(); closeSheet(true); render(); toast(`${formQty} ${plur(formQty,'fles','flessen')} bijgeschreven`);
 };
 ACT.wishNew = () => {
@@ -4041,7 +4104,7 @@ function viewRecipes(){
     : `<div class="menu">${recs.map(r => `<div class="mitem" style="cursor:default">
         <button class="grow" style="text-align:left" data-act="recipeOpen" data-k="${esc(r.key)}">
           <div style="font-weight:600">${ik('boek')} ${esc(r.recipe.title||r.dish)}</div>
-          <div class="small">${r.persons} personen${r.recipe.time?' · '+esc(r.recipe.time):''}${r.wineName?' · '+ik('glas')+' '+esc(r.wineName):''} · ${new Date(r.at).toLocaleDateString(LOCALE(),{day:'numeric',month:'short'})}</div>
+          <div class="small">${Number(r.persons)||0} personen${r.recipe.time?' · '+esc(r.recipe.time):''}${r.wineName?' · '+ik('glas')+' '+esc(r.wineName):''} · ${new Date(r.at).toLocaleDateString(LOCALE(),{day:'numeric',month:'short'})}</div>
         </button>
         <button class="btn sm plain" data-act="recipeDel" data-k="${esc(r.key)}" aria-label="Recept verwijderen" style="flex:none">✕</button>
       </div>`).join('')}</div>
@@ -4159,9 +4222,9 @@ ACT.restoreBackup = el => {
   const n = (b.data.wines||[]).length;
   confirmSheet('Reservekopie terugzetten?', `Je huidige kelder wordt vervangen door deze reservekopie (<b>${n}</b> wijnen, ${new Date(b.at).toLocaleString(LOCALE(),{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})}). Je huidige stand wordt eerst zelf als reservekopie bewaard; de teruggezette versie synct daarna naar de cloud.`, 'Zet terug', () => {
     if(typeof snapshotLocal === 'function') snapshotLocal('caveau_backup_prev');
-    const d = b.data;
-    S.wines = d.wines||[]; S.history = d.history||[]; S.wishlist = d.wishlist||[];
-    S.locations = d.locations||[]; S.pairCache = d.pairCache||[]; S.recipeCache = d.recipeCache||[];
+    const d = schoonDoc(b.data);
+    S.wines = d.wines; S.history = d.history; S.wishlist = d.wishlist;
+    S.locations = d.locations; S.pairCache = d.pairCache; S.recipeCache = d.recipeCache;
     if(d.cellarName) S.settings.cellarName = d.cellarName;
     save(); render(); toast('Reservekopie teruggezet');
   });
@@ -4703,11 +4766,17 @@ ACT.demoLoad = () => {
 function render(keepFocus){
   navSync(); renderNaSluiten = false;
   const v = document.getElementById('view');
-  v.innerHTML = UI.tab==='kelder' ? viewKelder()
-    : UI.tab==='pairing' ? viewPairing()
-    : UI.tab==='scan' ? viewScan()
-    : UI.tab==='overzicht' ? viewOverzicht()
-    : viewMeer();
+  try{
+    v.innerHTML = UI.tab==='kelder' ? viewKelder()
+      : UI.tab==='pairing' ? viewPairing()
+      : UI.tab==='scan' ? viewScan()
+      : UI.tab==='overzicht' ? viewOverzicht()
+      : viewMeer();
+  }catch(e){
+    /* Zonder dit bleef het scherm leeg en was ook Instellingen (met de reservekopieën) onbereikbaar. */
+    v.innerHTML = noodScherm(e);
+    return;
+  }
   fillPhotos(v);
   if(typeof updateBadge === 'function') updateBadge();
   if(UI.tab==='pairing' && UI.pairMode==='menu') menuFillShots();
@@ -4829,12 +4898,15 @@ function applySession(s){
        de kelder van de nieuwe gebruiker en zet bovendien andermans wijnen in zijn
        account. We bewaren hem als reservekopie en beginnen leeg; de sync haalt
        daarna op wat van dít account is. */
-    if(c.uid && s.user.id !== c.uid && (S.wines.length || S.history.length)){
-      snapshotLocal('caveau_backup_prev', {vanEmail: c.email || ''});
+    if(c.uid && s.user.id !== c.uid){
+      const ietsHier = S.wines.length || S.history.length || S.wishlist.length || (S.locations||[]).length;
+      if(ietsHier) snapshotLocal('caveau_backup_prev', {vanEmail: c.email || ''});
       S.wines = []; S.history = []; S.wishlist = []; S.locations = [];
       S.pairCache = []; S.recipeCache = []; S.tonight = [];
-      S.rev = 0; S.syncedRev = 0;
-      toast('Andere gebruiker: de vorige kelder staat als reservekopie in Instellingen', null, null, 7000);
+      /* ook de sync-tellers: anders erft het nieuwe account het ijkpunt van het vorige en kan een
+         toevallig gelijk revisienummer de cloudkelder van de nieuwe gebruiker stil overschrijven */
+      S.rev = 0; S.syncedRev = 0; delete S.syncedTel;
+      if(ietsHier) toast('Andere gebruiker: de vorige kelder staat als reservekopie in Instellingen', null, null, 7000);
     }
     c.uid = s.user.id; c.email = s.user.email;
   }
@@ -4872,11 +4944,11 @@ function sbLogout(){
 function cloudDoc(){ return { rev: S.rev||0, wines: S.wines, history: S.history, wishlist: S.wishlist,
   locations: S.locations||[], pairCache: S.pairCache||[], recipeCache: S.recipeCache||[], tonight: S.tonight||[], cellarName: S.settings.cellarName }; }
 function adoptDoc(d){
-  S.wines = schoonLijst(d.wines, schoonWijn); S.history = schoonLijst(d.history, schoonHist); S.wishlist = schoonLijst(d.wishlist, schoonWens);
-  S.locations = schoonLijst(d.locations, schoonLoc); S.pairCache = d.pairCache || []; S.recipeCache = d.recipeCache || [];
-  S.tonight = d.tonight || [];
-  if(d.cellarName) S.settings.cellarName = d.cellarName;
-  S.rev = d.rev || 0;
+  const n = schoonDoc(d);
+  S.wines = n.wines; S.history = n.history; S.wishlist = n.wishlist; S.locations = n.locations;
+  S.pairCache = n.pairCache; S.recipeCache = n.recipeCache; S.tonight = n.tonight;
+  if(n.cellarName) S.settings.cellarName = n.cellarName;
+  S.rev = n.rev;
   save(true);
 }
 async function pushDoc(){
@@ -4888,9 +4960,12 @@ async function pullRev(){
   const rows = await sbFetch('/rest/v1/cellars?select=data->rev&user_id=eq.' + cloud().uid, {method:'GET'});
   return (rows && rows[0]) ? {rev: Number(rows[0].rev)||0} : null;
 }
+const DOC_MAX = 4000000; /* tekens JSON; localStorage houdt rond 5 MB en er moeten vier kopieën in */
 async function pullDoc(){
   const rows = await sbFetch('/rest/v1/cellars?select=data&user_id=eq.' + cloud().uid, {method:'GET'});
-  return (rows && rows[0] && rows[0].data) || null;
+  const d = (rows && rows[0] && rows[0].data) || null;
+  if(d && JSON.stringify(d).length > DOC_MAX) throw new Error('Het cloud-document is te groot voor dit apparaat');
+  return d;
 }
 
 /* ---- vangnet: lokale reservekopieën + rem op verdachte krimp ---- */
@@ -4925,8 +5000,13 @@ function krimpErgens(hier, daar){
 function askShrink(mode, remote, lc, rc){
   lastSyncNote = 'Wacht op jouw keuze, groot verschil tussen versies';
   if(UI.tab === 'meer' && UI.meerPage === 'account') render();
-  const done = async () => { const c = cloud(); c.lastSync = Date.now(); S.syncedRev = S.rev||0; save(true); lastSyncNote = '';
-    toast('Gesynchroniseerd ✓'); if(UI.tab === 'meer' && UI.meerPage === 'account') render(); };
+  /* na een keuze: het ijkpunt is de stand die gepusht of overgenomen is, mét de tellingen voor de krimpbewaking */
+  const done = async (ijk) => { const c = cloud(); c.lastSync = Date.now();
+    S.syncedRev = ijk ? ijk.rev : (S.rev||0); S.syncedTel = ijk ? ijk.tel : [S.wines.length, S.history.length, S.wishlist.length];
+    const nogEens = !!ijk && (S.rev||0) !== ijk.rev;
+    save(true); lastSyncNote = '';
+    toast('Gesynchroniseerd ✓'); if(UI.tab === 'meer' && UI.meerPage === 'account') render(); if(nogEens) syncNow(); };
+  const ijkNu = () => ({rev: S.rev||0, tel: [S.wines.length, S.history.length, S.wishlist.length]});
   const tekst = mode === 'adopt'
     ? `De cloudversie bevat <b>${rc}</b> ${plur(rc,'wijn','wijnen')}, terwijl hier <b>${lc}</b> staan. Dat kan kloppen (bijvoorbeeld na "Alles wissen" op een ander apparaat), maar het kan ook een vergissing zijn. Daarom neem ik dit niet stilzwijgend over.`
     : mode === 'push'
@@ -4943,24 +5023,26 @@ function askShrink(mode, remote, lc, rc){
     <p class="small mt8">Wat je ook kiest: je huidige stand wordt eerst als lokale reservekopie bewaard (Instellingen → Reservekopieën).</p>`);
   document.getElementById('shrinkGo').onclick = async () => { closeSheet();
     try{
+      let ijk = null;
       if(mode === 'adopt' || mode === 'botsing'){ await applyRemote(remote); }
-      else { snapshotLocal('caveau_backup_prev'); await pushDoc(); await pushPhotos(); }
-      await done();
+      else { snapshotLocal('caveau_backup_prev'); ijk = ijkNu(); await pushDoc(); await pushPhotos(); }
+      await done(ijk);
     }catch(e){ lastSyncNote = String(e.message||e).slice(0,110); toast('Sync mislukt: ' + lastSyncNote); }
   };
   document.getElementById('shrinkKeep').onclick = async () => { closeSheet();
     try{
+      let ijk = null;
       if(mode === 'adopt' || mode === 'botsing'){ snapshotLocal('caveau_backup_prev');
         /* deze stand moet winnen van wat er in de cloud staat */
         S.rev = Math.max(S.rev||0, (remote && remote.rev)||0) + 1; save(true);
-        await pushDoc(); await pushPhotos(); }
+        ijk = ijkNu(); await pushDoc(); await pushPhotos(); }
       else {
         /* in de stand 'push' is remote een placeholder met alleen lengtes (_kop); wie dan toch
            de cloud kiest krijgt eerst het echte document, anders adopteert hij lege rijen */
         if(remote && remote._kop) remote = await pullDoc();
         if(!remote) throw new Error('Cloudversie niet gevonden');
         await applyRemote(remote); }
-      await done();
+      await done(ijk);
     }catch(e){ lastSyncNote = String(e.message||e).slice(0,110); toast('Sync mislukt: ' + lastSyncNote); }
   };
 }
@@ -4984,6 +5066,7 @@ function syncBesluit(localRev, remoteRev, syncedRev, kopBestaat){
 }
 async function syncNow(interactive){
   if(!loggedIn()) return;
+  if(koppelSheetOpen) return;   /* eerst de vraag "kelder koppelen?" beantwoorden */
   if(syncBusy){ syncAgain = true; return; }
   syncBusy = true;
   try{
@@ -5000,9 +5083,17 @@ async function syncNow(interactive){
     if(besluit === 'botsing' || besluit === 'pull' || (besluit === 'push' && !S.syncedTel)) remote = await pullDoc();
     else if(besluit === 'push') remote = {rev: remoteRev, wines: new Array(S.syncedTel[0]), history: new Array(S.syncedTel[1]), wishlist: new Array(S.syncedTel[2]), _kop: true};
     if(!remote && besluit !== 'niets') besluit = 'eerste';   /* rij zonder document: dan is dit apparaat de bron */
+    /* Is er hier iets opgeslagen terwijl het document werd opgehaald, dan is "pull" niet meer
+       veilig (adoptDoc zou die wijziging overschrijven): dan is het een botsing en kiest de gebruiker. */
+    if((S.rev||0) !== localRev && (besluit === 'pull' || besluit === 'push')) besluit = 'botsing';
     const lc = S.wines.length, rc = remote ? (remote.wines||[]).length : 0;
+    /* Het ijkpunt is de stand die de cloud in krijgt. Wordt er tijdens de upload (foto's kunnen
+       seconden duren) nog iets opgeslagen, dan lag het ijkpunt anders vóór op de cloud en haalde de
+       volgende sync het oude document terug over die wijziging heen. */
+    let ijk = null;
+    const pushNu = async () => { ijk = {rev: S.rev||0, tel: [S.wines.length, S.history.length, S.wishlist.length]}; await pushDoc(); await pushPhotos(); };
     if(besluit === 'eerste'){
-      await pushDoc(); await pushPhotos();
+      await pushNu();
     } else if(besluit === 'botsing'){
       syncBusy = false; askShrink('botsing', remote, lc, rc); return;
     } else if(besluit === 'pull'){
@@ -5010,9 +5101,12 @@ async function syncNow(interactive){
       await applyRemote(remote);
     } else if(besluit === 'push'){
       if(krimpErgens(remote, S)){ syncBusy = false; askShrink('push', remote, lc, rc); return; }
-      await pushDoc(); await pushPhotos();
+      await pushNu();
     }
-    const c = cloud(); c.lastSync = Date.now(); S.syncedRev = S.rev||0; S.syncedTel = [S.wines.length, S.history.length, S.wishlist.length]; save(true);
+    const c = cloud(); c.lastSync = Date.now();
+    if(ijk){ S.syncedRev = ijk.rev; S.syncedTel = ijk.tel; if((S.rev||0) !== ijk.rev) syncAgain = true; }
+    else { S.syncedRev = S.rev||0; S.syncedTel = [S.wines.length, S.history.length, S.wishlist.length]; }
+    save(true);
     lastSyncNote = '';
     if(interactive) toast('Gesynchroniseerd ✓');
   }catch(e){
@@ -5056,7 +5150,8 @@ async function pullPhotos(){
     for(const w of [...S.wines, ...S.wishlist, ...(S.locations||[])]){
       if(w.photo && !(await pGet(w.id))){
         const rows = await sbFetch('/rest/v1/photos?select=data&user_id=eq.' + encodeURIComponent(cloud().uid) + '&id=eq.' + encodeURIComponent(w.id), {method:'GET'});
-        if(rows && rows[0] && typeof rows[0].data === 'string'){ await pSet(w.id, rows[0].data); fotoOpnieuw.delete(w.id); }   /* net binnengehaald: niet meteen weer omhoog */
+        const foto = rows && rows[0] && rows[0].data;
+        if(typeof foto === 'string' && foto.startsWith('data:image/') && foto.length < 6000000){ await pSet(w.id, foto); fotoOpnieuw.delete(w.id); }   /* net binnengehaald: niet meteen weer omhoog */
       }
     }
     fillPhotos();
@@ -5146,7 +5241,7 @@ async function billingGo(action, el){
   if(el){ el.disabled = true; el.textContent = 'Even geduld…'; }
   try{
     const d = await sbFn('billing', {action});
-    if(d.url) location.href = d.url; else throw new Error('Geen betaallink ontvangen');
+    if(d.url && /^https:\/\/([a-z0-9-]+\.)*stripe\.com\//i.test(String(d.url))) location.href = d.url; else throw new Error('Geen geldige betaallink ontvangen');
   }catch(e){ toast(String(e.message||e)); if(el){ el.disabled = false; render(); } }
 }
 /* Voor het afrekenen: wat je koopt, wat het kost, en het vinkje. Dat vinkje is
@@ -5266,6 +5361,8 @@ async function acAuth(el, isNew){
   try{
     const r = isNew ? await sbSignup(email, pass) : await sbLogin(email, pass);
     if(r === 'confirm'){
+      /* de bevestigingslink mag alleen hier een sessie opleveren (zie de hash-handler hieronder) */
+      try{ localStorage.setItem('caveau_auth_pending', email); }catch(_){}
       toast('Bijna klaar: open de mail die we je stuurden en tik op de bevestigingslink, op dit apparaat', null, null, 9000);
     } else {
       toast('Ingelogd, synchroniseren…');
@@ -5302,13 +5399,43 @@ const appAdres = () => location.origin + location.pathname.replace(/index\.html$
   const type = p.get('type') || '';
   if(!s.access_token) return;
   sbFetch('/auth/v1/user', {method:'GET', headers:{authorization:'Bearer ' + s.access_token}}, true).then(u => {
+    /* Een geldig token bewijst alleen dat het een Supabase-sessie is, niet dat hij van deze gebruiker is:
+       iemand kan zijn eigen tokens in een link zetten en die sturen. Wie hem opent zou dan stil in het
+       account van de ander belanden en zijn kelder daarheen syncen. Daarom: een bevestigingslink
+       geeft alleen een sessie op het apparaat dat de aanmelding startte (caveau_auth_pending); elders
+       is de mail bevestigd en logt de gebruiker in met zijn wachtwoord. Een herstel-link heeft het
+       token wél nodig (het wachtwoord is juist kwijt); daar vangt koppelOfSync het op. */
+    let pending = ''; try{ pending = String(localStorage.getItem('caveau_auth_pending') || ''); }catch(_){}
+    const mail = String((u && u.email) || '').toLowerCase();
+    const hierGestart = !!pending && !!mail && pending.toLowerCase() === mail;
+    if(type !== 'recovery' && !hierGestart){
+      UI.tab = 'meer'; UI.meerPage = 'account'; render();
+      setTimeout(() => { const e = document.getElementById('ac_email'); if(e && mail) e.value = mail; }, 0);
+      toast(type === 'signup' ? 'Account bevestigd. Log hier in met je e-mailadres en wachtwoord' : 'Log in met je e-mailadres en wachtwoord', null, null, 9000);
+      return;
+    }
+    try{ localStorage.removeItem('caveau_auth_pending'); }catch(_){}
+    const hadUid = cloud().uid;
     applySession({...s, user: u});
-    if(type === 'recovery'){ openNieuwWachtwoord(); return; }
+    if(type === 'recovery'){ openNieuwWachtwoord(hadUid); return; }
     toast(type === 'signup' ? 'Account bevestigd. Welkom!' : 'Ingelogd', null, null, 5000);
     UI.tab = 'meer'; UI.meerPage = 'account'; render();
-    syncNow(true);
+    koppelOfSync(hadUid);
   }).catch(() => toast('Deze link is verlopen of al gebruikt. Vraag een nieuwe aan', null, null, 7000));
 })();
+/* Na een sessie uit een link: staat hier een kelder die nog aan geen account hangt, dan eerst vragen
+   met het e-mailadres in beeld, want de eerste sync stuurt hem anders zonder pardon naar dat account. */
+let koppelSheetOpen = false;
+function koppelOfSync(hadUid){
+  const c = cloud(), n = S.wines.length;
+  if(hadUid === c.uid || !(S.wines.length || S.history.length || S.wishlist.length)){ syncNow(true); return; }
+  koppelSheetOpen = true;
+  openSheet(`${sheetHead('Kelder koppelen?')}
+    <p style="font-size:14px;color:var(--ink2)">Je bent ingelogd als <b>${esc(c.email || '')}</b>. Op dit apparaat staat een kelder met <b>${n}</b> ${plur(n,'wijn','wijnen')} die nog aan geen account hangt. Naar dit account sturen?</p>
+    <div class="btnrow mt14"><button class="btn ghost" data-act="koppelNee">Nee, uitloggen</button><button class="btn" data-act="koppelJa">Ja, koppelen</button></div>`, {onClose: () => { koppelSheetOpen = false; }});
+}
+ACT.koppelJa = () => { closeSheet(); syncNow(true); };
+ACT.koppelNee = () => { closeSheet(); sbLogout(); render(); toast('Uitgelogd. Je kelder blijft op dit apparaat', null, null, 5000); };
 ACT.acVergeten = async el => {
   const email = ((document.getElementById('ac_email')||{}).value||'').trim().toLowerCase();
   if(!/.+@.+\..+/.test(email)){ toast('Vul eerst je e-mailadres in, dan sturen we een herstel-link'); return; }
@@ -5319,7 +5446,9 @@ ACT.acVergeten = async el => {
   }catch(e){ toast('Versturen lukte niet: ' + String(e.message||e).slice(0, 90), null, null, 6000); }
   el.textContent = orig; el.style.pointerEvents = '';
 };
-function openNieuwWachtwoord(){
+let nwHadUid = null; /* wie er vóór de herstel-link ingelogd was, voor koppelOfSync na het opslaan */
+function openNieuwWachtwoord(hadUid){
+  nwHadUid = hadUid;
   openSheet(`${sheetHead('Nieuw wachtwoord')}
     <p class="small mb8">Je bent ingelogd via de herstel-link. Kies nu een nieuw wachtwoord; laat je telefoon het in de sleutelhanger bewaren.</p>
     <div class="field"><label>Nieuw wachtwoord</label><input class="inp" id="nw_pass" type="password" autocomplete="new-password" placeholder="minimaal 8 tekens"></div>
@@ -5335,7 +5464,7 @@ ACT.acNieuwWachtwoord = async el => {
     if(!sbAccess || tokenVerlopen(sbAccess)){ const ok = await sbRefresh(); if(!ok) throw new Error('Sessie verlopen, vraag een nieuwe herstel-link aan'); }
     await sbFetch('/auth/v1/user', {method:'PUT', body:JSON.stringify({password:a})});
     closeSheet(); toast('Wachtwoord gewijzigd. Je bent ingelogd', null, null, 5000);
-    UI.tab = 'meer'; UI.meerPage = 'account'; render(); syncNow(true);
+    UI.tab = 'meer'; UI.meerPage = 'account'; render(); koppelOfSync(nwHadUid);
   }catch(e){ toast('Opslaan lukte niet: ' + String(e.message||e).slice(0, 90), null, null, 6000); el.textContent = 'Wachtwoord opslaan'; el.style.pointerEvents = ''; }
 };
 
@@ -5402,7 +5531,10 @@ const EN = {
   'Tik een ster. Linkerhelft is een halve ster, nogmaals dezelfde maakt er nul van':'Tap a star. The left half is half a star, the same star again makes it zero',
   '0 van 5, die was niks':'0 out of 5, that was nothing', 'Datum':'Date', 'Proefnotitie (optioneel)':'Tasting note (optional)', 'Notitie (optioneel)':'Note (optional)', 'Proefnotitie':'Tasting note', 'Notitie':'Note',
   'Hoe smaakte hij? Bij welk gerecht?':'How did it taste? With which dish?', 'Aan wie, of wat er gebeurde':'To whom, or what happened', 'Proost, leg vast':'Cheers, save it', 'Afboeken':'Remove',
-  'Genoteerd. Santé!':'Noted. Cheers!', 'Ongedaan':'Undo', 'Elders geproefd':'Tasted elsewhere', 'Waar? (optioneel)':'Where? (optional)', 'bv. restaurant, bij vrienden, op het domaine':'e.g. restaurant, at friends, at the estate',
+  'Genoteerd. Santé!':'Noted. Cheers!', 'Ongedaan':'Undo',
+  'Kelder koppelen?':'Link this cellar?', 'Nee, uitloggen':'No, log out', 'Ja, koppelen':'Yes, link it', 'Uitgelogd. Je kelder blijft op dit apparaat':'Logged out. Your cellar stays on this device',
+  'Account bevestigd. Log hier in met je e-mailadres en wachtwoord':'Account confirmed. Log in here with your email address and password', 'Log in met je e-mailadres en wachtwoord':'Log in with your email address and password',
+  'Er ging iets mis op dit scherm':'Something went wrong on this screen', 'Back-up bewaren':'Save a backup', 'Naar Meer':'Go to More', 'Reservekopieën':'Safety copies', 'Elders geproefd':'Tasted elsewhere', 'Waar? (optioneel)':'Where? (optional)', 'bv. restaurant, bij vrienden, op het domaine':'e.g. restaurant, at friends, at the estate',
   'Leg vast':'Save', 'Geef sterren of schrijf een notitie':'Give stars or write a note', 'Proefnotitie vastgelegd':'Tasting note saved', 'Proefnotitie vastgelegd. Santé!':'Tasting note saved. Cheers!',
   'Al geproefd?':'Tasted already?', 'Op het domaine, in de winkel of bij vrienden. Je oordeel telt meteen mee in je smaakprofiel; overslaan mag.':'At the estate, in the shop or at friends. Your verdict counts towards your taste profile right away; feel free to skip.',
   'waar geproefd, bv. op het domaine (optioneel)':'where tasted, e.g. at the estate (optional)', 'hoe was hij? (optioneel)':'how was it? (optional)',
@@ -5797,10 +5929,11 @@ function openTaalKeuze(){
 ACT.setTaal = el => {
   const v = el.dataset.v === 'en' ? 'en' : 'nl';
   S.settings.taal = v; save(true); applyTaal();
-  if(sheets.length) closeSheet(true);
+  if(sheets.length) closeSheet();
   render();
   if(v === 'nl') toast('De app staat op Nederlands'); else toast('The app is now in English');
 };
 applyTaal();
-if(!S.settings.taal && !location.hash.includes('access_token')) setTimeout(openTaalKeuze, 500);
+if(!S.settings.taal && !location.hash.includes('access_token')) setTimeout(() => { if(!sheets.length) openTaalKeuze(); }, 500);
+if(standKapot) setTimeout(() => toast('De opgeslagen kelder was onleesbaar en is bewaard als caveau_v1_kapot. Zet een reservekopie terug via Meer, Instellingen', null, null, 12000), 800);
 </script>

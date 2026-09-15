@@ -11,10 +11,10 @@ tmp=$(mktemp -d) || exit 1
 trap 'rm -rf "$tmp"' EXIT
 fouten=0
 
-n=$(awk '/<script>/{n++} END{print n+0}' cellarmentor.html)
+n=$(awk '/^<script>$/{n++} END{print n+0}' cellarmentor.html)
 awk -v dir="$tmp" '
-  /<script>/ {in_s=1; n++; f=dir "/blok" n ".js"; next}
-  /<\/script>/ {in_s=0; next}
+  /^<script>$/ {in_s=1; n++; f=dir "/blok" n ".js"; next}
+  /^<\/script>$/ {in_s=0; next}
   in_s {print > f}
 ' cellarmentor.html
 for f in "$tmp"/blok*.js; do

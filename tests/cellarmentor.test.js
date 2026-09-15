@@ -12,7 +12,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const bron = fs.readFileSync(path.join(__dirname, '..', 'cellarmentor.html'), 'utf8');
-const blokken = [...bron.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+const blokken = [...bron.matchAll(/^<script>$([\s\S]*?)^<\/script>$/gm)].map(m => m[1]);
 assert.equal(blokken.length, 6, 'cellarmentor.html hoort zes scriptblokken te hebben');
 
 /* ---- browserstub ---- */
@@ -43,7 +43,7 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, matchWine, foodCats, windowStatus, estimateWindow, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, estimateWindow, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
@@ -191,4 +191,37 @@ test('schrijfState: bij een vol quotum gaan de reservekopieën weg, oudste eerst
 });
 test('uid: ids voldoen aan wat de normalisatie toelaat', () => {
   assert.match(C.uid(), /^[A-Za-z0-9_-]{1,64}$/);
+});
+
+/* ================= normalisatie van het hele document (15 sep 2026) ================= */
+test('schoonHist: geen beoordeling blijft geen beoordeling, ook na een sync', () => {
+  assert.equal(C.schoonHist({ name: 'x' }).rating, null);
+  assert.equal(C.schoonHist({ name: 'x', rating: null }).rating, null);
+  assert.equal(C.schoonHist({ name: 'x', rating: 0 }).rating, 0);
+  assert.equal(C.schoonHist({ name: 'x', rating: 4.5 }).rating, 4.5);
+});
+test('prototype-sleutels tellen niet als type of reden', () => {
+  assert.equal(C.eigenSleutel({ rood: 1 }, 'rood'), true);
+  assert.equal(C.eigenSleutel({ rood: 1 }, 'constructor'), false);
+  assert.equal(C.eigenSleutel({ rood: 1 }, undefined), false);
+  assert.equal(C.schoonWijn({ name: 'x', type: 'constructor' }).type, 'rood');
+  assert.equal(C.schoonHist({ name: 'x', weg: 'constructor' }).weg, undefined);
+});
+test('schoonDoc: verkeerde types in caches en tafel breken de app niet, score en persons zijn getallen', () => {
+  const d = C.schoonDoc({ tonight: 'x', pairCache: [null, { key: 'k', dish: 'd', matches: [{ id: 'abc', score: '<img onerror=1>', reason: 'r' }] }],
+    recipeCache: 'x', rev: '7', cellarName: 'n'.repeat(200), wines: [null, { name: 'ok' }] });
+  assert.equal(d.tonight.length, 0);
+  assert.equal(d.pairCache.length, 1);
+  assert.equal(d.pairCache[0].matches[0].score, 0);
+  assert.equal(d.recipeCache.length, 0);
+  assert.equal(d.rev, 7);
+  assert.equal(d.cellarName.length, 60);
+  assert.equal(d.wines.length, 1);
+  const r = C.schoonDoc({ recipeCache: [{ key: 'x|4', dish: 'x', persons: '<b>', recipe: {} }] }).recipeCache[0];
+  assert.equal(r.persons, 2);
+  assert.equal(r.recipe.ingredients.length, 0);
+});
+test('schoonWijn: valueAt is een datum of niets', () => {
+  assert.equal(C.schoonWijn({ name: 'x', valueAt: 'nonsense' }).valueAt, undefined);
+  assert.equal(C.schoonWijn({ name: 'x', valueAt: '2026-09-15' }).valueAt, '2026-09-15');
 });
