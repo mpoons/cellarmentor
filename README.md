@@ -2,7 +2,7 @@
 
 Persoonlijke wijnkelder-app: etiketten scannen, voorraad en locaties bijhouden, drinkvensters volgen, spijs-wijnpairing twee kanten op, de wijnkaart in het restaurant lezen, drink-historie met sterren, prijzen met bron en een verlanglijst. Nederlands en Engels.
 
-**App:** https://mpoons.github.io/cellarmentor/ Open hem op je telefoon en kies "Zet op beginscherm".
+**App:** https://cellarmentor.com/ Open hem op je telefoon en kies "Zet op beginscherm".
 
 ## Hoe het werkt
 

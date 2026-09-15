@@ -6,7 +6,7 @@
 // Vereiste secrets (Edge Functions → Secrets):
 //   STRIPE_SECRET_KEY   = sk_live_... (of sk_test_... om te proberen)
 //   STRIPE_PRICE_PLUS   = price_...   (het €2,99/maand-abonnement uit Stripe → Products)
-//   CAVEAU_APP_URL      = https://mpoons.github.io/cellarmentor/   (waar Stripe naartoe terugstuurt)
+//   CAVEAU_APP_URL      = https://cellarmentor.com/   (waar Stripe naartoe terugstuurt)
 
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import Stripe from 'npm:stripe@17'
@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   try {
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2025-10-29.clover' })
-    const appUrl = Deno.env.get('CAVEAU_APP_URL') || 'https://mpoons.github.io/cellarmentor/'
+    const appUrl = Deno.env.get('CAVEAU_APP_URL') || 'https://cellarmentor.com/'
     const supa = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
 
     const jwt = (req.headers.get('authorization') || '').replace('Bearer ', '')

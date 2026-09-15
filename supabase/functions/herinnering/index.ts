@@ -10,7 +10,7 @@
 
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
-const APP_URL = Deno.env.get('CAVEAU_APP_URL') || 'https://mpoons.github.io/cellarmentor/'
+const APP_URL = Deno.env.get('CAVEAU_APP_URL') || 'https://cellarmentor.com/'
 const WACHT_DAGEN = 6.5   // niet vaker dan dit, ook als de cron vaker zou lopen
 
 type Wijn = { name?: string; producer?: string; vintage?: number | null; qty?: number; drinkFrom?: number | null; drinkTo?: number | null; location?: string }

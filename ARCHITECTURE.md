@@ -6,6 +6,8 @@ Stand: 15 september 2026, app-versie v75 (hernoemd van Caveau naar CellarMentor;
 
 ## 1. Wat het is
 
+**Adres en brug (15 september 2026).** De app staat op cellarmentor.com (GitHub Pages met eigen domein). Daarvoor stond hij op mpoons.github.io, en de browser bewaart de kelder per adres: een kelder die zonder account op het oude adres is opgebouwd, is op het nieuwe adres niet te zien. Daarom draait op het oude adres (mpoons.github.io/caveau/, repo `mpoons/caveau`) dezelfde app als *brug*, met een banner die de weg wijst: inloggen (dan neemt de synchronisatie alles mee, ook foto's) of een back-up bewaren en op het nieuwe adres inlezen. De brug wordt gebouwd door `brug.sh` en blijft staan tot iedereen over is.
+
 CellarMentor is een wijnkelder-app die in de browser draait en zich op een telefoon laat installeren als app (*PWA*). Je scant een etiket, de app herkent de wijn, bewaart hem in je kelder, zegt wanneer je hem moet drinken en welke fles bij een gerecht past. Alles werkt zonder account op het apparaat zelf. Met een account synchroniseert de kelder tussen apparaten en betaalt de app de AI voor je, tegen een maandelijks tegoed (*credits*).
 
 ## 2. De onderdelen

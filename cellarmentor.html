@@ -1700,7 +1700,7 @@ function viewKelder(){
     <div class="search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
       <input type="search" placeholder="Zoek op naam, druif, regio, of typ een gerecht…" value="${esc(UI.q)}" data-in="q" aria-label="Zoeken">
       <button class="sortbtn" data-act="chipSort" aria-label="Sorteren: ${esc(SORTS[UI.sort])}" title="Sorteren"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20V5m0 0L4 8m3-3 3 3"/><path d="M17 4v15m0 0 3-3m-3 3-3-3"/></svg></button></div>
-    <div class="chiprow">${chips}</div>${opslagBanner()}${tonightBanner()}${installBanner()}${locBanner}${body}`;
+    <div class="chiprow">${chips}</div>${verhuisBanner()}${opslagBanner()}${tonightBanner()}${installBanner()}${locBanner}${body}`;
 }
 INP.q = el => { UI.q = el.value; refreshList(); };
 function refreshList(){ if(UI.tab==='kelder') { render(true); } }
@@ -4067,7 +4067,7 @@ ACT.devTap = () => {
 };
 function viewSettings(){
   const ai = IN_SANDBOX
-    ? `<div class="banner"><span>${ik('slot')}</span><span><b>AI-scannen in deze omgeving:</b> de app draait hier in een beveiligde sandbox zonder externe verbindingen. Alles werkt: foto's, voorraad, regels voor venster & pairing. Wil je dat de sommelier etiketten leest? Gebruik CellarMentor dan via <b>mpoons.github.io/cellarmentor</b>.</span></div>`
+    ? `<div class="banner"><span>${ik('slot')}</span><span><b>AI-scannen in deze omgeving:</b> de app draait hier in een beveiligde sandbox zonder externe verbindingen. Alles werkt: foto's, voorraad, regels voor venster & pairing. Wil je dat de sommelier etiketten leest? Gebruik CellarMentor dan via <b>cellarmentor.com</b>.</span></div>`
     : `<div class="banner"><span>${ik('wolk')}</span><span>${(typeof loggedIn==='function'&&loggedIn())?'<b>Ingelogd:</b> AI werkt automatisch via de CellarMentor-server, met je maandtegoed (zie Meer → Account).':`<b>Log in via Meer → Account</b> en de sommelier werkt meteen. Je krijgt ${FREE_CREDITS} gratis credits per maand.`}</span></div>
       <div class="field"><label>Antwoordstijl sommelier</label><div class="seg" id="styleSeg">${[['simpel','Simpel'],['kenner','Kenner'],['sommelier','Sommelier']].map(([k,l])=>`<button type="button" data-act="aiStyle" data-s="${k}" class="${(S.settings.aiStyle||'kenner')===k?'on':''}">${l}</button>`).join('')}</div>
        <div class="small mt8">Bepaalt de toon van pairing-redenen, karakterschetsen en antwoorden, van jip-en-janneke tot sommeliers onder elkaar.</div></div>
@@ -4190,8 +4190,20 @@ function isApple(){
    is hij weg. En op de iPhone kan een app op het beginscherm een eigen opslag hebben:
    eerst in Safari flessen toevoegen en daarna installeren kan een lege kelder opleveren.
    Eerst zetten, dan vullen is dus ook veiliger. */
+/* Brug: dezelfde app op het oude adres (mpoons.github.io/caveau/), zodat wie daar de kelder heeft staan
+   niets kwijtraakt. De browser bewaart opslag per herkomst, dus het nieuwe adres cellarmentor.com ziet die
+   kelder niet; de banner wijst de weg: inloggen (sync neemt alles mee) of een back-up bewaren. */
+const NIEUW_ADRES = 'https://cellarmentor.com/';
+const BRUG = /\/caveau\/?$/.test(location.pathname);
+function verhuisBanner(){
+  if(!BRUG) return '';
+  return `<div class="banner">
+    <span>${ik('wolk')}</span>
+    <span style="flex:1"><b>CellarMentor is verhuisd naar cellarmentor.com</b>. Je kelder staat nog op dit apparaat. Log daar in met je account en hij staat klaar. Nog geen account? Maak er hier eerst een (Meer, Account), of bewaar een back-up (Meer, Back-up) en lees die daar in.
+      <div class="mt8"><a class="btn sm" href="${NIEUW_ADRES}" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none">Naar cellarmentor.com</a></div></span></div>`;
+}
 function toonInstallTip(){
-  return !IN_SANDBOX && !isStandalone() && !S.settings.installWeg;
+  return !IN_SANDBOX && !BRUG && !isStandalone() && !S.settings.installWeg;
 }
 /* Blijft staan zolang de laatste opslag mislukte; verdwijnt vanzelf zodra bewaren weer lukt. */
 function opslagBanner(){
@@ -5157,7 +5169,7 @@ ACT.plusGo = el => {
 ACT.acPortal = el => billingGo('portal', el);
 
 /* Directe adressen voor de twee openbare pagina's, zodat je ze kunt delen en
-   in Stripe kunt opgeven: .../cellarmentor/#voorwaarden en .../cellarmentor/#privacy */
+   in Stripe kunt opgeven: https://cellarmentor.com/#voorwaarden en https://cellarmentor.com/#privacy */
 (function(){
   const naar = () => {
     const h = (location.hash||'').replace('#','').toLowerCase();
@@ -5220,7 +5232,7 @@ function viewAccount(){
   const c = cloud();
   if(!CLOUD_OK)
     return `${brandRow('')}${backRow}<div class="eyebrow">Account</div><h2 class="h2">Cloud-sync</h2>
-      <div class="banner"><span>${ik('slot')}</span><span>Sync is niet beschikbaar in deze omgeving. Gebruik de app via <b>mpoons.github.io/cellarmentor</b>.</span></div>`;
+      <div class="banner"><span>${ik('slot')}</span><span>Sync is niet beschikbaar in deze omgeving. Gebruik de app via <b>cellarmentor.com</b>.</span></div>`;
   if(!loggedIn()){
     return `${brandRow('')}${backRow}<div class="eyebrow">Account</div><h2 class="h2">Cloud-sync aanzetten</h2>
       <p class="small mb8">Log in en je kelder synchroniseert automatisch tussen al je apparaten. Nog geen account? Kies een wachtwoord en tik op "Account aanmaken".</p>
@@ -5354,7 +5366,7 @@ const EN = {
   'Instellingen':'Settings', 'Instellingen & back-up':'Settings & backup', 'Account':'Account', 'Account & cloud-sync':'Account & cloud sync',
   'Locaties':'Locations', 'Locaties & rekken':'Locations & racks', 'Rekken & plekken':'Racks & places', 'Historie':'History', 'Drink-historie':'Drinking history',
   'Verlanglijst':'Wishlist', 'Op de verlanglijst':'On the wishlist', 'Nog te kopen':'Still to buy', 'Recepten':'Recipes', 'Receptenboek':'Recipe book',
-  'Jouw smaak':'Your taste', 'Waar je van houdt':'What you love', 'Over CellarMentor':'About CellarMentor', 'Voorwaarden':'Terms', 'Privacy':'Privacy',
+  'Jouw smaak':'Your taste', 'Waar je van houdt':'What you love', 'Over CellarMentor':'About CellarMentor', 'CellarMentor is verhuisd naar cellarmentor.com':'CellarMentor has moved to cellarmentor.com', '. Je kelder staat nog op dit apparaat. Log daar in met je account en hij staat klaar. Nog geen account? Maak er hier eerst een (Meer, Account), of bewaar een back-up (Meer, Back-up) en lees die daar in.':'. Your cellar is still on this device. Log in there with your account and it will be waiting. No account yet? Create one here first (More, Account), or save a backup (More, Backup) and import it there.', 'Naar cellarmentor.com':'Go to cellarmentor.com', 'Voorwaarden':'Terms', 'Privacy':'Privacy',
   'CellarMentor als app':'CellarMentor as an app', 'CellarMentor op je beginscherm':'CellarMentor on your home screen', 'Meerdere tegelijk':'Several at once', 'Meerdere flessen tegelijk':'Several bottles at once',
   'Etiket scannen':'Scan a label', 'Scan etiket':'Scan label', 'Scan een fles':'Scan a bottle', 'Scan je eerste fles':'Scan your first bottle',
   'Geavanceerd':'Advanced', 'Ontwikkelaarsstand':'Developer mode', 'Weergave':'Appearance', 'Stijl':'Style', 'Kleur':'Colour', 'Streken':'Regions', 'Druiven':'Grapes',
