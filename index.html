@@ -4352,6 +4352,19 @@ function isApple(){
   const ua = navigator.userAgent || '';
   return /iphone|ipad|ipod/i.test(ua) || (/macintosh/i.test(ua) && (navigator.maxTouchPoints||0) > 1);
 }
+/* Welke browser op de iPhone. Sinds iOS 16.4 kunnen ook Chrome, Firefox en Edge een app op het
+   beginscherm zetten (de knop zit alleen ergens anders dan in Safari); het venster van een andere
+   app (WhatsApp, Instagram, Facebook) kan het nooit. Chrome is CriOS, Firefox FxiOS, Edge EdgiOS;
+   een venster in een andere app mist het woord Safari. Brave en DuckDuckGo zien eruit als Safari
+   en hebben de knop op dezelfde plek. */
+function iosBrowser(){
+  const ua = navigator.userAgent || '';
+  if(/CriOS/.test(ua)) return 'chrome';
+  if(/FxiOS/.test(ua)) return 'firefox';
+  if(/EdgiOS/.test(ua)) return 'edge';
+  if(!/Safari\//.test(ua)) return 'app';
+  return 'safari';
+}
 /* Meteen aanbieden, niet pas na de eerste fles. Wie hier binnenkomt heeft een link
    van iemand gekregen en hoeft niet overtuigd te worden; sluit hij het tabblad, dan
    is hij weg. En op de iPhone kan een app op het beginscherm een eigen opslag hebben:
@@ -4394,12 +4407,7 @@ ACT.installSheet = () => {
     ? `<p style="font-size:14px;color:var(--ink2);line-height:1.6">Je browser kan CellarMentor in één tik installeren.</p>
        <button class="btn" data-act="installNow">Op mijn beginscherm zetten</button>`
     : isApple()
-      ? `<ol style="font-size:14px;color:var(--ink2);line-height:1.7;margin-left:18px">
-           <li>Tik onderin Safari op het <b>deel-icoon</b>, het vierkantje met het pijltje omhoog.</li>
-           <li>Scroll in dat menu naar <b>"Zet op beginscherm"</b>.</li>
-           <li>Tik rechtsboven op <b>Voeg toe</b>.</li>
-         </ol>
-         <p class="small mt14">Lukt het niet? Dan sta je waarschijnlijk in een andere browser dan Safari. Op de iPhone kan alleen Safari dit. Open ${esc(location.host)} in Safari en probeer het daar.</p>`
+      ? installUitlegIos()
       : `<ol style="font-size:14px;color:var(--ink2);line-height:1.7;margin-left:18px">
            <li>Open het menu van je browser (de drie puntjes).</li>
            <li>Kies <b>"App installeren"</b> of <b>"Toevoegen aan startscherm"</b>.</li>
@@ -4407,9 +4415,30 @@ ACT.installSheet = () => {
          </ol>`;
   openSheet(`${sheetHead('CellarMentor als app')}
     <p style="font-size:14px;color:var(--ink2);line-height:1.6;margin-bottom:12px">CellarMentor is een website die zich als app gedraagt. Zet je hem op je beginscherm, dan krijg je een eigen icoon, geen adresbalk, en blijft je kelder ook zonder bereik gewoon werken, handig in een kelder of een restaurant.</p>
-    <p class="small mb8">Doe dit bij voorkeur vóór je flessen toevoegt: op de iPhone bewaart de app op je beginscherm zijn gegevens soms apart van Safari. Log je in, dan maakt het niet uit, want dan staat je kelder in de cloud.</p>
+    <p class="small mb8">Doe dit bij voorkeur vóór je flessen toevoegt: op de iPhone heeft de app op je beginscherm zijn eigen opslag, los van je browser, dus hij begint leeg. Log je in, dan maakt het niet uit: je kelder staat dan in de cloud en komt met dezelfde login terug.</p>
     ${uitleg}`);
 };
+/* De stappen per browser. De tekst noemt de plek van de deelknop, want daar liep het op vast:
+   in Chrome zit hij rechts in de adresbalk, in Safari onderin. "Zet op beginscherm" staat in het
+   deelmenu vaak onder de vouw, achter Toon meer; dat staat er nu bij, ook voor Safari. */
+function installUitlegIos(){
+  const br = iosBrowser();
+  const adres = esc((location.host + location.pathname).replace(/\/(index\.html)?$/, ''));
+  if(br === 'app') return `<p class="small">Je zit in het venster van een andere app, en daar kan dit niet. Open <b>${adres}</b> in Safari of Chrome zelf en probeer het daar.</p>`;
+  const stap1 = br === 'chrome' ? `Tik in Chrome rechts in de adresbalk op het <b>deel-icoon</b>, het vierkantje met het pijltje omhoog.`
+    : br === 'firefox' ? `Tik in Firefox onderin op het menu (de drie streepjes) en kies <b>Delen</b>.`
+    : br === 'edge' ? `Tik in Edge onderin op het menu (de drie puntjes) en kies <b>Delen</b>.`
+    : `Tik onderin Safari op het <b>deel-icoon</b>, het vierkantje met het pijltje omhoog.`;
+  const wenk = br === 'safari'
+    ? `Staat "Zet op beginscherm" er ook na Toon meer niet bij? Dan zit je waarschijnlijk in het venster van een andere app. Open <b>${adres}</b> in Safari zelf en probeer het daar.`
+    : `Staat "Zet op beginscherm" er ook na Toon meer niet bij? Dan draait je iPhone een iOS-versie van vóór 16.4, en kan alleen Safari dit. Kopieer het adres <b>${adres}</b>, open Safari, plak het daar en probeer het opnieuw.`;
+  return `<ol style="font-size:14px;color:var(--ink2);line-height:1.7;margin-left:18px">
+      <li>${stap1}</li>
+      <li>Scroll in dat menu omlaag naar <b>"Zet op beginscherm"</b>. Zie je hem niet, tik dan op <b>Toon meer</b>.</li>
+      <li>Tik rechtsboven op <b>Voeg toe</b>.</li>
+    </ol>
+    <p class="small mt14">${wenk}</p>`;
+}
 ACT.installNow = async () => {
   if(!installPrompt){ toast('Je browser biedt dit nu niet aan'); return; }
   const p = installPrompt; installPrompt = null;
@@ -5399,12 +5428,16 @@ async function fetchQuota(){
   try{
     if(!sbAccess || tokenVerlopen(sbAccess)){ const ok = await sbRefresh(); if(!ok){ el.textContent = 'AI-tegoed: log opnieuw in'; return; } }
     const ms = new Date(); ms.setUTCDate(1); ms.setUTCHours(0,0,0,0);
-    const [prof, used] = await Promise.all([
-      sbFetch('/rest/v1/profiles?select=plan,bonus_credits,plan_status,plan_renews_at,mail_herinnering', {method:'GET'}),
-      sbFetch('/rest/v1/ai_usage?select=cost_units&created_at=gte.' + encodeURIComponent(ms.toISOString()), {method:'GET'})
+    /* De mailvoorkeur apart: die kolom bestaat pas na herinnering.sql, en zolang hij ontbreekt
+       gaf de ene gecombineerde query 400 en zag niemand zijn tegoed ("nog niet beschikbaar"). */
+    const [prof, used, mail] = await Promise.all([
+      sbFetch('/rest/v1/profiles?select=plan,bonus_credits,plan_status,plan_renews_at', {method:'GET'}),
+      sbFetch('/rest/v1/ai_usage?select=cost_units&created_at=gte.' + encodeURIComponent(ms.toISOString()), {method:'GET'}),
+      sbFetch('/rest/v1/profiles?select=mail_herinnering', {method:'GET'}).catch(() => null)
     ]);
     const p = (prof && prof[0]) || {};
-    if(p.mail_herinnering != null && !!S.settings.mailMij !== !!p.mail_herinnering){ S.settings.mailMij = !!p.mail_herinnering; save(true); }
+    const mh = (mail && mail[0]) ? mail[0].mail_herinnering : null;
+    if(mh != null && !!S.settings.mailMij !== !!mh){ S.settings.mailMij = !!mh; save(true); }
     quota = { plan:p.plan || 'free', bonus:p.bonus_credits || 0, status:p.plan_status || null,
       renews:p.plan_renews_at || null,
       used:(used||[]).reduce((n,r) => n + (r.cost_units || 1), 0) };
@@ -5767,19 +5800,24 @@ const EN = {
   'Andere gebruiker: de vorige kelder staat als reservekopie in Instellingen':'Different user: the previous cellar is kept as a safety copy under Settings',
   'Laat je telefoon het wachtwoord in de sleutelhanger bewaren, dan is het eenmalig. Alleen jíj kunt bij je kelder; dat is op databaseniveau afgedwongen.':'Let your phone keep the password in the keychain, then it is a one-off. Only you can reach your cellar; that is enforced at database level.',
   'Elke wijziging gaat een paar seconden later automatisch naar de cloud; bij het openen wordt de nieuwste versie opgehaald. Uitloggen verwijdert niets.':'Every change goes to the cloud automatically a few seconds later; on opening, the latest version is fetched. Logging out deletes nothing.',
-  'Doe dit bij voorkeur vóór je flessen toevoegt: op de iPhone bewaart de app op je beginscherm zijn gegevens soms apart van Safari. Log je in, dan maakt het niet uit, want dan staat je kelder in de cloud.':'Preferably do this before adding bottles: on iPhone the home-screen app sometimes keeps its data apart from Safari. If you log in it does not matter, because your cellar is then in the cloud.',
+  'Doe dit bij voorkeur vóór je flessen toevoegt: op de iPhone heeft de app op je beginscherm zijn eigen opslag, los van je browser, dus hij begint leeg. Log je in, dan maakt het niet uit: je kelder staat dan in de cloud en komt met dezelfde login terug.':'Preferably do this before adding bottles: on iPhone the home-screen app has its own storage, separate from your browser, so it starts empty. If you log in it does not matter: your cellar is then in the cloud and comes back with the same login.',
   'Je tegoed':'Your credits', 'AI-tegoed: laden…':'AI credits: loading…', 'AI-tegoed: log opnieuw in':'AI credits: log in again', 'Onbeperkt tegoed op dit account.':'Unlimited credits on this account.', 'CellarMentor Plus':'CellarMentor Plus', 'Plus nemen':'Get Plus',
   'Een etiketscan of pairing kost 1 credit; een wijnkaart 2 per gefotografeerde pagina. Maandelijks opzegbaar.':'A label scan or pairing costs 1 credit; a wine list 2 per photographed page. Cancel monthly.',
   'Een etiketscan of pairing kost 1 credit; een wijnkaart 2 per gefotografeerde pagina. Kom je tekort? Laat het even weten, dan zet ik je tegoed hoger.':'A label scan or pairing costs 1 credit; a wine list 2 per photographed page. Running short? Let me know and I will raise your credits.',
   'Abonnement beheren':'Manage subscription', 'Opzeggen':'Cancel subscription', 'Betalen':'Pay', 'Naar de betaling':'To payment', 'Welkom bij CellarMentor Plus. Je tegoed staat klaar':'Welcome to CellarMentor Plus. Your credits are ready',
   'Zet eerst het vinkje, dat hoort bij een abonnement dat meteen ingaat':'Tick the box first; that goes with a subscription that starts right away', 'Ik ga akkoord met de':'I agree to the', 'voorwaarden':'terms', 'privacyverklaring':'privacy statement', 'en de':'and the',
   'Afgebroken, er is niets afgeschreven':'Cancelled, nothing was charged', 'Staat onder Meer als je hem toch wilt':'It is under More if you want it after all', 'Niet meer tonen':'Do not show again',
-  'App installeren':'Install app', 'Toevoegen aan startscherm':'Add to home screen', 'Zet op beginscherm':'Put on home screen', 'Je browser kan CellarMentor in één tik installeren.':'Your browser can install CellarMentor in one tap.',
+  'App installeren':'Install app', 'Toevoegen aan startscherm':'Add to home screen', '"App installeren"':'"Install app"', '"Toevoegen aan startscherm"':'"Add to Home screen"', 'of':'or', 'Zet op beginscherm':'Put on home screen', 'Je browser kan CellarMentor in één tik installeren.':'Your browser can install CellarMentor in one tap.',
   'Je browser biedt dit nu niet aan':'Your browser does not offer this right now', 'Zet CellarMentor eerst op je beginscherm':'Put CellarMentor on your home screen first', 'deel-icoon':'share icon',
   'Tik onderin Safari op het':'In Safari, tap the', ', het vierkantje met het pijltje omhoog.':', the square with the arrow pointing up.', 'Scroll in dat menu naar':'Scroll in that menu to', 'Bevestigen.':'Confirm.',
   'Open het menu van je browser (de drie puntjes).':'Open your browser menu (the three dots).', 'Tik rechtsboven op':'Tap top right on', 'Hoe?':'How?',
   'CellarMentor is een website die zich als app gedraagt. Zet je hem op je beginscherm, dan krijg je een eigen icoon, geen adresbalk, en blijft je kelder ook zonder bereik gewoon werken, handig in een kelder of een restaurant.':'CellarMentor is a website that behaves like an app. Put it on your home screen and you get its own icon, no address bar, and your cellar keeps working without signal, handy in a cellar or a restaurant.',
-  'Lukt het niet? Dan sta je waarschijnlijk in een andere browser dan Safari. Op de iPhone kan alleen Safari dit.':'Not working? Then you are probably in a browser other than Safari. On iPhone only Safari can do this.',
+  'Tik in Chrome rechts in de adresbalk op het':'In Chrome, at the right of the address bar, tap the', 'Tik in Firefox onderin op het menu (de drie streepjes) en kies':'In Firefox, tap the menu at the bottom (the three lines) and choose',
+  'Tik in Edge onderin op het menu (de drie puntjes) en kies':'In Edge, tap the menu at the bottom (the three dots) and choose', 'Delen':'Share', 'Scroll in dat menu omlaag naar':'Scroll down in that menu to', '"Zet op beginscherm"':'"Add to Home Screen"',
+  '. Zie je hem niet, tik dan op':'. If you do not see it, tap', 'Toon meer':'Show more',
+  'Je zit in het venster van een andere app, en daar kan dit niet. Open':'You are in the browser window of another app, and that cannot do this. Open', 'in Safari of Chrome zelf en probeer het daar.':'in Safari or Chrome itself and try there.',
+  'Staat "Zet op beginscherm" er ook na Toon meer niet bij? Dan zit je waarschijnlijk in het venster van een andere app. Open':'No "Add to Home Screen", even after Show more? Then you are probably in the browser window of another app. Open', 'in Safari zelf en probeer het daar.':'in Safari itself and try there.',
+  'Staat "Zet op beginscherm" er ook na Toon meer niet bij? Dan draait je iPhone een iOS-versie van vóór 16.4, en kan alleen Safari dit. Kopieer het adres':'No "Add to Home Screen", even after Show more? Then your iPhone runs an iOS version older than 16.4, and only Safari can do this. Copy the address', ', open Safari, plak het daar en probeer het opnieuw.':', open Safari, paste it there and try again.',
   'CellarMentor is je persoonlijke wijnkelder: scan etiketten, houd voorraad en locaties bij, zie wanneer elke fles op dronk is, en laat de sommelier het perfecte glas bij je gerecht kiezen, of andersom. Zonder account blijft alles op je eigen apparaat; met een account synct je kelder tussen je apparaten. Deel de link gerust, iedereen krijgt zijn eigen kelder.':'CellarMentor is your personal wine cellar: scan labels, track stock and locations, see when each bottle is ready, and let the sommelier pick the perfect glass for your dish, or the other way round. Without an account everything stays on your own device; with an account your cellar syncs across your devices. Share the link freely, everyone gets their own cellar.',
   'Drinkvensters en pairing zijn schattingen. Jouw smaak wint altijd. Santé!':'Drinking windows and pairings are estimates. Your taste always wins. Cheers!',
   'Taal / Language':'Language',
