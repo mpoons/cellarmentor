@@ -43,7 +43,7 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, estimateWindow, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, estimateWindow, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, toonAccountWenk, ACCOUNT_WENK_BIJ, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
@@ -224,4 +224,20 @@ test('schoonDoc: verkeerde types in caches en tafel breken de app niet, score en
 test('schoonWijn: valueAt is een datum of niets', () => {
   assert.equal(C.schoonWijn({ name: 'x', valueAt: 'nonsense' }).valueAt, undefined);
   assert.equal(C.schoonWijn({ name: 'x', valueAt: '2026-09-15' }).valueAt, '2026-09-15');
+});
+
+test('schoonWijn: de bron van het drinkvenster is ai, regels of eigen, anders niets', () => {
+  assert.equal(C.schoonWijn({ name: 'x', vensterBron: 'regels' }).vensterBron, 'regels');
+  assert.equal(C.schoonWijn({ name: 'x', vensterBron: 'ai' }).vensterBron, 'ai');
+  assert.equal(C.schoonWijn({ name: 'x', vensterBron: 'hack' }).vensterBron, undefined);
+  assert.equal(C.schoonWijn({ name: 'x' }).vensterBron, undefined);   /* een fles van vóór dit veld blijft zonder bron */
+});
+
+test('accountwenk: alleen zonder account, vanaf de drempel, en niet na wegklikken', () => {
+  const n = C.ACCOUNT_WENK_BIJ;
+  assert.equal(C.toonAccountWenk(n, false, true), true);
+  assert.equal(C.toonAccountWenk(n - 1, false, true), false);
+  assert.equal(C.toonAccountWenk(n, true, true), false);
+  assert.equal(C.toonAccountWenk(n + 50, false, false), false);
+  assert.equal(C.toonAccountWenk(n, undefined, true), true);   /* een oude instellingenset zonder de vlag */
 });

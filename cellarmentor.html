@@ -520,7 +520,7 @@ const IN_SANDBOX = /claudeusercontent\.com$/i.test(location.hostname) || !!windo
 const DB_KEY = 'caveau_v1';
 
 const DEFAULTS = () => ({ v:1, wines:[], history:[], wishlist:[], locations:[], pairCache:[], recipeCache:[], tonight:[], menuLast:null,
-  settings:{ cellarName:'Mijn kelder', apiKey:'', model:'claude-sonnet-5', devMode:false, installWeg:false } });
+  settings:{ cellarName:'Mijn kelder', apiKey:'', model:'claude-sonnet-5', devMode:false, installWeg:false, accountWenkWeg:false } });
 
 let standKapot = false; /* caveau_v1 was geen leesbare JSON; de tekst staat dan onder caveau_v1_kapot */
 function loadState(){
@@ -652,6 +652,7 @@ function schoonWijn(w){
     qty: Math.max(0, Math.min(999, parseInt(w.qty, 10) || 0)), type: eigenSleutel(TYPES, w.type) ? w.type : 'rood',
     grapes: lijstOk(w.grapes, 8, 60), pairing: lijstOk(w.pairing, 8, 120), photo: !!w.photo, valueAt: datumOk(w.valueAt),
     valueSrc: ['ai','zoek','eigen','samen'].includes(w.valueSrc) ? w.valueSrc : (w.value != null ? 'eigen' : undefined),
+    vensterBron: ['ai','regels','eigen'].includes(w.vensterBron) ? w.vensterBron : undefined,
     samen: (w.samen && typeof w.samen === 'object' && getalOk(w.samen.n) >= 2) ? {n: Math.min(99999, Math.round(getalOk(w.samen.n))), low: getalOk(w.samen.low), high: getalOk(w.samen.high), med: getalOk(w.samen.med), at: tekstOk(w.samen.at, 40)} : undefined,
     valueBron: (w.valueBron && typeof w.valueBron === 'object') ? {...w.valueBron, name: tekstOk(w.valueBron.name, 80), url: safeUrl(w.valueBron.url), vintage: jaarOk(w.valueBron.vintage), n: getalOk(w.valueBron.n)} : null};
 }
@@ -1235,7 +1236,23 @@ function ownKey(){
    minder goed kunnen zijn. Gedeeld door Mijn gerecht, Mijn wijn en Wijnkaart. */
 const aiRedenUit = () => IN_SANDBOX ? 'in deze proefomgeving staat de AI uit' : 'log in, dan doet de sommelier mee';
 const bronLabel = src => src === 'Kelderregels' ? 'Standaardregels · zonder AI' : src;
+/* Zonder account is het enige geval waarin een account iets oplost; bij tegoed op, netwerk of sandbox
+   blijft de kale melding staan. */
+const zonderAccount = () => !IN_SANDBOX && !aiReady();
+/* Wat een account kost en oplevert, in één zin die overal hetzelfde is: gratis, alleen e-mail en
+   wachtwoord, en het tegoed staat er meteen. In een eigen span, zodat de vertaallaag hem als één tekst ziet. */
+const gratisTegoed = () => `<span>Gratis, alleen een e-mailadres en een wachtwoord, niets te betalen. Je krijgt meteen ${FREE_CREDITS} credits per maand; een scan of een advies is één credit.</span>`;
+const accountKnop = () => `<div class="mt8"><button class="btn sm" data-act="goAccount">Gratis account aanmaken</button></div>`;
+/* Eén banner voor elke plek waar de sommelier zonder account stilstaat: een kop met wat hij hier zou
+   doen, de vaste zin over het gratis tegoed, en de knop. */
+function accountBanner(kop, icoon){
+  return `<div class="banner"><span>${ik(icoon || 'glas')}</span><span style="flex:1">${kop} ${gratisTegoed()}${accountKnop()}</span></div>`;
+}
+/* De kelderbanner mag pas als er iets te adviseren valt: vanaf ACCOUNT_WENK_BIJ wijnen, zolang hij niet is weggeklikt. */
+const ACCOUNT_WENK_BIJ = 5;
+const toonAccountWenk = (nWijnen, weg, zonder) => !!zonder && !weg && nWijnen >= ACCOUNT_WENK_BIJ;
 function zonderAiHtml(reden){
+  if(zonderAccount()) return accountBanner(`<b>Dit is het advies volgens de standaardregels.</b> <span>Met een gratis account kijkt de sommelier naar je hele kelder, weet hij van saus en bereiding, weegt hij je smaak mee en legt hij uit waarom.</span>`, 'chat');
   return `<div class="banner"><span>${ik('chat')}</span><span><b>Advies zonder de sommelier-AI.</b> <span>${esc(((r) => r.charAt(0).toUpperCase() + r.slice(1))(String(reden || aiRedenUit())))}</span>. <span>Dit komt uit de standaardregels, een eenvoudige tabel op trefwoorden die niets weet van sauzen, bereiding of je hele kelder. Daardoor zijn dit misschien niet de allerbeste keuzes.</span></span></div>`;
 }
 function aiReady(){
@@ -1747,7 +1764,7 @@ function viewKelder(){
       <button class="btn" data-act="tab" data-tab="scan" style="max-width:260px">Scan je eerste fles</button>
       <div class="mt14"><button class="linkbtn" data-act="wineNew">Handmatig toevoegen</button> &nbsp;·&nbsp; <button class="linkbtn" data-act="goImport">Lijst of doos inlezen</button></div>
       <div class="mt8"><button class="linkbtn" data-act="demoLoad">Bekijk met voorbeeldflessen</button></div>
-      <p class="small mt14" style="max-width:330px;margin-left:auto;margin-right:auto">Log in bij <button class="linkbtn" data-act="goAccount">Meer → Account</button> en je kelder synchroniseert tussen je apparaten; je krijgt dan ook ${FREE_CREDITS} gratis credits per maand om etiketten en wijnkaarten te laten lezen.</p></div>`;
+      <p class="small mt14" style="max-width:330px;margin-left:auto;margin-right:auto">Met een gratis account leest de sommelier je etiketten, kiest hij de wijn bij je eten en synct je kelder tussen je apparaten. Alleen een e-mailadres en een wachtwoord, niets te betalen: <button class="linkbtn" data-act="goAccount">account aanmaken</button>.</p></div>`;
   } else if(!list.length){
     body = `<div class="empty"><div class="big">Niets gevonden</div><p>Geen flessen die aan deze filters voldoen.</p></div>`;
   } else if(UI.qGerecht){
@@ -1768,7 +1785,7 @@ function viewKelder(){
     <div class="search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
       <input type="search" placeholder="Zoek op naam, druif, regio, of typ een gerecht…" value="${esc(UI.q)}" data-in="q" aria-label="Zoeken">
       <button class="sortbtn" data-act="chipSort" aria-label="Sorteren: ${esc(SORTS[UI.sort])}" title="Sorteren"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20V5m0 0L4 8m3-3 3 3"/><path d="M17 4v15m0 0 3-3m-3 3-3-3"/></svg></button></div>
-    <div class="chiprow">${chips}</div>${verhuisBanner()}${opslagBanner()}${tonightBanner()}${installBanner()}${locBanner}${leegRij}${body}`;
+    <div class="chiprow">${chips}</div>${verhuisBanner()}${opslagBanner()}${tonightBanner()}${installBanner()}${accountWenkBanner()}${locBanner}${leegRij}${body}`;
 }
 INP.q = el => { UI.q = el.value; refreshList(); };
 function refreshList(){ if(UI.tab==='kelder') { render(true); } }
@@ -2272,6 +2289,7 @@ function openDetail(id){
     <div class="wsub" style="font-size:14px">${esc([w.producer, w.vintage||'NV'].filter(Boolean).join(' · '))}</div>
     <div class="small mt8">${esc([w.appellation, w.region, w.country].filter(Boolean).join(' · '))}</div>
     <div class="wmeta mt8">${typeHtml(w.type)}<span class="badge ${st.cls}">${st.label}${st.sub?' · '+st.sub:''}</span></div>
+    ${vensterBronHtml(w)}
     ${(w.grapes&&w.grapes.length)?`<div class="grapes">${w.grapes.map(g=>`<span class="grape">${esc(g)}</span>`).join('')}</div>`:''}
     ${schaalHtml(w)}
     <div class="drow"><span class="k">Voorraad</span>
@@ -2297,6 +2315,15 @@ function openDetail(id){
     <div class="btnrow"><button class="btn ghost" data-act="wineEdit" data-id="${w.id}">Bewerken</button>
     <button class="btn danger" data-act="wineDel" data-id="${w.id}">Verwijderen</button></div>`);
   fillPhotos(sh);
+}
+/* Een venster uit de standaardregels ziet er even stellig uit als een schatting van de sommelier.
+   Daarom staat erbij waar het vandaan komt, en wat een account hier beter maakt. */
+function vensterBronHtml(w){
+  if(w.vensterBron !== 'regels' || (!w.drinkFrom && !w.drinkTo)) return '';
+  const vervolg = zonderAccount()
+    ? `<span>Met een gratis account schat de sommelier het per producent en jaargang:</span> <button class="linkbtn" data-act="goAccount">account aanmaken</button>.`
+    : aiReady() ? `<button class="linkbtn" data-act="wineEdit" data-id="${w.id}">Bewerken en herbereken</button> <span>geeft een schatting van de sommelier.</span>` : '';
+  return `<div class="small mt8"><span>Drinkvenster geschat volgens de standaardregels (druif, streek, jaargang).</span> ${vervolg}</div>`;
 }
 function timelineHtml(w){
   const f = w.drinkFrom, t = w.drinkTo;
@@ -2813,6 +2840,7 @@ let formQty = 1;
 let recalcPairing = null;
 let recalcValueRange = null;
 let vensterAuto = true; /* venster is (nog) een schatting → mag automatisch herberekend worden */
+let vensterVia = null;   /* waar het venster in dit formulier vandaan kwam: 'ai', 'regels', 'eigen'; null = onveranderd */
 
 /* ---- "Op tafel": fles gekozen om vanavond te drinken, nog niet afgestreept ---- */
 /* Schenkadvies uit vaste sommelierregels: temperatuur, glas en karafferen.
@@ -2951,6 +2979,7 @@ async function doRecalc(el, silent, opts){
       const r = await aiRecalc(d);
       if(venster && r.drink_from) setVal('f_from', r.drink_from);
       if(venster && r.drink_to) setVal('f_to', r.drink_to);
+      if(venster && (r.drink_from || r.drink_to)) vensterVia = 'ai';
       if(!(d.grapes||[]).length && Array.isArray(r.grapes) && r.grapes.length) setVal('f_grapes', r.grapes.join(', '));
       if(!d.note && r.note) setVal('f_note', r.note);
       if(Array.isArray(r.pairing) && r.pairing.length){
@@ -2974,7 +3003,7 @@ async function doRecalc(el, silent, opts){
   }
   if(!done && venster){
     const est = estimateWindow(d);
-    setVal('f_from', est.from); setVal('f_to', est.to);
+    setVal('f_from', est.from); setVal('f_to', est.to); vensterVia = 'regels';
   }
   if(el){ el.innerHTML = orig; el.style.pointerEvents = ''; }
   if(opts.auto && done) toast(`Waarde${venster ? ' en venster' : ''} bijgerekend voor ${d.vintage || 'NV'}${ownKey() ? '' : ' · 1 credit'}`);
@@ -2990,7 +3019,7 @@ let scanTouched = new Set();
 document.addEventListener('input', e => {
   const t = e.target;
   if(t && t.id && t.id.startsWith('f_')) scanTouched.add(t.id);
-  if(t && (t.id === 'f_from' || t.id === 'f_to')) vensterAuto = false;
+  if(t && (t.id === 'f_from' || t.id === 'f_to')){ vensterAuto = false; vensterVia = 'eigen'; }
 });
 /* jaargang ingevuld of gewijzigd → venster automatisch bijrekenen zolang het een schatting is */
 document.addEventListener('change', e => {
@@ -3005,7 +3034,7 @@ document.addEventListener('change', e => {
   if(vensterAuto) doRecalc(btn, true);
 });
 function openWineForm(w){
-  formQty = 1; recalcPairing = null; recalcValueRange = null; proefRating = null; vensterAuto = !w || (!w.drinkFrom && !w.drinkTo);
+  formQty = 1; recalcPairing = null; recalcValueRange = null; proefRating = null; vensterAuto = !w || (!w.drinkFrom && !w.drinkTo); vensterVia = null;
   formVakReset(w);
   const isNew = !w;
   openSheet(`${sheetHead(isNew ? 'Fles toevoegen' : 'Bewerken')}
@@ -3028,7 +3057,8 @@ ACT.wineSave = el => {
   if(!d.name){ toast('Geef de wijn een naam'); return; }
   if(!d.type) d.type = 'rood';
   if(d.location) S.settings.lastLocation = d.location;
-  if(!d.drinkFrom && !d.drinkTo){ const est = estimateWindow(d); d.drinkFrom = est.from; d.drinkTo = est.to; }
+  if(!d.drinkFrom && !d.drinkTo){ const est = estimateWindow(d); d.drinkFrom = est.from; d.drinkTo = est.to; vensterVia = 'regels'; }
+  if(vensterVia) d.vensterBron = vensterVia;   /* onveranderd venster houdt bij bewerken zijn bron */
   const id = el.dataset.id;
   if(id){ const w = findWine(id); if(!w) return; const vOud = w.value, pOud = w.price, locOud = w.location;
     if(d.value == null && w.valueSrc === 'ai' && w.value != null && !recalcValueRange) d.value = w.value;   /* indicatie stond niet in het veld, blijft bewaard */
@@ -3040,6 +3070,7 @@ ACT.wineSave = el => {
     save(); closeSheet(true); render(); toast('Bijgewerkt'); }
   else {
     const w = { id:uid(), ...d, qty:formQty, pairing:recalcPairing||[], photo:false, addedAt:Date.now() };
+    if(!w.vensterBron) w.vensterBron = 'eigen';   /* nieuw en zelf ingevuld, zonder herberekening */
     if(recalcValueRange){ if(w.value == null) w.value = recalcValueRange.value; w.valueLow = recalcValueRange.low; w.valueHigh = recalcValueRange.high; w.valueSrc = 'ai'; w.valueAt = vandaag(); }
     if(d.value != null && !(recalcValueRange && d.value === recalcValueRange.value)){ w.valueSrc = 'eigen'; w.valueAt = vandaag(); }
     prijsAlsBron(w); deelBetaald(w);
@@ -3190,7 +3221,7 @@ function scanReset(){ scan = { stage:'idle', photo:null, thumb:null, data:null, 
 
 function aiBanner(){
   if(IN_SANDBOX) return `<div class="banner"><span>${ik('info')}</span><span><b>Etiket-lezen met AI staat uit</b> in deze omgeving (de app-sandbox blokkeert externe verbindingen). Foto's bewaren en zelf invullen werkt gewoon. De ingebouwde sommelier-regels schatten drinkvenster en pairing. Host je het bestand zelf, dan leest Claude etiketten automatisch.</span></div>`;
-  if(!aiReady()) return `<div class="banner"><span>${ik('info')}</span><span><b>Log in en de sommelier leest je etiketten</b>: naam, druiven, drinkvenster en pairing in één foto. Je krijgt ${FREE_CREDITS} gratis credits per maand: <button class="linkbtn" data-act="goAccount">account aanmaken</button>. Zonder inloggen werkt alles behalve het automatisch lezen.</span></div>`;
+  if(!aiReady()) return accountBanner(`<b>Log in en de sommelier leest je etiketten</b><span>: naam, druiven, drinkvenster, waarde en pairing uit één foto. Zonder account bewaar je de foto en vul je de velden zelf in.</span>`, 'info');
   return '';
 }
 function viewScan(){
@@ -3414,7 +3445,8 @@ INP.quickLoc = el => {
 
 /* venster ontbreekt in het scanresultaat → altijd alvast een regels-schatting invullen */
 function ensureWindow(d){
-  if(d.drink_from && d.drink_to) return;
+  if(d.drink_from && d.drink_to){ d.venster_bron = d.venster_bron || 'ai'; return; }
+  d.venster_bron = (d.drink_from || d.drink_to) ? 'ai' : 'regels';
   const est = estimateWindow({ type: mapType(d.type||'rood'), grapes: d.grapes||[], region: d.region,
     appellation: d.appellation, country: d.country, name: d.name, vintage: d.vintage||null });
   d.drink_from = d.drink_from || est.from;
@@ -3452,7 +3484,7 @@ async function scanLezen(){
 ACT.scanRetry = async () => {
   if(!scan.photo || scan.busy) return;
   if(!aiReady()){ toast('AI-scannen staat hier uit. Vul de velden in en gebruik Herbereken'); return; }
-  scan.err = null; scan.busy = true; vensterAuto = true; scanTouched = new Set(); render(); showScanImg();
+  scan.err = null; scan.busy = true; vensterAuto = true; vensterVia = null; scanTouched = new Set(); render(); showScanImg();
   try{ await scanLezen(); }catch(e){ scan.err = leesFout(e); }
   scan.busy = false; render(); showScanImg();
 };
@@ -3467,7 +3499,7 @@ async function handlePhoto(file){
     scan.thumb = await resizeImg(file, 380, 0.72);
   }catch(e){ toast('Foto kon niet worden gelezen'); return; }
   scan.stage = 'confirm'; scan.data = null; scan.err = null; scan.match = null; scanTouched = new Set();
-  scan.busy = aiReady(); vensterAuto = true;
+  scan.busy = aiReady(); vensterAuto = true; vensterVia = null;
   UI.tab = 'scan'; render(); showScanImg(); camWenkToon();
   if(scan.busy){
     try{ await scanLezen(); }catch(e){ scan.err = leesFout(e); }
@@ -3480,7 +3512,9 @@ function wineFromScanForm(){
   const d = readForm();
   if(!d.name){ toast('Geef de wijn minstens een naam'); return null; }
   if(!d.type){ toast('Kies eerst het type: rood, wit, rosé…'); return null; }
-  if(!d.drinkFrom && !d.drinkTo){ const est = estimateWindow(d); d.drinkFrom = est.from; d.drinkTo = est.to; }
+  if(!d.drinkFrom && !d.drinkTo){ const est = estimateWindow(d); d.drinkFrom = est.from; d.drinkTo = est.to; vensterVia = 'regels'; }
+  /* wat de gebruiker in het formulier deed wint van wat de scan gaf; zonder scan is het een regels-schatting */
+  d.vensterBron = vensterVia || (scan.data && scan.data.venster_bron) || 'regels';
   return d;
 }
 ACT.scanAdd = async () => {
@@ -3654,6 +3688,7 @@ async function runPair(dish, force, stuur){
         <div class="mt8" style="display:flex;gap:16px;flex-wrap:wrap"><button class="linkbtn" data-act="${onTable(m.w.id)?'tafelAf':'tafelOp'}" data-id="${m.w.id}">${onTable(m.w.id)?'✓ Op tafel':'✓ Deze kies ik'}</button><button class="linkbtn" data-act="detail" data-id="${m.w.id}">Bekijk fles →</button><button class="linkbtn" data-act="askSomm" data-id="${m.w.id}" data-dish="${esc(dish)}">${ik('chat')} Vraag</button></div></div>`;
     }).join('');
     if(buyTip) html += `<div class="banner"><span>${ik('winkel')}</span><span>${esc(buyTip)}</span></div>`;
+    if(src === 'Kelderregels' && zonderAccount()) html += voorbeeldAdvies();
     /* na het advies: bijsturen, alleen als de AI het kan opvolgen (de kelderregels kennen geen "liever wit") */
     if(aiReady()) html += `<div class="panel" style="padding:11px 13px;margin-top:12px"><div class="eyebrow mb8">Stuur het advies bij</div>
       <div style="display:flex;gap:8px"><input class="inp" id="pairStuur" placeholder="bv. liever wit, iets lichter, niet de Barolo" value="${esc(stuur||'')}" style="flex:1;min-width:0" aria-label="Bijsturing"><button class="btn sm" data-act="pairStuur" data-d="${esc(dish)}" style="flex:none">Opnieuw</button></div>
@@ -3662,6 +3697,16 @@ async function runPair(dish, force, stuur){
     html = `<div class="empty"><div class="big">Geen goede match</div><p>${buyTip?esc(buyTip):'Probeer het gerecht anders te omschrijven.'}</p></div>`;
   }
   pairOut = html; out.innerHTML = html;
+}
+
+/* Zonder account zie je alleen de standaardregels; dit laat zien wat de sommelier ervan maakt.
+   Eén vast voorbeeld met flessen uit de voorbeeldkelder, duidelijk als voorbeeld gemerkt. */
+function voorbeeldAdvies(){
+  return `<div class="panel" style="padding:11px 13px;margin-top:12px"><div class="eyebrow mb8">Zo adviseert de sommelier · voorbeeld</div>
+    <div class="small mb8">Bij "gebraden parelhoen met knolselderij en jus", uit een kelder als de voorbeeldkelder:</div>
+    <div class="wname" style="font-size:15px">Meursault 2020, Olivier Leflaive <span class="tnum" style="color:var(--acc-ink)">9/10</span></div>
+    <div class="mreason">De romige knolselderij en de jus vragen om een witte wijn met vet en structuur; deze Meursault heeft precies dat, en de lichte houttoon pakt de gebraden korst op. Liever rood? De Viña Ardanza Reserva is zacht genoeg om het gevogelte niet te overstemmen.</div>
+    ${accountKnop()}</div>`;
 }
 
 /* ================= WIJNKAART (restaurant) ================= */
@@ -3701,7 +3746,7 @@ function viewMenu(){
   if(!menuOut && S.menuLast && Date.now() - (S.menuLast.at||0) < 12*3600*1000) menuOut = menuResultHtml(S.menuLast);
   return `${brandRow('')}<div class="eyebrow">Uit eten</div><h2 class="h2">De wijnkaart lezen</h2>${pairToggle()}
     <p class="small mb8">Fotografeer de kaart, zeg wat je eet. De sommelier kiest de beste flessen ván die kaart, met een oordeel over de prijs.</p>
-    ${aiReady() ? '' : `<div class="banner"><span>${ik('info')}</span><span><b>Hiervoor moet je ingelogd zijn</b>. Het lezen van de kaart gebeurt op de CellarMentor-server. <button class="linkbtn" data-act="goAccount">Account aanmaken</button> geeft je ${FREE_CREDITS} gratis credits per maand. Zonder account krijg je hieronder de kaartgids: waar je bij dit gerecht op de kaart naar zoekt.</span></div>`}
+    ${aiReady() ? '' : accountBanner(`<b>Hiervoor is een account nodig</b><span>: het lezen van de kaart gebeurt op de CellarMentor-server. Zonder account krijg je hieronder de kaartgids: waar je bij dit gerecht op de kaart naar zoekt.</span>`, 'info')}
     <div class="panel" style="margin-bottom:12px">
       <div class="eyebrow mb8">1 · De wijnkaart</div>
       ${shotStrip(menu.shots, 'ms', 'menuDel', 'menuCam', MENU_MAX, 'kaart')}
@@ -4003,7 +4048,7 @@ ACT.wishBuyGo = async el => {
     grapes:[], country:it.country||'', region:it.region||'', appellation:'', price:it.price??null, value:null,
     location:((document.getElementById('wb_loc')||{}).value||'').trim(), note:it.note||'' };
   if(d.location) S.settings.lastLocation = d.location;
-  const est = estimateWindow(d); d.drinkFrom = est.from; d.drinkTo = est.to;
+  const est = estimateWindow(d); d.drinkFrom = est.from; d.drinkTo = est.to; d.vensterBron = 'regels';
   const w = { id:uid(), ...d, qty:formQty, pairing:[], photo:false, addedAt:Date.now() };
   if(it.photo){ const p = await pGet(it.id); if(p){ await pSet(w.id, p); w.photo = true; } }
   S.wines.unshift(w);
@@ -4206,7 +4251,7 @@ ACT.devTap = () => {
 function viewSettings(){
   const ai = IN_SANDBOX
     ? `<div class="banner"><span>${ik('slot')}</span><span><b>AI-scannen in deze omgeving:</b> de app draait hier in een beveiligde sandbox zonder externe verbindingen. Alles werkt: foto's, voorraad, regels voor venster & pairing. Wil je dat de sommelier etiketten leest? Gebruik CellarMentor dan via <b>cellarmentor.com</b>.</span></div>`
-    : `<div class="banner"><span>${ik('wolk')}</span><span>${(typeof loggedIn==='function'&&loggedIn())?'<b>Ingelogd:</b> AI werkt automatisch via de CellarMentor-server, met je maandtegoed (zie Meer → Account).':`<b>Log in via Meer → Account</b> en de sommelier werkt meteen. Je krijgt ${FREE_CREDITS} gratis credits per maand.`}</span></div>
+    : `<div class="banner"><span>${ik('wolk')}</span><span>${(typeof loggedIn==='function'&&loggedIn())?'<b>Ingelogd:</b> AI werkt automatisch via de CellarMentor-server, met je maandtegoed (zie Meer → Account).':`<b>Log in via Meer → Account</b> <span>en de sommelier werkt meteen.</span> ${gratisTegoed()}`}</span></div>
       <div class="field"><label>Antwoordstijl sommelier</label><div class="seg" id="styleSeg">${[['simpel','Simpel'],['kenner','Kenner'],['sommelier','Sommelier']].map(([k,l])=>`<button type="button" data-act="aiStyle" data-s="${k}" class="${(S.settings.aiStyle||'kenner')===k?'on':''}">${l}</button>`).join('')}</div>
        <div class="small mt8">Bepaalt de toon van pairing-redenen, karakterschetsen en antwoorden, van jip-en-janneke tot sommeliers onder elkaar.</div></div>
       <hr class="sep">
@@ -4360,6 +4405,16 @@ function installBanner(){
     <button class="xbtn" data-act="installWeg" aria-label="Niet meer tonen">✕</button></div>`;
 }
 ACT.installWeg = () => { S.settings.installWeg = true; save(true); render(); toast('Staat onder Meer als je hem toch wilt'); };
+/* Zonder account, zodra de kelder groot genoeg is om iets te adviseren. Niet op de brug (daar staat de verhuisbanner al). */
+function accountWenkBanner(){
+  const n = S.wines.filter(w => (w.qty||0) > 0).length;
+  if(!toonAccountWenk(n, S.settings.accountWenkWeg, zonderAccount() && !BRUG)) return '';
+  return `<div class="banner">
+    <span>${ik('glas')}</span>
+    <span style="flex:1"><b>Je kelder is groot genoeg om de sommelier aan het werk te zetten.</b> <span>Met een gratis account kiest hij de wijn bij je eten uit deze ${n} wijnen, leest hij etiketten en bewaakt hij je drinkvensters.</span> ${gratisTegoed()}${accountKnop()}</span>
+    <button class="xbtn" data-act="accountWenkWeg" aria-label="Niet meer tonen">✕</button></div>`;
+}
+ACT.accountWenkWeg = () => { S.settings.accountWenkWeg = true; save(true); render(); };
 ACT.installSheet = () => {
   const uitleg = installPrompt
     ? `<p style="font-size:14px;color:var(--ink2);line-height:1.6">Je browser kan CellarMentor in één tik installeren.</p>
@@ -4579,7 +4634,7 @@ ACT.impLocAll = () => {
    druiven, prijs en locatie allemaal kunnen. readForm() leest dezelfde velden. */
 ACT.impEdit = el => {
   const i = +el.dataset.i, f = imp.found[i];
-  recalcPairing = null; recalcValueRange = null; vensterAuto = true;
+  recalcPairing = null; recalcValueRange = null; vensterAuto = true; vensterVia = null;
   const sh = openSheet(`${sheetHead('Bijwerken')}
     ${formFields({ name:f.name, producer:f.producer, vintage:f.vintage, type:f.type, grapes:f.grapes,
       country:f.country, region:f.region, appellation:f.appellation, location:f.location, note:f.note,
@@ -4631,10 +4686,12 @@ ACT.impAdd = async () => {
       qty: f.qty, pairing:[], photo:false, addedAt:Date.now() };
     if(w.value != null && f.valueSrc === 'eigen'){ w.valueSrc = 'eigen'; w.valueAt = vandaag(); }
     if(w.location) S.settings.lastLocation = w.location;
+    const uitBestand = !!(w.drink_from || w.drink_to);
     ensureWindow(w);
     /* estimateWindow rekent in drinkFrom/drinkTo, ensureWindow in drink_from/to */
     if(w.drink_from != null){ w.drinkFrom = w.drink_from; delete w.drink_from; }
     if(w.drink_to != null){ w.drinkTo = w.drink_to; delete w.drink_to; }
+    w.vensterBron = uitBestand ? 'eigen' : 'regels'; delete w.venster_bron;
     S.wines.unshift(w); n += 1;
   }
   save();
@@ -4814,7 +4871,7 @@ ACT.wipe = () => confirmSheet('Alles wissen?', 'Je hele kelder, historie, verlan
   }
   const ids = await pKeys(); for(const id of ids) await pDel(id);
   photoCache.clear();
-  const bewaar = {cloud: S.settings.cloud, taal: S.settings.taal, theme: S.settings.theme, installWeg: S.settings.installWeg};
+  const bewaar = {cloud: S.settings.cloud, taal: S.settings.taal, theme: S.settings.theme, installWeg: S.settings.installWeg, accountWenkWeg: S.settings.accountWenkWeg};
   S = DEFAULTS(); Object.assign(S.settings, bewaar);
   if(cloudAan){ S.rev = rev; S.syncedRev = rev; S.syncedTel = [0, 0, 0]; }
   save(true); scanReset(); render(); toast(cloudAan ? 'Alles gewist, ook in de cloud' : 'Alles gewist');
@@ -5404,8 +5461,9 @@ function viewAccount(){
     return `${brandRow('')}${backRow}<div class="eyebrow">Account</div><h2 class="h2">Cloud-sync</h2>
       <div class="banner"><span>${ik('slot')}</span><span>Sync is niet beschikbaar in deze omgeving. Gebruik de app via <b>cellarmentor.com</b>.</span></div>`;
   if(!loggedIn()){
-    return `${brandRow('')}${backRow}<div class="eyebrow">Account</div><h2 class="h2">Cloud-sync aanzetten</h2>
-      <p class="small mb8">Log in en je kelder synchroniseert automatisch tussen al je apparaten. Nog geen account? Kies een wachtwoord en tik op "Account aanmaken".</p>
+    return `${brandRow('')}${backRow}<div class="eyebrow">Account</div><h2 class="h2">Inloggen of account aanmaken</h2>
+      <p class="small mb8">Een account is gratis: alleen een e-mailadres en een wachtwoord, niets te betalen. Je krijgt meteen ${FREE_CREDITS} credits per maand, waarmee de sommelier etiketten en wijnkaarten leest en de wijn bij je eten kiest; en je kelder synchroniseert tussen al je apparaten. Meer tegoed nodig? Dat is CellarMentor Plus, alleen als je daar zelf voor kiest.</p>
+      <p class="small mb8">Nog geen account? Kies een wachtwoord en tik op "Account aanmaken".</p>
       <div class="field"><label>E-mail</label><input class="inp" id="ac_email" type="email" autocomplete="username" inputmode="email" value="${esc(c.email||'')}" placeholder="jij@voorbeeld.nl"></div>
       <div class="field"><label>Wachtwoord</label><input class="inp" id="ac_pass" type="password" autocomplete="current-password" placeholder="minimaal 8 tekens"></div>
       <button class="btn" data-act="acLogin" style="margin-bottom:9px">Inloggen</button>
@@ -5770,7 +5828,18 @@ const EN = {
   'een Crémant of droge Fino sherry':'a Crémant or dry Fino sherry', 'een Chenin, rijpe Comté-partner als Jura, of Tawny Port':'a Chenin, a Jura as ripe Comté partner, or Tawny Port', 'een Sauternes of late-harvest Riesling':'a Sauternes or late-harvest Riesling',
   'een Banyuls, Maury of Ruby Port':'a Banyuls, Maury or Ruby Port', 'een Sauternes of Vintage Port':'a Sauternes or Vintage Port', 'een rijpe Pinot Noir of Madiran':'a ripe Pinot Noir or Madiran', 'een droge Riesling of Grüner Veltliner':'a dry Riesling or Grüner Veltliner',
  
-  'Log in via Meer → Account':'Log in via More → Account', 'Log in bij':'Log in under', 'Met een account':'With an account', 'Je hebt nog':'You have', 'deze maand. Elke maand begint de teller opnieuw.':'left this month. The counter restarts every month.',
+  'Log in via Meer → Account':'Log in via More → Account', 'en de sommelier werkt meteen.':'and the sommelier gets to work right away.',
+  'Gratis account aanmaken':'Create a free account', 'Dit is het advies volgens de standaardregels.':'This is the advice by the standard rules.',
+  'Met een gratis account kijkt de sommelier naar je hele kelder, weet hij van saus en bereiding, weegt hij je smaak mee en legt hij uit waarom.':'With a free account the sommelier looks at your whole cellar, knows about sauce and preparation, weighs your taste and explains why.',
+  ': naam, druiven, drinkvenster, waarde en pairing uit één foto. Zonder account bewaar je de foto en vul je de velden zelf in.':': name, grapes, drinking window, value and pairing from one photo. Without an account you keep the photo and fill in the fields yourself.',
+  'Hiervoor is een account nodig':'This needs an account', ': het lezen van de kaart gebeurt op de CellarMentor-server. Zonder account krijg je hieronder de kaartgids: waar je bij dit gerecht op de kaart naar zoekt.':': the list is read on the CellarMentor server. Without an account you get the list guide below: what to look for on the list with this dish.',
+  'Met een gratis account leest de sommelier je etiketten, kiest hij de wijn bij je eten en synct je kelder tussen je apparaten. Alleen een e-mailadres en een wachtwoord, niets te betalen:':'With a free account the sommelier reads your labels, picks the wine for your food and your cellar syncs across your devices. Just an email address and a password, nothing to pay:',
+  'Zo adviseert de sommelier · voorbeeld':'How the sommelier advises · example', 'Bij "gebraden parelhoen met knolselderij en jus", uit een kelder als de voorbeeldkelder:':'For "roast guinea fowl with celeriac and jus", from a cellar like the sample cellar:',
+  'De romige knolselderij en de jus vragen om een witte wijn met vet en structuur; deze Meursault heeft precies dat, en de lichte houttoon pakt de gebraden korst op. Liever rood? De Viña Ardanza Reserva is zacht genoeg om het gevogelte niet te overstemmen.':'The creamy celeriac and the jus call for a white wine with weight and structure; this Meursault has exactly that, and its light touch of oak picks up the roasted skin. Rather red? The Viña Ardanza Reserva is gentle enough not to overpower the bird.',
+  'Drinkvenster geschat volgens de standaardregels (druif, streek, jaargang).':'Drinking window estimated by the standard rules (grape, region, vintage).', 'Met een gratis account schat de sommelier het per producent en jaargang:':'With a free account the sommelier estimates it per producer and vintage:',
+  'Bewerken en herbereken':'Edit and recalculate', 'geeft een schatting van de sommelier.':'gives the sommelier\'s estimate.',
+  'Je kelder is groot genoeg om de sommelier aan het werk te zetten.':'Your cellar is big enough to put the sommelier to work.',
+  'Inloggen of account aanmaken':'Log in or create an account', 'Nog geen account? Kies een wachtwoord en tik op "Account aanmaken".':'No account yet? Choose a password and tap "Create account".', 'Log in bij':'Log in under', 'Met een account':'With an account', 'Je hebt nog':'You have', 'deze maand. Elke maand begint de teller opnieuw.':'left this month. The counter restarts every month.',
   'deze maand. Met Plus krijg je er':'left this month. With Plus you get', 'Wat credits kosten':'What credits cost', 'Gratis, en Plus':'Free, and Plus', 'Bedenktijd':'Cooling-off period', 'Je bestaande kelder erin':'Your existing cellar in',
   'Hoe preciezer, hoe beter het advies: saus, bereiding en bijgerecht sturen de keuze vaak meer dan het stuk vlees of vis zelf.':'The more precise, the better the advice: sauce, preparation and side dish often steer the choice more than the meat or fish itself.',
   'Sync is niet beschikbaar in deze omgeving. Gebruik de app via':'Sync is not available in this environment. Use the app via', 'AI-scannen in deze omgeving:':'AI scanning in this environment:',
@@ -5901,6 +5970,9 @@ const EN_RE = [
   [/^(\d+) van de (\d+) gratis credits$/, '$1 of $2 free credits'],
   [/^(\d+) per maand gratis$/, '$1 a month free'],
   [/^(\d+) credits per maand$/, '$1 credits a month'],
+  [/^Gratis, alleen een e-mailadres en een wachtwoord, niets te betalen\. Je krijgt meteen (\d+) credits per maand; een scan of een advies is één credit\.$/, 'Free: just an email address and a password, nothing to pay. You get $1 credits a month right away; a scan or a piece of advice is one credit.'],
+  [/^Met een gratis account kiest hij de wijn bij je eten uit deze (\d+) wijnen, leest hij etiketten en bewaakt hij je drinkvensters\.$/, 'With a free account he picks the wine for your food from these $1 wines, reads labels and keeps an eye on your drinking windows.'],
+  [/^Een account is gratis: alleen een e-mailadres en een wachtwoord, niets te betalen\. Je krijgt meteen (\d+) credits per maand, waarmee de sommelier etiketten en wijnkaarten leest en de wijn bij je eten kiest; en je kelder synchroniseert tussen al je apparaten\. Meer tegoed nodig\? Dat is CellarMentor Plus, alleen als je daar zelf voor kiest\.$/, 'An account is free: just an email address and a password, nothing to pay. You get $1 credits a month right away, with which the sommelier reads labels and wine lists and picks the wine for your food; and your cellar syncs across all your devices. Need more? That is CellarMentor Plus, only if you choose it yourself.'],
   [/^(\d+) per maand$/, '$1 a month'],
   [/^CellarMentor Plus · (.+)$/, 'CellarMentor Plus · $1'],
   [/^CellarMentor v1 · (\d+) flessen · gemaakt met Claude$/, 'CellarMentor v1 · $1 bottles · made with Claude'],
