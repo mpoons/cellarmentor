@@ -62,7 +62,17 @@ Deno.serve(async (req) => {
 
   const { count: prijzenNieuw } = await supa.from('wine_prices').select('*', { count: 'exact', head: true }).gte('created_at', sinds)
   const { count: prijzenTotaal } = await supa.from('wine_prices').select('*', { count: 'exact', head: true })
-  const { count: zoekMissers } = await supa.from('wine_price_log').select('*', { count: 'exact', head: true }).gte('created_at', sinds).is('value', null)
+  const { count: zoekMissers } = await supa.from('wine_price_log').select('*', { count: 'exact', head: true }).gte('created_at', sinds).is('value', null).not('model', 'like', '%vers%')
+  // Verversingen op de achtergrond (sinds 15 sep): geen gebruiker, geen credit, dus niet in ai_usage; wel geld (Brave plus Haiku).
+  let versRegel = '', versMeting: { n: number; gelukt: number } | null = null
+  try {
+    const { data: vers } = await supa.from('wine_price_log').select('value').gte('created_at', sinds).like('model', '%vers%')
+    const vs = (vers || []) as { value: number | null }[]
+    if (vs.length) {
+      versMeting = { n: vs.length, gelukt: vs.filter((v) => v.value != null).length }
+      versRegel = `<p>Prijzen op de achtergrond ververst: <b>${vs.length}</b>, waarvan ${versMeting.gelukt} gelukt (± ${usd(vs.length * 0.01)} aan Brave en Haiku, buiten het tegoed van gebruikers om).</p>`
+    }
+  } catch (_) { /* logboek onbereikbaar */ }
   const { count: profielen } = await supa.from('profiles').select('*', { count: 'exact', head: true })
   // Hoe scheef zit de scanner? Verhouding schatting/gevonden prijs over de week, mediaan.
   let schattingRegel = '', schattingMeting: { n: number; mediaan: number | null; teLaag: number } | null = null
@@ -105,13 +115,14 @@ Deno.serve(async (req) => {
     <table cellpadding="6" style="border-collapse:collapse;font-size:14px"><tr style="color:#8E867D;text-transform:uppercase;font-size:11px;letter-spacing:.06em"><td>Soort</td><td align="right">Acties</td><td align="right">Credits</td><td align="right">Kosten</td></tr>${regels || '<tr><td colspan="4">Geen acties deze week.</td></tr>'}</table>
     <p>Tokens: ${d.tokensIn.toLocaleString('nl-NL')} in, ${d.tokensOut.toLocaleString('nl-NL')} uit.</p>
     <p>Prijstabel: <b>${prijzenNieuw || 0}</b> nieuwe prijzen deze week, ${prijzenTotaal || 0} in totaal. Zoekagent zonder resultaat: ${zoekMissers || 0} keer.</p>
+    ${versRegel}
     ${schattingRegel}
     ${foutenRegel}
     <p>Accounts: ${profielen || 0}, waarvan ${plus || 0} Plus.</p>
-    <p style="color:#8E867D;font-size:13px">Automatisch verstuurd op maandagochtend door de Edge Function <code>kosten</code>. Tarieven: Sonnet 5 $2/$10 per miljoen tokens, Haiku 4.5 $1/$5, Brave $0,005 en de API-webtool $0,01 per zoekopdracht.</p>
+    <p style="color:#8E867D;font-size:13px">Automatisch verstuurd op maandagochtend door de Edge Function <code>kosten</code>. Tarieven: Sonnet 5 $2/$10 per miljoen tokens, Haiku 4.5 $1/$5, Brave $0,005 per zoekopdracht (tot twee per prijsvraag) en de API-webtool $0,01 per zoekopdracht.</p>
   </div>`
 
-  const samenvatting = { week: d, vorige: v, perSoort, perCreditUsd, prijzenNieuw, prijzenTotaal, zoekMissers, schatting: schattingMeting, fouten: foutenMeting, profielen, plus }
+  const samenvatting = { week: d, vorige: v, perSoort, perCreditUsd, prijzenNieuw, prijzenTotaal, zoekMissers, ververst: versMeting, schatting: schattingMeting, fouten: foutenMeting, profielen, plus }
   const resendKey = Deno.env.get('RESEND_API_KEY'), from = Deno.env.get('MAIL_FROM'), to = Deno.env.get('KOSTEN_MAIL_TO')
   if (!resendKey || !from || !to) {
     return new Response(JSON.stringify({ verstuurd: false, reden: 'RESEND_API_KEY, MAIL_FROM of KOSTEN_MAIL_TO ontbreekt', onderwerp, samenvatting }, null, 1), { status: 200, headers: { 'content-type': 'application/json' } })

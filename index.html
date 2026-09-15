@@ -1991,6 +1991,8 @@ INP.smaakSchuif = el => { const p = smaak(); const v = Number(el.value); if(v ==
    (AI-schatting) levert hooguit "waarschijnlijk" op; "Je topfles" vraagt een
    opgezochte, zelf ingevulde of betaalde prijs. */
 const vandaag = () => new Date().toISOString().slice(0,10);
+/* Een datum van de server (ISO-tijdstempel) als dag; alles wat geen datum is wordt vandaag. */
+const datumOf = t => /^\d{4}-\d{2}-\d{2}/.test(String(t || '')) ? String(t).slice(0, 10) : vandaag();
 /* Een aankoopprijs is een echt datapunt. Ligt de schatting van het model daar ruim onder
    (Voliero 2017: €65 bij de wijnboer, €22 volgens de scanner), dan geldt de aankoopprijs.
    Een zelf ingevulde of opgezochte waarde blijft altijd staan. */
@@ -2140,6 +2142,16 @@ function prijsSleutel(w){
   const jaar = Number(w.vintage) || 0;
   return `${n(w.producer)}|${n(w.name)}|${jaar || 'nv'}`;
 }
+/* Mag een prijs uit de gedeelde tabel deze fles overschrijven? Nooit een zelf ingevulde waarde of
+   aankoopprijs ('eigen'). Wel een fles zonder bron, een gemeenschapsprijs ('samen', de tabel kent de
+   bron), en een eerder opgezochte prijs ('zoek') zodra de tabel een nieuwer datapunt heeft: zo komt een
+   verversing door een ander of door de server ook hier aan. Zelfde dag = niets nieuws. */
+function tabelPrijsPast(w, p){
+  if(!metBron(w) || w.valueSrc === 'samen') return true;
+  if(w.valueSrc !== 'zoek') return false;
+  const nieuw = String((p && p.at) || '').slice(0, 10), oud = String(w.valueAt || '').slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(nieuw) && (!oud || nieuw > oud);
+}
 async function prijzenUitTabel(wines){
   if(!wines.length || typeof loggedIn !== 'function' || !loggedIn()) return 0;
   /* de server kijkt naar hoogstens 100 flessen per aanroep; met meer werd de rest stil overgeslagen */
@@ -2158,12 +2170,12 @@ async function prijzenUitTabel(wines){
   let n = 0, gewijzigd = false;
   for(const w of wines){
     const k = prijsSleutel(w), p = map.get(k), b = paid.get(k);
-    if(p && pasPrijsToe(w, {...p, cached:true})) n++;
+    if(p && tabelPrijsPast(w, p) && pasPrijsToe(w, {...p, cached:true})) n++;
     if(b && getalOk(b.n) >= 2 && getalOk(b.med) > 0){
       w.samen = {n: Math.round(b.n), low: getalOk(b.low), high: getalOk(b.high), med: getalOk(b.med), at: tekstOk(b.at, 40)}; gewijzigd = true;
       /* geen echte prijs? dan geldt wat anderen betaalden, met de spreiding als band; pas vanaf drie
          mensen, bij twee staat het alleen ter info in het detail */
-      if(!metBron(w) && b.n >= 3){ w.value = Math.round(b.med); w.valueLow = Math.round(b.low); w.valueHigh = Math.round(b.high); w.valueSrc = 'samen'; w.valueAt = vandaag(); w.valueBron = {name:'CellarMentor-gebruikers', n: Math.round(b.n)}; n++; }
+      if(!metBron(w) && b.n >= 3){ w.value = Math.round(b.med); w.valueLow = Math.round(b.low); w.valueHigh = Math.round(b.high); w.valueSrc = 'samen'; w.valueAt = datumOf(b.at); w.valueBron = {name:'CellarMentor-gebruikers', n: Math.round(b.n)}; n++; }
     }
   }
   if(n || gewijzigd){ save(); renderTenzijFormulier(); }
@@ -2198,12 +2210,14 @@ async function deelAlles(){
 }
 INP.prijsAuto = el => { S.settings.prijsAuto = !!el.checked; save(true); };
 INP.deelPrijzen = el => { S.settings.deelPrijzen = !!el.checked; save(true); if(el.checked) deelAlles(); };
-/* Eén keer per dag, bij het openen: alle flessen zonder opgezochte prijs langs de tabel. */
+/* Eén keer per dag, bij het openen: alle flessen langs de tabel, behalve die met een eigen waarde.
+   Ook flessen met een opgezochte prijs gaan mee: de tabel kan een nieuwer datapunt hebben (iemand
+   anders zocht opnieuw, of de server ververste een verouderde rij); tabelPrijsPast beslist per fles. */
 async function prijsTabelRonde(){
   if(typeof loggedIn !== 'function' || !loggedIn()) return;
   const dag = vandaag();
   if(S.settings.prijsRondeOp === dag) return;
-  const targets = S.wines.filter(w => w.valueSrc !== 'zoek');
+  const targets = S.wines.filter(w => w.valueSrc !== 'eigen');
   if(!targets.length) return;
   const n = await prijzenUitTabel(targets);
   S.settings.prijsRondeOp = dag; save(true);
@@ -2236,7 +2250,7 @@ function pasPrijsToe(w, r){
   w.value = Math.round(v);
   w.valueLow = getalOk(r.low) != null ? Math.round(getalOk(r.low)) : null;
   w.valueHigh = getalOk(r.high) != null ? Math.round(getalOk(r.high)) : null;
-  w.valueSrc = 'zoek'; w.valueAt = vandaag();
+  w.valueSrc = 'zoek'; w.valueAt = datumOf(r.at);   /* uit de tabel: de dag dat er gezocht is; vers gezocht: vandaag */
   w.valueBron = { name: tekstOk(r.source, 80), url: safeUrl(r.url),
     vintage: jaarOk(r.vintage_found), conf: tekstOk(r.confidence, 10) || null, note: tekstOk(r.note, 200), cached: !!r.cached };
   return true;
@@ -4241,7 +4255,7 @@ function viewSettings(){
       <hr class="sep">
       <div class="eyebrow mb8">Prijzen</div>
       <label style="display:flex;gap:10px;align-items:center;font-size:14.5px"><input type="checkbox" data-in="prijsAuto" ${S.settings.prijsAuto !== false ? 'checked' : ''} style="width:19px;height:19px;accent-color:var(--acc)"> Na een scan meteen de marktprijs opzoeken (1 credit)</label>
-      <div class="small mb8" style="margin-top:6px">Eerst gratis de gedeelde prijstabel. Staat de fles er niet in, dan zoekt de sommelier bij wijnhandels, met bron en datum. Een schatting zonder bron tonen we niet meer als waarde.</div>
+      <div class="small mb8" style="margin-top:6px">Eerst gratis de gedeelde prijstabel. Staat de fles er niet in, dan zoekt de sommelier bij wijnhandels, met bron en datum. Een prijs in de tabel geldt drie maanden en wordt daarna ververst. Een schatting zonder bron tonen we niet meer als waarde.</div>
       <label style="display:flex;gap:10px;align-items:center;font-size:14.5px;margin-top:10px"><input type="checkbox" data-in="deelPrijzen" ${S.settings.deelPrijzen ? 'checked' : ''} ${(typeof loggedIn==='function'&&loggedIn()) ? '' : 'disabled'} style="width:19px;height:19px;accent-color:var(--acc)"> Deel anoniem wat je betaalde</label>
       <div class="small mb8" style="margin-top:6px">Je aankoopprijs gaat met naam en jaargang van de wijn naar de gedeelde tabel. Anderen zien alleen samengevoegde bedragen van minstens twee mensen, nooit wie wat betaalde. Zo krijgt elke fles een echte prijs.${(typeof loggedIn==='function'&&loggedIn()) ? '' : ' Hiervoor moet je ingelogd zijn.'}</div>
       <button class="btn ghost" data-act="prijsBulk" style="margin-bottom:8px">${ik('zoek')} Prijzen opzoeken voor flessen zonder prijs</button>
@@ -5832,7 +5846,7 @@ const EN = {
   'Geen prijs bij de wijnhandels in de zoeklaag. Dieper zoeken kijkt ook op veilingen en buitenlandse sites':'No price at the merchants in the search layer. Searching deeper also covers auctions and foreign sites',
   'Elke fles op voorraad heeft al een prijs met bron':'Every bottle in stock already has a sourced price', 'Prijzen opzoeken?':'Look up prices?', 'Prijzen':'Prices',
   'Na een scan meteen de marktprijs opzoeken (1 credit)':'Look up the market price right after a scan (1 credit)',
-  'Eerst gratis de gedeelde prijstabel. Staat de fles er niet in, dan zoekt de sommelier bij wijnhandels, met bron en datum. Een schatting zonder bron tonen we niet meer als waarde.':'First the shared price table, for free. If the bottle is not in it, the sommelier searches wine merchants, with source and date. An estimate without a source is no longer shown as a value.',
+  'Eerst gratis de gedeelde prijstabel. Staat de fles er niet in, dan zoekt de sommelier bij wijnhandels, met bron en datum. Een prijs in de tabel geldt drie maanden en wordt daarna ververst. Een schatting zonder bron tonen we niet meer als waarde.':'First the shared price table, for free. If the bottle is not in it, the sommelier searches wine merchants, with source and date. A price in the table is valid for three months and is refreshed after that. An estimate without a source is no longer shown as a value.',
   'Deel anoniem wat je betaalde':'Share anonymously what you paid',
   'Je aankoopprijs gaat met naam en jaargang van de wijn naar de gedeelde tabel. Anderen zien alleen samengevoegde bedragen van minstens twee mensen, nooit wie wat betaalde. Zo krijgt elke fles een echte prijs.':'Your purchase price goes to the shared table with the name and vintage of the wine. Others only see combined amounts from at least two people, never who paid what. That is how every bottle gets a real price.',
   'Je aankoopprijs gaat met naam en jaargang van de wijn naar de gedeelde tabel. Anderen zien alleen samengevoegde bedragen van minstens twee mensen, nooit wie wat betaalde. Zo krijgt elke fles een echte prijs. Hiervoor moet je ingelogd zijn.':'Your purchase price goes to the shared table with the name and vintage of the wine. Others only see combined amounts from at least two people, never who paid what. That is how every bottle gets a real price. You need to be logged in for this.',

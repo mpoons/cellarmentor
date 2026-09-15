@@ -2,7 +2,7 @@
 
 Geschreven voor de eigenaar, niet voor een programmeur. Elke term die hieronder cursief staat, wordt uitgelegd in de woordenlijst onderaan. Bijwerken in dezelfde commit als elke structurele wijziging (nieuw onderdeel, nieuwe tabel, nieuwe externe dienst, andere gegevensstroom).
 
-Stand: 15 september 2026, app-versie v75 (hernoemd van Caveau naar CellarMentor; alleen de zichtbare naam, het bronbestand en het adres veranderden). Vorige stand: 7 september 2026, v74 (het versienummer staat in `sw.js`), na de fresh review van die dag (`~/Downloads/fresh-review-caveau-2026-09-07.md`).
+Stand: 15 september 2026, app-versie v79 (prijzen: houdbaarheid van 90 dagen met verversing op de achtergrond, zoeken vanuit Nederland; v75 was de hernoeming van Caveau naar CellarMentor, alleen de zichtbare naam, het bronbestand en het adres). Vorige stand: 7 september 2026, v74 (het versienummer staat in `sw.js`), na de fresh review van die dag (`~/Downloads/fresh-review-caveau-2026-09-07.md`).
 
 ## 1. Wat het is
 
@@ -34,7 +34,7 @@ Er zijn drie lagen: het apparaat van de gebruiker, de server bij Supabase, en ex
 
 ### 2c. Externe diensten (allemaal alleen vanaf de server, behalve waar anders staat)
 - **Anthropic** (Claude): etiketten lezen, wijnkaarten lezen, pairing, waardeschattingen, prijzen uit zoekfragmenten lezen. In de ontwikkelaarsstand kan de app met een eigen sleutel rechtstreeks naar Anthropic; buiten die stand nooit.
-- **Brave Search**: één zoekopdracht per prijsvraag (naam, producent, jaargang). Plafond 400 per dag over alle gebruikers.
+- **Brave Search**: één zoekopdracht per prijsvraag (naam, producent, jaargang), en een tweede zonder jaargang als de eerste niets oplevert. Plafond 400 prijsvragen per dag over alle gebruikers, plus hoogstens 40 verversingen per dag van verouderde rijen in de prijstabel. Werkt alleen zodra de sleutel `BRAVE_SEARCH_KEY` is gezet; tot die tijd doet de zware agent (de zoekfunctie van Anthropic zelf) al het werk.
 - **Stripe**: abonnement Plus (€2,99 per maand). Staat in testmodus; `PLUS_TE_KOOP = false` verbergt de koopknop.
 - **Resend**: e-mail versturen (herinnering, kostenmail). Nog niet ingericht; zonder sleutel geeft de functie het overzicht als tekst terug.
 - **GitHub Pages**: serveert de app vanaf `main`.
@@ -69,7 +69,7 @@ Er zijn drie lagen: het apparaat van de gebruiker, de server bij Supabase, en ex
 
 **Een gerecht kiezen.** De app stuurt de kelderlijst (tot 100 flessen alles, daarboven een voorselectie) plus het gerecht, de smaakvoorkeuren en de stijlregels naar `ai`. Het antwoord wordt per gerecht bewaard, zodat dezelfde vraag geen tweede credit kost.
 
-**Een prijs opzoeken.** Eerst gratis de gedeelde tabel `wine_prices`. Niets gevonden: één credit voor Brave plus Anthropic-Haiku dat de prijs uit de zoekfragmenten leest; de bron-URL komt uit het zoekresultaat, nooit uit het model. Nog niets: op verzoek vijf credits voor de zware zoekagent. Elke gevonden prijs gaat na controle in de gedeelde tabel, met de gebruiker die zocht; een link erbij alleen als hij naar een bekende wijnsite (`PRIJS_SITES`) wijst, anders alleen de naam van de bron.
+**Een prijs opzoeken.** Eerst gratis de gedeelde tabel `wine_prices`. Niets gevonden, of de rij is ouder dan 90 dagen: één credit voor Brave plus Anthropic-Haiku dat de prijs uit de zoekfragmenten leest; de bron-URL komt uit het zoekresultaat, nooit uit het model. Nog niets: op verzoek vijf credits voor de zware zoekagent, die vanuit Nederland zoekt op een vaste lijst wijnwinkels. Elke gevonden prijs gaat na controle in de gedeelde tabel, met de gebruiker die zocht; een link erbij alleen als hij naar een bekende wijnsite (`PRIJS_SITES`) wijst, anders alleen de naam van de bron. De app haalt één keer per dag de tabel op voor de hele kelder (behalve flessen met een zelf ingevulde waarde): zo komt een nieuwer datapunt van een ander bij iedereen aan. Raadpleegt iemand een rij die ouder is dan 90 dagen, dan zoekt de server die daarna op de achtergrond opnieuw op (hoogstens 3 per aanroep en 40 per dag, alleen met Brave-sleutel, geen credit) en vervangt hem alleen als de nieuwe prijs tussen 0,4× en 2,5× de oude ligt.
 
 **Betalen (nog uit).** De app vraagt `billing` om een Stripe-pagina. Na betaling meldt Stripe zich bij `stripe-webhook`, die na handtekeningcontrole en alleen bij status "paid" het plan op Plus zet. Een tijdstempel (`plan_event_at`) voorkomt dat een oude gebeurtenis een nieuwe overschrijft.
 

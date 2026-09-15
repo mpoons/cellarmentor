@@ -1,4 +1,6 @@
 // CellarMentor AI-proxy: gewogen credits, de zoekagent voor prijzen en de gedeelde prijstabel.
+// Prijzen (sinds 15 sep 2026): een rij in de tabel geldt 90 dagen; daarna zoekt "Prijs opzoeken" opnieuw en
+// ververst de tabel zichzelf op de achtergrond zodra de app hem raadpleegt (alleen met BRAVE_SEARCH_KEY).
 // Uitrollen: supabase functions deploy ai --project-ref dbzgrkipcoebglacsqwe
 // Vereist secret: CAVEAU_ANTHROPIC_KEY (aparte Anthropic-sleutel voor de server).
 // "Verify JWT" laten aanstaan: alleen ingelogde CellarMentor-gebruikers kunnen deze functie aanroepen.
@@ -57,7 +59,16 @@ const BRAVE_DAG_MAX = 400
 // Wijnsites waar de zoekagent mag kijken: minder ruis, minder tokens, en een bron-URL
 // die we vertrouwen (de gedeelde tabel neemt alleen adressen op deze domeinen op).
 const PRIJS_SITES = ['wine-searcher.com', 'idealwine.com', 'vivino.com', 'cellartracker.com', 'gall.nl', 'grandcruwijnen.nl', 'wijnvoordeel.nl',
-  'wijnbeurs.nl', 'drankdozijn.nl', 'bestofwines.com', 'topwijnen.be', 'vinatis.com', 'millesima.com', 'vino.com', 'catawiki.com', 'winedecider.com']
+  'wijnbeurs.nl', 'drankdozijn.nl', 'bestofwines.com', 'topwijnen.be', 'vinatis.com', 'millesima.com', 'vino.com', 'catawiki.com', 'winedecider.com',
+  // Sinds 15 sep ook de winkels waar de meeste flessen in een Nederlandse of Belgische kelder vandaan komen. Zonder deze
+  // vond de agent vooral Amerikaanse Wine-Searcher-lijsten in dollars (gemeten: zeven van de negen prijzen in de tabel).
+  'ah.nl', 'jumbo.com', 'grapedistrict.nl', 'henribloem.nl', 'okhuysen.nl', 'colruyt.be', 'delhaize.be', 'hawesko.de', 'vicampo.de']
+// De zoekfunctie van de API zoekt vanuit Nederland: euro's bij Nederlandse en Belgische handels in plaats van dollars uit de VS.
+const ZOEK_PLEK = { type: 'approximate', country: 'NL', city: 'Amsterdam', timezone: 'Europe/Amsterdam' }
+// Verouderde rijen in de prijstabel worden op de achtergrond ververst via de zoeklaag (alleen met Brave-sleutel):
+// hoogstens zoveel per aanroep van de tabel en zoveel per dag, buiten het tegoed van gebruikers om.
+const VERS_PER_AANROEP = 3
+const VERS_DAG_MAX = 40
 const STIJL = ' Schrijf in gewone zinnen met komma\'s en punten. Gebruik geen gedachtestreepjes en vermijd de constructie "niet X, maar Y".'
 
 // Prijstabel: een opgezochte prijs blijft staan, met datum; de app toont "gegevens van <maand>".
@@ -77,11 +88,17 @@ function prijsSleutel(w: Wijn): string {
 // in de buurt ligt (0,4× tot 2,5×), of als die rij verouderd is. Eigen rijen mag je altijd verversen.
 // Zo kan één gebruiker met refresh:true niet de gedeelde tabel voor iedereen herschrijven.
 const PRIJS_VEROUDERD_DAGEN = 90
+// Een rij ouder dan 90 dagen geldt als verouderd: "Prijs opzoeken" zoekt dan opnieuw in plaats van de
+// tabel terug te geven, en de tabel zelf ververst hem op de achtergrond zodra iemand hem raadpleegt.
+function prijsVerouderd(row: { updated_at?: string | null } | null): boolean {
+  if (!row) return true
+  const t = row.updated_at ? Date.parse(row.updated_at) : NaN
+  return !Number.isFinite(t) || (Date.now() - t) > PRIJS_VEROUDERD_DAGEN * 864e5
+}
 function prijsMagVervangen(row: { user_id?: string | null; value?: number | null; updated_at?: string | null } | null, v: number, uid: string): boolean {
   if (!row || row.value == null || !(Number(row.value) > 0)) return true
   if (row.user_id === uid) return true
-  const oud = !row.updated_at || (Date.now() - Date.parse(row.updated_at)) > PRIJS_VEROUDERD_DAGEN * 864e5
-  if (oud) return true
+  if (prijsVerouderd(row)) return true
   const b = Number(row.value)
   return v >= b * 0.4 && v <= b * 2.5
 }
@@ -106,10 +123,13 @@ Antwoord als allerlaatste met alleen dit JSON-object, zonder tekst ervoor of ern
 // fragmenten. Geen webtool, geen paginabezoek; de bron-URL komt uit de zoekresultaten zelf,
 // dus die kan het model niet verzinnen.
 type Treffer = { title: string; url: string; desc: string }
-async function braveZoek(w: Wijn): Promise<Treffer[]> {
+// Tweede vorm (zonderJaar): winkels noemen vaak alleen de jaargang die nu in het schap ligt, dus een
+// zoekopdracht mét jaargang levert soms niets terwijl de wijn gewoon te koop is. De leesbeurt weet dan
+// dat een andere jaargang "middel" is.
+async function braveZoek(w: Wijn, zonderJaar = false): Promise<Treffer[]> {
   const key = Deno.env.get('BRAVE_SEARCH_KEY')
   if (!key) return []
-  const q = [tekstVeld(w.producer), tekstVeld(w.name), Number(w.vintage) || ''].filter(Boolean).join(' ') + ' prijs'
+  const q = [tekstVeld(w.producer), tekstVeld(w.name), zonderJaar ? '' : (Number(w.vintage) || '')].filter(Boolean).join(' ') + (zonderJaar ? ' wijn kopen' : ' prijs')
   const u = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(q)}&count=10&country=NL&search_lang=nl&text_decorations=false&extra_snippets=true`
   try {
     const r = await fetch(u, { headers: { 'Accept': 'application/json', 'X-Subscription-Token': key }, signal: AbortSignal.timeout(8000) })
@@ -138,6 +158,84 @@ Antwoord met alleen dit JSON-object, zonder tekst ervoor of erna:
 {"value":42,"low":38,"high":48,"result":3,"vintage_found":${jaar || 'null'},"size_seen":"75cl|50cl|37.5cl|magnum|onbekend","confidence":"hoog|middel|laag","note":"één korte zin in het Nederlands over waar de prijs vandaan komt"}${STIJL}
 
 ${lijst}`
+}
+// Hoeveel Brave-zoekopdrachten er vandaag al zijn gedaan (één logregel per prijsvraag, die tot twee zoekopdrachten kan bevatten).
+// deno-lint-ignore no-explicit-any
+async function braveTel(supa: any): Promise<number> {
+  try {
+    const dag = new Date(); dag.setUTCHours(0, 0, 0, 0)
+    const { count } = await supa.from('wine_price_log').select('*', { count: 'exact', head: true }).gte('created_at', dag.toISOString()).like('model', '%brave%')
+    return count || 0
+  } catch (_) { return 0 /* logboek onbereikbaar: gewoon proberen */ }
+}
+// Zoeklaag: de bron is het genummerde zoekresultaat, nooit een adres uit het model zelf.
+function bronUitTreffer(p: Record<string, unknown>, treffers: Treffer[]) {
+  const t = treffers[Number(p.result) - 1]
+  if (t) { p.url = t.url; try { p.source = new URL(t.url).hostname.replace(/^www\./, '') } catch { p.source = t.url.slice(0, 60) } }
+  else { p.url = ''; p.source = 'zoekresultaat' }
+}
+function anthropic(payload: Record<string, unknown>): Promise<Response> {
+  return fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': Deno.env.get('CAVEAU_ANTHROPIC_KEY')!,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify(payload),
+  })
+}
+// Werk dat na het antwoord mag doorlopen. Supabase geeft daar EdgeRuntime.waitUntil voor; ontbreekt dat, dan
+// loopt de belofte gewoon los en kan hij afgebroken worden, wat bij een verversing geen kwaad kan.
+function achtergrond(p: Promise<unknown>) {
+  const rt = (globalThis as { EdgeRuntime?: { waitUntil?: (p: Promise<unknown>) => void } }).EdgeRuntime
+  const stil = p.catch((e) => console.error('achtergrond', String((e as Error)?.message || e).slice(0, 200)))
+  if (rt?.waitUntil) rt.waitUntil(stil)
+}
+// Verouderde rijen uit de prijstabel opnieuw opzoeken via de zoeklaag, zonder gebruiker en zonder credit.
+// Een automatische verversing mag een bestaande prijs alleen vervangen als de nieuwe geloofwaardig in de
+// buurt ligt (0,4× tot 2,5×): er kijkt geen mens mee. Een mislukte poging staat in het logboek (model
+// "+vers") en dezelfde rij wordt dan twee weken met rust gelaten.
+type PrijsRij = { key: string; name?: string | null; producer?: string | null; vintage?: number | null; value?: number | null }
+// deno-lint-ignore no-explicit-any
+async function versPrijzen(supa: any, rijen: PrijsRij[]) {
+  if (!rijen.length || !Deno.env.get('BRAVE_SEARCH_KEY')) return
+  const dag = new Date(); dag.setUTCHours(0, 0, 0, 0)
+  const { count } = await supa.from('wine_price_log').select('*', { count: 'exact', head: true }).gte('created_at', dag.toISOString()).like('model', '%vers%')
+  let ruimte = Math.min(VERS_PER_AANROEP, VERS_DAG_MAX - (count || 0))
+  if (ruimte <= 0 || await braveTel(supa) >= BRAVE_DAG_MAX) return
+  const { data: recent } = await supa.from('wine_price_log').select('key').gte('created_at', new Date(Date.now() - 14 * 864e5).toISOString())
+    .like('model', '%vers%').in('key', rijen.map((r) => r.key))
+  const geprobeerd = new Set(((recent || []) as { key: string }[]).map((r) => r.key))
+  const model = MODEL_BY_KIND.prijs
+  for (const row of rijen) {
+    if (ruimte <= 0) break
+    if (geprobeerd.has(row.key)) continue
+    ruimte--
+    const w: Wijn = { name: row.name, producer: row.producer, vintage: row.vintage }
+    let treffers = await braveZoek(w)
+    if (!treffers.length && Number(w.vintage)) treffers = await braveZoek(w, true)
+    const log = { key: row.key, model: model + '+brave+vers', status: 200, text: '', value: null as number | null, error: null as string | null, tokens_in: 0, tokens_out: 0 }
+    if (!treffers.length) { await supa.from('wine_price_log').insert({ ...log, status: 204, error: 'geen zoekresultaten' }); continue }
+    const r = await anthropic({ model, max_tokens: 1000, messages: [{ role: 'user', content: [{ type: 'text', text: leesPrompt(w, treffers) }] }] })
+    if (!r.ok) { await supa.from('wine_price_log').insert({ ...log, status: r.status, error: 'fout bij de AI' }); continue }
+    const data = await r.json()
+    const txt = tekstUit(data), p = jsonUit(txt)
+    if (p) bronUitTreffer(p, treffers)
+    const v = p ? Number(p.value) : NaN
+    const goed = !!p && Number.isFinite(v) && v > 0 && v < 100000 && ['hoog', 'middel'].includes(String(p.confidence || ''))
+    const b = Number(row.value)
+    const plausibel = goed && (!(b > 0) || (v >= b * 0.4 && v <= b * 2.5))
+    await supa.from('wine_price_log').insert({ ...log, text: txt.slice(0, 6000), value: plausibel ? v : null,
+      error: p ? (goed ? (plausibel ? null : 'wijkt te veel af van de oude prijs') : 'geen prijs') : 'geen JSON',
+      tokens_in: data?.usage?.input_tokens || 0, tokens_out: data?.usage?.output_tokens || 0 })
+    if (!plausibel || !p) continue
+    await supa.from('wine_prices').upsert({
+      key: row.key, value: v, low: Number.isFinite(Number(p.low)) ? Number(p.low) : null, high: Number.isFinite(Number(p.high)) ? Number(p.high) : null,
+      source: tekstVeld(p.source, 120), url: okUrl(p.url), vintage_found: Number(p.vintage_found) || null,
+      confidence: tekstVeld(p.confidence, 10), note: tekstVeld(p.note, 300), updated_at: new Date().toISOString(),
+    })
+  }
 }
 function tekstUit(data: { content?: { type?: string; text?: string }[] }): string {
   return (data?.content || []).filter((b) => b.type === 'text').map((b) => b.text || '').join('')
@@ -231,6 +329,9 @@ Deno.serve(async (req) => {
         const { data: rows } = await supa.from('wine_prices').select('*').in('key', keys)
         const vers = (rows || []).filter((r) => r.value != null)
         await Promise.all(vers.map((r) => supa.from('wine_prices').update({ hits: (r.hits || 0) + 1 }).eq('key', r.key)))
+        // wat verouderd is gaat na het antwoord opnieuw langs de zoeklaag; de app krijgt nu de oude rij (met datum)
+        // en morgen bij de dagelijkse ronde de nieuwe
+        achtergrond(versPrijzen(supa, vers.filter(prijsVerouderd)))
         // gemeenschapsprijzen erbij: samengevoegd, en alleen bij twee of meer verschillende gebruikers
         let paid: unknown[] = []
         try {
@@ -271,7 +372,8 @@ Deno.serve(async (req) => {
         try {
           const key = prijsSleutel(wijn)
           const { data: row } = await supa.from('wine_prices').select('*').eq('key', key).maybeSingle()
-          if (row && row.value != null) {
+          // een verouderde rij (90 dagen) geven we niet terug: dan zoekt de agent opnieuw en vervangt hem
+          if (row && row.value != null && !prijsVerouderd(row)) {
             await supa.from('wine_prices').update({ hits: (row.hits || 0) + 1 }).eq('key', key)
             const uit = { value: row.value, low: row.low, high: row.high, source: row.source, url: row.url,
               vintage_found: row.vintage_found, confidence: row.confidence, note: row.note, cached: true, at: row.updated_at }
@@ -305,16 +407,11 @@ Deno.serve(async (req) => {
     // Zoeklaag (kind 'prijs'): Brave zoekt, Haiku leest. Geen sleutel of plafond bereikt: dan
     // valt 'prijs' terug op de zware agent, zodat de app blijft werken.
     let treffers: Treffer[] = []
-    let viaBrave = false
+    let viaBrave = false, zonderJaar = false
     if (wijn && kind === 'prijs' && Deno.env.get('BRAVE_SEARCH_KEY')) {
-      let vandaagN = 0
-      try {
-        const dag = new Date(); dag.setUTCHours(0, 0, 0, 0)
-        const { count } = await supa.from('wine_price_log').select('*', { count: 'exact', head: true }).gte('created_at', dag.toISOString()).like('model', '%brave%')
-        vandaagN = count || 0
-      } catch (_) { /* logboek onbereikbaar: gewoon proberen */ }
-      if (vandaagN < BRAVE_DAG_MAX) {
+      if (await braveTel(supa) < BRAVE_DAG_MAX) {
         treffers = await braveZoek(wijn)
+        if (!treffers.length && Number(wijn.vintage)) { zonderJaar = true; treffers = await braveZoek(wijn, true) }
         if (treffers.length) { viaBrave = true; messages = [{ role: 'user', content: [{ type: 'text', text: leesPrompt(wijn, treffers) }] }] }
         else {
           // niets gevonden bij Brave: geen AI-aanroep, credit terug, en dat melden
@@ -333,16 +430,8 @@ Deno.serve(async (req) => {
     // Sonnet/Opus 5 denken standaard mee in het antwoordbudget; voor JSON zetten we dat uit. Haiku 4.5 kent dat veld anders: weglaten.
     if (!/haiku/.test(model)) payload.thinking = { type: 'disabled' }
     // De webzoekfunctie van de API zelf; Haiku 4.5 kent alleen de basisvariant.
-    if (web && !viaBrave) payload.tools = [{ type: /haiku/.test(model) ? 'web_search_20250305' : 'web_search_20260209', name: 'web_search', max_uses: 3, allowed_domains: PRIJS_SITES }]
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': Deno.env.get('CAVEAU_ANTHROPIC_KEY')!,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify(payload),
-    })
+    if (web && !viaBrave) payload.tools = [{ type: /haiku/.test(model) ? 'web_search_20250305' : 'web_search_20260209', name: 'web_search', max_uses: 3, allowed_domains: PRIJS_SITES, user_location: ZOEK_PLEK }]
+    const r = await anthropic(payload)
     if (!r.ok || !r.body) {
       const fout = await r.json().catch(() => ({}))
       console.error('anthropic', r.status, JSON.stringify(fout).slice(0, 300))
@@ -390,23 +479,34 @@ Deno.serve(async (req) => {
       })
     }
 
-    const data = await r.json()
-    if (boekId) await supa.from('ai_usage').update({ tokens_in: data?.usage?.input_tokens || 0, tokens_out: data?.usage?.output_tokens || 0 }).eq('id', boekId)
-    if (wijn) {
-      const txt = tekstUit(data)
-      const p = jsonUit(txt)
-      // zoeklaag: de bron is het genummerde zoekresultaat, nooit een adres uit het model zelf
-      if (p && viaBrave) {
-        const t = treffers[Number(p.result) - 1]
-        if (t) { p.url = t.url; try { p.source = new URL(t.url).hostname.replace(/^www\./, '') } catch { p.source = t.url.slice(0, 60) } }
-        else { p.url = ''; p.source = 'zoekresultaat' }
+    let data = await r.json()
+    let tokIn = data?.usage?.input_tokens || 0, tokOut = data?.usage?.output_tokens || 0
+    let txt = wijn ? tekstUit(data) : '', p = wijn ? jsonUit(txt) : null
+    // Zoeklaag: zochten we met jaargang en las Haiku er geen prijs uit, dan nog één keer zonder jaargang
+    // (tweede Brave-zoekopdracht plus tweede leesbeurt, samen rond een cent). Pas daarna is het een miss.
+    let brave2 = false
+    if (wijn && viaBrave && !zonderJaar && Number(wijn.vintage) && !(p && Number(p.value) > 0)) {
+      const t2 = await braveZoek(wijn, true)
+      if (t2.length) {
+        const r2 = await anthropic({ ...payload, messages: [{ role: 'user', content: [{ type: 'text', text: leesPrompt(wijn, t2) }] }] })
+        if (r2.ok) {
+          const d2 = await r2.json()
+          tokIn += d2?.usage?.input_tokens || 0; tokOut += d2?.usage?.output_tokens || 0
+          const p2 = jsonUit(tekstUit(d2))
+          brave2 = true
+          if (p2 && Number(p2.value) > 0) { data = d2; txt = tekstUit(d2); p = p2; treffers = t2 }
+        }
       }
+    }
+    if (boekId) await supa.from('ai_usage').update({ tokens_in: tokIn, tokens_out: tokOut }).eq('id', boekId)
+    if (wijn) {
+      if (p && viaBrave) bronUitTreffer(p, treffers)
       const v = p ? Number(p.value) : NaN
       const goed = !!p && Number.isFinite(v) && v > 0 && v < 100000 && ['hoog', 'middel'].includes(String(p.confidence || ''))
       // logboek zonder gebruikers-id, en oude regels opruimen
       try {
-        const logRij = { key: prijsSleutel(wijn), model: viaBrave ? model + '+brave' : model, status: r.status, text: txt.slice(0, 6000),
-          value: goed ? v : null, error: p ? null : 'geen JSON', tokens_in: data?.usage?.input_tokens || 0, tokens_out: data?.usage?.output_tokens || 0 }
+        const logRij = { key: prijsSleutel(wijn), model: viaBrave ? model + (brave2 || zonderJaar ? '+brave2' : '+brave') : model, status: r.status, text: txt.slice(0, 6000),
+          value: goed ? v : null, error: p ? null : 'geen JSON', tokens_in: tokIn, tokens_out: tokOut }
         // Meting: wat de scanner schatte naast wat de zoekagent vond. Zolang de kolom `schatting`
         // nog niet bestaat (SQL in supabase/sql/schatting-3sep.sql) valt de insert terug op de oude rij.
         const est = Number(wijn.est)

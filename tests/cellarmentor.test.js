@@ -43,16 +43,19 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, estimateWindow, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, estimateWindow, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
 function serverFn(naam) {
   const m = serverBron.match(new RegExp(`function ${naam}\\([\\s\\S]*?\\n}`));
   assert.ok(m, `server heeft een functie ${naam}`);
-  const js = m[0].replace(/\(w: Wijn\): string/, '(w)').replace(/\(x: unknown\)/g, '(x)').replace(/\(kind: string, images: number\): number/, '(kind, images)');
+  const js = m[0].replace(/\(w: Wijn\): string/, '(w)').replace(/\(x: unknown\)/g, '(x)').replace(/\(kind: string, images: number\): number/, '(kind, images)')
+    .replace(/\(row: [^)]*\): boolean/, '(row)');
   return vm.runInContext(`(${js})`, ctx);
 }
+/* constanten van de server die zo'n functie nodig heeft */
+vm.runInContext(`var PRIJS_VEROUDERD_DAGEN = ${serverBron.match(/const PRIJS_VEROUDERD_DAGEN = (\d+)/)[1]}`, ctx);
 
 /* ================= sync ================= */
 test('sync: zonder document in de cloud gaat alles omhoog', () => {
@@ -140,6 +143,26 @@ test('credits: de soorten die de app stuurt staan in de vaste lijst van de serve
   for (const m of bron.matchAll(/callClaude\([^;]*?,\s*'([a-z]+)'/g)) gebruikt.add(m[1]);
   for (const m of bron.matchAll(/'(prijsdiep|prijs)'/g)) gebruikt.add(m[1]);
   for (const k of gebruikt) assert.ok(lijst.includes(k), `server kent soort '${k}'`);
+});
+
+test('prijstabel: overschrijft nooit een eigen waarde, wel een fles zonder bron en een oudere opgezochte prijs', () => {
+  const p = { at: '2026-09-15T10:00:00+00:00', value: 20 };
+  assert.equal(C.tabelPrijsPast({ name: 'x' }, p), true, 'zonder waarde');
+  assert.equal(C.tabelPrijsPast({ name: 'x', value: 30, valueSrc: 'ai' }, p), true, 'een schatting is geen bron');
+  assert.equal(C.tabelPrijsPast({ name: 'x', value: 30, valueSrc: 'eigen' }, p), false, 'zelf ingevuld blijft staan');
+  assert.equal(C.tabelPrijsPast({ name: 'x', value: 30, valueSrc: 'samen' }, p), true, 'een opgezochte prijs gaat vóór wat anderen betaalden');
+  assert.equal(C.tabelPrijsPast({ name: 'x', value: 30, valueSrc: 'zoek', valueAt: '2026-06-01' }, p), true, 'de tabel is nieuwer');
+  assert.equal(C.tabelPrijsPast({ name: 'x', value: 30, valueSrc: 'zoek', valueAt: '2026-09-15' }, p), false, 'zelfde dag is niets nieuws');
+  assert.equal(C.tabelPrijsPast({ name: 'x', value: 30, valueSrc: 'zoek', valueAt: '2026-06-01' }, { value: 20 }), false, 'zonder datum in de tabel geen verversing');
+  assert.equal(C.datumOf('2026-09-02T15:19:29.174+00:00'), '2026-09-02');
+  assert.equal(C.datumOf('nonsense'), new Date().toISOString().slice(0, 10));
+});
+test('prijsVerouderd (server): een rij van meer dan 90 dagen oud geldt als verouderd', () => {
+  const server = serverFn('prijsVerouderd');
+  assert.equal(server({ updated_at: new Date(Date.now() - 10 * 864e5).toISOString() }), false);
+  assert.equal(server({ updated_at: new Date(Date.now() - 100 * 864e5).toISOString() }), true);
+  assert.equal(server({ updated_at: null }), true);
+  assert.equal(server(null), true);
 });
 
 /* ================= kelderregels ================= */
