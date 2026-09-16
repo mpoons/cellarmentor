@@ -51,9 +51,13 @@ function meet(messages: unknown) {
   return { images, docs, tekst, b64 }
 }
 
-// Alles draait op Sonnet 5, behalve prijzen: die plukt Haiku 4.5 uit zoekresultaten.
+// Alles draait op Sonnet 5. Prijzen (sinds 16 sep): ook de leesbeurt op de Brave-fragmenten (MODEL_LEES) en de
+// zware agent (prijsdiep) draaien op Sonnet 5; Haiku las een actiefolder of retourwinkel als winkelprijs en
+// miste dezelfde wijn onder een iets andere naam. Op ± 3.000 tokens scheelt Sonnet een halve cent per fles.
+// De terugval van 'prijs' zónder Brave-sleutel blijft Haiku: dat is de dure agent voor maar één credit.
 const MODEL_DEFAULT = 'claude-sonnet-5'
-const MODEL_BY_KIND: Record<string, string> = { prijs: 'claude-haiku-4-5', prijsdiep: 'claude-haiku-4-5' }
+const MODEL_LEES = 'claude-sonnet-5'
+const MODEL_BY_KIND: Record<string, string> = { prijs: 'claude-haiku-4-5', prijsdiep: 'claude-sonnet-5' }
 // Zoeklaag: hoogstens zoveel Brave-zoekopdrachten per dag, over alle gebruikers. Brave rekent
 // zonder plafond af, dus het plafond staat hier.
 const BRAVE_DAG_MAX = 400
@@ -66,6 +70,11 @@ const PRIJS_SITES = ['wine-searcher.com', 'idealwine.com', 'vivino.com', 'cellar
   'ah.nl', 'jumbo.com', 'grapedistrict.nl', 'henribloem.nl', 'okhuysen.nl', 'colruyt.be', 'delhaize.be', 'hawesko.de', 'vicampo.de']
 // De zoekfunctie van de API zoekt vanuit Nederland: euro's bij Nederlandse en Belgische handels in plaats van dollars uit de VS.
 const ZOEK_PLEK = { type: 'approximate', country: 'NL', city: 'Amsterdam', timezone: 'Europe/Amsterdam' }
+// Volgorde van Brave-treffers voor de leesbeurt: bekende winkels eerst, dan de rest, en actiefolders,
+// outlets, retourwinkels en veilingen achteraan. Gemeten op 15 sep: Haiku koos anders een Lidl-folder en
+// een Duitse retourwinkel terwijl een gewone Nederlandse winkel ook in de lijst stond.
+const VOORKEUR = [...PRIJS_SITES, 'gevoslijterij.nl', 'perfectewijn.nl', 'whiskyvanzuylen.nl', 'wijnhandelbrouwers.nl', 'devinoteca.nl', 'wijnkoperijdegoudenton.nl']
+const RUIS = ['promocatalogues', 'folder', 'aanbieding', 'retoura', 'outlet', 'catawiki', 'veiling', 'auction', 'ebay', 'marktplaats']
 // Verouderde rijen in de prijstabel worden op de achtergrond ververst via de zoeklaag (alleen met Brave-sleutel):
 // hoogstens zoveel per aanroep van de tabel en zoveel per dag, buiten het tegoed van gebruikers om.
 const VERS_PER_AANROEP = 3
@@ -124,6 +133,17 @@ Antwoord als allerlaatste met alleen dit JSON-object, zonder tekst ervoor of ern
 // fragmenten. Geen webtool, geen paginabezoek; de bron-URL komt uit de zoekresultaten zelf,
 // dus die kan het model niet verzinnen.
 type Treffer = { title: string; url: string; desc: string }
+// Rang 0 = winkel op de voorkeurslijst, 1 = onbekend, 2 = ruis; binnen een rang blijft de volgorde van Brave.
+function rangschik(treffers: Treffer[], voorkeur: string[], ruis: string[]): Treffer[] {
+  const rang = (t: Treffer): number => {
+    let h = ''
+    try { h = new URL(t.url).hostname.replace(/^www\./, '') } catch { return 2 }
+    if (voorkeur.some((d) => h === d || h.endsWith('.' + d))) return 0
+    const tekst = (h + ' ' + t.title).toLowerCase()
+    return ruis.some((r) => tekst.includes(r)) ? 2 : 1
+  }
+  return treffers.map((t, i) => ({ t, i, r: rang(t) })).sort((a, b) => a.r - b.r || a.i - b.i).map((x) => x.t)
+}
 // Tweede vorm (zonderJaar): winkels noemen vaak alleen de jaargang die nu in het schap ligt, dus een
 // zoekopdracht mét jaargang levert soms niets terwijl de wijn gewoon te koop is. De leesbeurt weet dan
 // dat een andere jaargang "middel" is.
@@ -152,10 +172,10 @@ async function braveZoek(w: Wijn, key: string, zonderJaar = false): Promise<Tref
     if (!r.ok) { console.error('brave', r.status); return [] }
     const d = await r.json()
     // deno-lint-ignore no-explicit-any
-    return ((d?.web?.results || []) as any[]).slice(0, 10).map((x) => ({
+    return rangschik(((d?.web?.results || []) as any[]).slice(0, 10).map((x) => ({
       title: tekstVeld(x.title, 160), url: String(x.url || '').slice(0, 500),
       desc: tekstVeld([x.description, ...(Array.isArray(x.extra_snippets) ? x.extra_snippets : [])].filter(Boolean).join(' '), 700),
-    })).filter((t) => /^https?:\/\//.test(t.url))
+    })).filter((t) => /^https?:\/\//.test(t.url)), VOORKEUR, RUIS)
   } catch (e) { console.error('brave', String((e as Error)?.message || e).slice(0, 120)); return [] }
 }
 function leesPrompt(w: Wijn, treffers: Treffer[]): string {
@@ -166,7 +186,7 @@ function leesPrompt(w: Wijn, treffers: Treffer[]): string {
 Regels, in deze volgorde:
 1. Alleen bedragen die letterlijk in een resultaat staan en die over precies deze wijn (zelfde producent en cuvée) gaan. Twijfel je of het dezelfde wijn is, laat het resultaat weg.
 2. Liefst jaargang ${jaar || 'NV'}: confidence "hoog". Alleen andere jaargangen gezien: neem de dichtstbijzijnde, zet die in vintage_found en confidence "middel". Dit is geen mislukking.
-3. Winkelprijzen gaan vóór veilingbiedingen. Meerdere winkelprijzen: value is de middelste, low en high de laagste en hoogste.
+3. De resultaten staan op betrouwbaarheid gesorteerd: een lager nummer is een bekendere winkel. Een gewone winkelprijs gaat vóór een actiefolder, outlet, retourwinkel of veiling; die laatste alleen als er niets anders is. Een europrijs gaat vóór een omgerekende prijs. Meerdere winkelprijzen: value is de middelste, low en high de laagste en hoogste.
 4. Flesmaat: 50 cl × 1,5, 37,5 cl × 2, magnum ÷ 2; zet wat je zag in size_seen. Dollars of ponden: omrekenen (1 USD = 0,92 EUR, 1 GBP = 1,17 EUR), confidence "middel".
 5. Zet in result het nummer van het resultaat waar de prijs vandaan komt.
 6. Geen bruikbare prijs: {"value":null,"note":"reden"}.
@@ -224,7 +244,7 @@ async function versPrijzen(supa: any, rijen: PrijsRij[]) {
   const { data: recent } = await supa.from('wine_price_log').select('key').gte('created_at', new Date(Date.now() - 14 * 864e5).toISOString())
     .like('model', '%vers%').in('key', rijen.map((r) => r.key))
   const geprobeerd = new Set(((recent || []) as { key: string }[]).map((r) => r.key))
-  const model = MODEL_BY_KIND.prijs
+  const model = MODEL_LEES
   for (const row of rijen) {
     if (ruimte <= 0) break
     if (geprobeerd.has(row.key)) continue
@@ -249,7 +269,7 @@ async function versPrijzen(supa: any, rijen: PrijsRij[]) {
     if (!plausibel || !p) continue
     await supa.from('wine_prices').upsert({
       key: row.key, value: v, low: Number.isFinite(Number(p.low)) ? Number(p.low) : null, high: Number.isFinite(Number(p.high)) ? Number(p.high) : null,
-      source: tekstVeld(p.source, 120), url: okUrl(p.url), vintage_found: Number(p.vintage_found) || null,
+      source: tekstVeld(p.source, 120), url: braveUrl(p.url), vintage_found: Number(p.vintage_found) || null,
       confidence: tekstVeld(p.confidence, 10), note: tekstVeld(p.note, 300), updated_at: new Date().toISOString(),
     })
   }
@@ -264,7 +284,12 @@ function jsonUit(txt: string): Record<string, unknown> | null {
   if (a < 0 || z <= a) return null
   try { return JSON.parse(txt.slice(a, z + 1)) } catch { return null }
 }
-// Alleen https-adressen op de toegestane wijnsites komen in de gedeelde tabel.
+// Op het Brave-pad komt het adres uit de zoekmachine, niet uit het model, dus elke http(s)-link mag mee
+// (sinds 16 sep; daarvoor bleef een Nederlandse winkel buiten de vaste lijst zonder link).
+function braveUrl(u: unknown): string {
+  try { const x = new URL(String(u || '')); return x.protocol === 'https:' || x.protocol === 'http:' ? x.href.slice(0, 500) : '' } catch { return '' }
+}
+// Op het agent-pad schrijft het model het adres zelf op: alleen https-adressen op de toegestane wijnsites komen in de gedeelde tabel.
 function okUrl(u: unknown): string {
   try {
     const x = new URL(String(u || ''))
@@ -420,9 +445,8 @@ Deno.serve(async (req) => {
 
     // verzoek doorsturen; de server bepaalt model en instellingen
     const wantStream = body.stream === true && !web
-    const model = MODEL_BY_KIND[kind] || MODEL_DEFAULT
-    // Zoeklaag (kind 'prijs'): Brave zoekt, Haiku leest. Geen sleutel of plafond bereikt: dan
-    // valt 'prijs' terug op de zware agent, zodat de app blijft werken.
+    // Zoeklaag (kind 'prijs'): Brave zoekt, Sonnet leest. Geen sleutel of plafond bereikt: dan
+    // valt 'prijs' terug op de zware agent (Haiku), zodat de app blijft werken.
     let treffers: Treffer[] = []
     let viaBrave = false, zonderJaar = false
     const bkey = wijn && kind === 'prijs' ? await braveSleutel(supa) : ''
@@ -439,16 +463,21 @@ Deno.serve(async (req) => {
         }
       }
     }
+    const model = viaBrave ? MODEL_LEES : (MODEL_BY_KIND[kind] || MODEL_DEFAULT)
     const payload: Record<string, unknown> = {
       model,
-      max_tokens: Math.min(Number(body.max_tokens) || 2000, 4000),
+      // de zware agent krijgt ruimte voor vijf zoekrondes plus het JSON; de rest houdt de vraag van de client
+      max_tokens: kind === 'prijsdiep' ? 4000 : Math.min(Number(body.max_tokens) || 2000, 4000),
       messages,
       ...(wantStream ? { stream: true } : {}),
     }
     // Sonnet/Opus 5 denken standaard mee in het antwoordbudget; voor JSON zetten we dat uit. Haiku 4.5 kent dat veld anders: weglaten.
     if (!/haiku/.test(model)) payload.thinking = { type: 'disabled' }
-    // De webzoekfunctie van de API zelf; Haiku 4.5 kent alleen de basisvariant.
-    if (web && !viaBrave) payload.tools = [{ type: /haiku/.test(model) ? 'web_search_20250305' : 'web_search_20260209', name: 'web_search', max_uses: 3, allowed_domains: PRIJS_SITES, user_location: ZOEK_PLEK }]
+    // De webzoekfunctie van de API zelf. De zware agent (prijsdiep, Sonnet 5) zoekt vrij over het web, zoals
+    // in claude.ai: vijf rondes, geen domeinlijst, wel vanuit Nederland. Alleen de Haiku-terugval van 'prijs'
+    // houdt de vaste sitelijst en de basisvariant van de zoekfunctie.
+    if (web && !viaBrave) payload.tools = [{ type: /haiku/.test(model) ? 'web_search_20250305' : 'web_search_20260209', name: 'web_search',
+      max_uses: kind === 'prijsdiep' ? 5 : 3, ...(kind === 'prijsdiep' ? {} : { allowed_domains: PRIJS_SITES }), user_location: ZOEK_PLEK }]
     const r = await anthropic(payload)
     if (!r.ok || !r.body) {
       const fout = await r.json().catch(() => ({}))
@@ -546,8 +575,8 @@ Deno.serve(async (req) => {
             key: prijsSleutel(wijn), user_id: user.id,
             name: tekstVeld(wijn.name, 200), producer: tekstVeld(wijn.producer, 200), vintage: Number(wijn.vintage) || null,
             value: v, low: Number.isFinite(Number(p.low)) ? Number(p.low) : null, high: Number.isFinite(Number(p.high)) ? Number(p.high) : null,
-            // ook op het Brave-pad alleen een link naar een bekende wijnsite; een andere bron houdt zijn naam, zonder link
-            source: tekstVeld(p.source, 120), url: okUrl(p.url), vintage_found: Number(p.vintage_found) || null,
+            // Brave-pad: het adres komt uit de zoekmachine en mag mee; agent-pad: alleen een bekende wijnsite
+            source: tekstVeld(p.source, 120), url: viaBrave ? braveUrl(p.url) : okUrl(p.url), vintage_found: Number(p.vintage_found) || null,
             confidence: tekstVeld(p.confidence, 10), note: tekstVeld(p.note, 300), updated_at: new Date().toISOString(),
           })
         } catch (e) { console.error('wine_prices upsert', String((e as Error)?.message || e).slice(0, 200)) }

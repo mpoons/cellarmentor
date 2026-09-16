@@ -51,7 +51,7 @@ function serverFn(naam) {
   const m = serverBron.match(new RegExp(`function ${naam}\\([\\s\\S]*?\\n}`));
   assert.ok(m, `server heeft een functie ${naam}`);
   const js = m[0].replace(/\(w: Wijn\): string/, '(w)').replace(/\(x: unknown\)/g, '(x)').replace(/\(kind: string, images: number\): number/, '(kind, images)')
-    .replace(/\(row: [^)]*\): boolean/, '(row)');
+    .replace(/\(row: [^)]*\): boolean/, '(row)').replace(/\(treffers: [^)]*\): Treffer\[\]/, '(treffers, voorkeur, ruis)').replace(/\(t: Treffer\): number/, '(t)');
   return vm.runInContext(`(${js})`, ctx);
 }
 /* constanten van de server die zo'n functie nodig heeft */
@@ -156,6 +156,14 @@ test('prijstabel: overschrijft nooit een eigen waarde, wel een fles zonder bron 
   assert.equal(C.tabelPrijsPast({ name: 'x', value: 30, valueSrc: 'zoek', valueAt: '2026-06-01' }, { value: 20 }), false, 'zonder datum in de tabel geen verversing');
   assert.equal(C.datumOf('2026-09-02T15:19:29.174+00:00'), '2026-09-02');
   assert.equal(C.datumOf('nonsense'), new Date().toISOString().slice(0, 10));
+});
+test('rangschik (server): bekende winkels eerst, folders en retourwinkels achteraan, verder de volgorde van Brave', () => {
+  const rangschik = serverFn('rangschik');
+  const t = u => ({ title: u.includes('folder') ? 'Aanbiedingen folder' : 'x', url: u, desc: '' });
+  const uit = rangschik([t('https://promocatalogues.fr/lidl'), t('https://www.onbekend.nl/wijn'), t('https://www.gall.nl/fles'), t('https://shop.retoura.de/x'), t('https://ander.be/y')],
+    ['gall.nl'], ['promocatalogues', 'retoura']).map(x => x.url);
+  assert.deepEqual(uit.join(' '), 'https://www.gall.nl/fles https://www.onbekend.nl/wijn https://ander.be/y https://promocatalogues.fr/lidl https://shop.retoura.de/x');
+  assert.equal(rangschik([t('geen url')], [], []).length, 1, 'een kapot adres blijft staan, achteraan');
 });
 test('prijsVerouderd (server): een rij van meer dan 90 dagen oud geldt als verouderd', () => {
   const server = serverFn('prijsVerouderd');

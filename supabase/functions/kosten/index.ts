@@ -9,8 +9,8 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 
 // Tarieven per miljoen tokens (USD), plus de zoekkosten per actie.
 const TARIEF: Record<string, { in: number; out: number; extra: number }> = {
-  prijs: { in: 1, out: 5, extra: 0.005 },     // Haiku 4.5 + één Brave-zoekopdracht ($5 per duizend)
-  prijsdiep: { in: 1, out: 5, extra: 0.03 },  // Haiku 4.5 + ± drie zoekrondes van de API-webtool à $0,01
+  prijs: { in: 2, out: 10, extra: 0.01 },     // Sonnet 5 leest (sinds 16 sep) + één of twee Brave-zoekopdrachten ($5 per duizend)
+  prijsdiep: { in: 2, out: 10, extra: 0.05 }, // Sonnet 5 + tot vijf zoekrondes van de API-webtool à $0,01
   default: { in: 2, out: 10, extra: 0 },      // Sonnet 5
 }
 const CREDIT_PRIJS_EUR = 2.99 / 300           // wat een Plus-credit opbrengt
@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
     const vs = (vers || []) as { value: number | null }[]
     if (vs.length) {
       versMeting = { n: vs.length, gelukt: vs.filter((v) => v.value != null).length }
-      versRegel = `<p>Prijzen op de achtergrond ververst: <b>${vs.length}</b>, waarvan ${versMeting.gelukt} gelukt (± ${usd(vs.length * 0.01)} aan Brave en Haiku, buiten het tegoed van gebruikers om).</p>`
+      versRegel = `<p>Prijzen op de achtergrond ververst: <b>${vs.length}</b>, waarvan ${versMeting.gelukt} gelukt (± ${usd(vs.length * 0.015)} aan Brave en Sonnet, buiten het tegoed van gebruikers om).</p>`
     }
   } catch (_) { /* logboek onbereikbaar */ }
   const { count: profielen } = await supa.from('profiles').select('*', { count: 'exact', head: true })
@@ -119,7 +119,7 @@ Deno.serve(async (req) => {
     ${schattingRegel}
     ${foutenRegel}
     <p>Accounts: ${profielen || 0}, waarvan ${plus || 0} Plus.</p>
-    <p style="color:#8E867D;font-size:13px">Automatisch verstuurd op maandagochtend door de Edge Function <code>kosten</code>. Tarieven: Sonnet 5 $2/$10 per miljoen tokens, Haiku 4.5 $1/$5, Brave $0,005 per zoekopdracht (tot twee per prijsvraag) en de API-webtool $0,01 per zoekopdracht.</p>
+    <p style="color:#8E867D;font-size:13px">Automatisch verstuurd op maandagochtend door de Edge Function <code>kosten</code>. Tarieven: Sonnet 5 $2/$10 per miljoen tokens (sinds 16 sep ook voor prijzen; oudere prijsregels op Haiku tellen daardoor iets te hoog), Brave $0,005 per zoekopdracht (tot twee per prijsvraag) en de API-webtool $0,01 per zoekopdracht (tot vijf bij dieper zoeken).</p>
   </div>`
 
   const samenvatting = { week: d, vorige: v, perSoort, perCreditUsd, prijzenNieuw, prijzenTotaal, zoekMissers, ververst: versMeting, schatting: schattingMeting, fouten: foutenMeting, profielen, plus }

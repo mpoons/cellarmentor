@@ -2124,9 +2124,11 @@ function plekHtml(w){
   if(p) chips.push(`<span class="badge b-top">${p.k === 'top' ? MEDAL(p.zeker) + ' ' : ''}${plekLabel(p)}</span>`);
   if(kl) chips.push(`<span class="grape">${esc(kl)}</span>`);
   if(w.score) chips.push(`<span class="grape">★ ${esc(w.score)}</span>`);
-  const oudPunt = w.valueSrc === 'zoek' && w.valueAt && (Date.now() - new Date(w.valueAt).getTime()) > 365 * 864e5;
-  const zoek = (w.valueSrc !== 'zoek' || oudPunt) && aiReady()
-    ? `<button class="linkbtn" data-act="prijsZoek" data-id="${w.id}" id="prijsBtn">${ik('zoek')} ${oudPunt ? 'Opnieuw opzoeken' : 'Prijs opzoeken'}${ownKey() ? '' : ' · ' + creditCost('prijs') + ' credit'}</button>` : '';
+  /* Opnieuw opzoeken kan altijd (sinds v81): wie een prijs ziet die niet klopt hoeft niet een jaar te wachten.
+     De server beschermt de gedeelde tabel: een eigen rij mag je verversen, die van een ander alleen binnen
+     0,4× tot 2,5× of als hij verouderd is. */
+  const zoek = aiReady()
+    ? `<button class="linkbtn" data-act="prijsZoek" data-id="${w.id}" id="prijsBtn">${ik('zoek')} ${w.valueSrc === 'zoek' ? 'Opnieuw opzoeken' : 'Prijs opzoeken'}${ownKey() ? '' : ' · ' + creditCost('prijs') + ' credit'}</button>` : '';
   /* staat hij op tafel, dan is "plek" letterlijk: waar ligt hij, zodat je hem kunt pakken */
   const tafel = onTable(w.id);
   if(!zin && !chips.length && !zoek && !tafel) return '';
