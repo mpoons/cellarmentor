@@ -50,12 +50,15 @@ const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'funct
 function serverFn(naam) {
   const m = serverBron.match(new RegExp(`function ${naam}\\([\\s\\S]*?\\n}`));
   assert.ok(m, `server heeft een functie ${naam}`);
-  const js = m[0].replace(/\(w: Wijn\): string/, '(w)').replace(/\(x: unknown\)/g, '(x)').replace(/\(kind: string, images: number\): number/, '(kind, images)')
-    .replace(/\(row: [^)]*\): boolean/, '(row)').replace(/\(treffers: [^)]*\): Treffer\[\]/, '(treffers, voorkeur, ruis)').replace(/\(t: Treffer\): number/, '(t)');
+  const js = m[0].replace(/\(w: Wijn\): string(?!\[)/, '(w)').replace(/\(x: unknown\)/g, '(x)').replace(/\(kind: string, images: number\): number/, '(kind, images)')
+    .replace(/\(row: [^)]*\): boolean/, '(row)').replace(/\(treffers: [^)]*\): Treffer\[\]/, '(treffers, voorkeur, ruis)').replace(/\(t: Treffer\): number/, '(t)')
+    .replace(/\(s: string\): string/, '(s)').replace(/\(w: Wijn\): string\[\]/, '(w)').replace(/\(w: Wijn\): \{[^}]*\}/, '(w)');
   return vm.runInContext(`(${js})`, ctx);
 }
-/* constanten van de server die zo'n functie nodig heeft */
+/* constanten en hulpjes van de server die zo'n functie nodig heeft */
 vm.runInContext(`var PRIJS_VEROUDERD_DAGEN = ${serverBron.match(/const PRIJS_VEROUDERD_DAGEN = (\d+)/)[1]}`, ctx);
+vm.runInContext(`var KLEUR = ${serverBron.match(/const KLEUR: Record<string, string> = (\{[^}]*\})/)[1]}`, ctx);
+vm.runInContext("var tekstVeld = (x, n = 120) => String(x ?? '').replace(/[\\r\\n\\t]+/g, ' ').trim().slice(0, n)", ctx);
 
 /* ================= sync ================= */
 test('sync: zonder document in de cloud gaat alles omhoog', () => {
@@ -129,8 +132,12 @@ test('prijssleutel: client en server geven dezelfde sleutel', () => {
     { name: 'Château Léoville-Barton', producer: 'Léoville Barton', vintage: '2016' },
     { name: 'Brut Réserve', producer: 'Billecart-Salmon', vintage: null },
     { name: 'Viña Ardanza', producer: '', vintage: 0 },
+    { name: 'Cuvée des Annibals', producer: 'Famille de Wulf Domaine des Annibals', vintage: 2025, zoekProducer: 'Domaine des Annibals', zoekNaam: 'Cuvée des Annibals' },
   ]) assert.equal(C.prijsSleutel(w), server(w), JSON.stringify(w));
   assert.equal(C.prijsSleutel({ name: 'Brut', producer: 'X', vintage: null }), 'x|brut|nv');
+  assert.equal(C.prijsSleutel({ name: 'Cuvée des Annibals', producer: 'Famille de Wulf Domaine des Annibals', vintage: 2025, zoekProducer: 'Domaine des Annibals', zoekNaam: 'Cuvée des Annibals' }), 'domaine des annibals|cuvee des annibals|2025', 'de zoekidentiteit bepaalt de sleutel');
+  assert.equal(C.schoonWijn({ name: 'x', zoekProducer: 'Domaine X' }).zoekProducer, 'Domaine X');
+  assert.equal(C.schoonWijn({ name: 'x' }).zoekProducer, undefined);
 });
 test('credits: client en server rekenen hetzelfde', () => {
   const server = serverFn('creditsFor');
@@ -156,6 +163,19 @@ test('prijstabel: overschrijft nooit een eigen waarde, wel een fles zonder bron 
   assert.equal(C.tabelPrijsPast({ name: 'x', value: 30, valueSrc: 'zoek', valueAt: '2026-06-01' }, { value: 20 }), false, 'zonder datum in de tabel geen verversing');
   assert.equal(C.datumOf('2026-09-02T15:19:29.174+00:00'), '2026-09-02');
   assert.equal(C.datumOf('nonsense'), new Date().toISOString().slice(0, 10));
+});
+test('zoekidentiteit (server): eigenaarsfamilie en rechtsvorm vallen weg, de trap heeft hoogstens drie treden zonder dubbelen', () => {
+  const kortVorm = serverFn('kortVorm');
+  assert.equal(kortVorm('Famille de Wulf Domaine des Annibals'), 'Domaine des Annibals');
+  assert.equal(kortVorm('SCEA Château Perron'), 'Château Perron');
+  assert.equal(kortVorm('Famille Perrin'), 'Famille Perrin', 'zonder domein erachter is de familie zelf de producent');
+  assert.equal(kortVorm('Louis Jadot'), 'Louis Jadot');
+  ctx.kortVorm = kortVorm; ctx.zoekId = serverFn('zoekId');
+  const zoekTreden = serverFn('zoekTreden');
+  assert.deepEqual([...zoekTreden({ producer: 'Famille de Wulf Domaine des Annibals', name: 'Cuvée des Annibals', vintage: 2025, appellation: 'Côtes de Provence', type: 'rose' })],
+    ['Domaine des Annibals Cuvée des Annibals 2025 prijs', 'Domaine des Annibals Cuvée des Annibals wijn kopen', 'Domaine des Annibals Côtes de Provence rosé kopen']);
+  assert.deepEqual([...zoekTreden({ producer: 'Château Talbot', name: 'Château Talbot', vintage: null })], ['Château Talbot wijn kopen'], 'zonder jaargang en zonder appellation blijft één trede');
+  assert.equal([...zoekTreden({ zoekProducer: 'Louis Jadot', zoekNaam: 'Les Petites Pierres', producer: 'Maison Louis Jadot', name: 'Bourgogne Les Petites Pierres', vintage: 2023, region: 'Bourgogne', type: 'wit' })][0], 'Louis Jadot Les Petites Pierres 2023 prijs', 'de zoekidentiteit van de scanner wint');
 });
 test('rangschik (server): bekende winkels eerst, folders en retourwinkels achteraan, verder de volgorde van Brave', () => {
   const rangschik = serverFn('rangschik');

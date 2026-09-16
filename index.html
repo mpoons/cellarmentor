@@ -651,7 +651,7 @@ const lijstOk = (v, n, len) => Array.isArray(v) ? v.slice(0, n || 12).map(x => t
 function schoonAI(d){
   if(!d || typeof d !== 'object') return {};
   const uit = {...d};
-  for(const k of ['name','producer','type','country','region','appellation']) if(k in uit) uit[k] = tekstOk(uit[k], 200);
+  for(const k of ['name','producer','type','country','region','appellation','zoek_producent','zoek_naam']) if(k in uit) uit[k] = tekstOk(uit[k], 200);
   for(const k of ['note']) if(k in uit) uit[k] = tekstOk(uit[k], 600);
   if('score_seen' in uit) uit.score_seen = tekstOk(uit.score_seen, 60);
   for(const k of ['vintage','drink_from','drink_to']) if(k in uit) uit[k] = jaarOk(uit[k]);
@@ -680,6 +680,7 @@ function schoonWijn(w){
     price: getalOk(w.price), value: getalOk(w.value), valueLow: getalOk(w.valueLow), valueHigh: getalOk(w.valueHigh),
     qty: Math.max(0, Math.min(999, parseInt(w.qty, 10) || 0)), type: eigenSleutel(TYPES, w.type) ? w.type : 'rood',
     grapes: lijstOk(w.grapes, 8, 60), pairing: lijstOk(w.pairing, 8, 120), photo: !!w.photo, valueAt: datumOk(w.valueAt),
+    zoekProducer: tekstOk(w.zoekProducer, 200) || undefined, zoekNaam: tekstOk(w.zoekNaam, 200) || undefined,
     valueSrc: ['ai','zoek','eigen','samen'].includes(w.valueSrc) ? w.valueSrc : (w.value != null ? 'eigen' : undefined),
     samen: (w.samen && typeof w.samen === 'object' && getalOk(w.samen.n) >= 2) ? {n: Math.min(99999, Math.round(getalOk(w.samen.n))), low: getalOk(w.samen.low), high: getalOk(w.samen.high), med: getalOk(w.samen.med), at: tekstOk(w.samen.at, 40)} : undefined,
     valueBron: (w.valueBron && typeof w.valueBron === 'object') ? {...w.valueBron, name: tekstOk(w.valueBron.name, 80), url: safeUrl(w.valueBron.url), vintage: jaarOk(w.valueBron.vintage), n: getalOk(w.valueBron.n)} : null};
@@ -1370,8 +1371,8 @@ function parseJsonLoose(s){
 async function aiScan(dataUrl, onPartial){
   const b64 = dataUrl.split(',')[1];
   const prompt = `Je bent een ervaren sommelier die wijnetiketten leest. Analyseer de foto van dit etiket en antwoord UITSLUITEND met geldig JSON, zonder andere tekst:
-{"name":"naam van de wijn/cuvée","producer":"producent/château/domaine","vintage":2019 of null bij NV,"type":"rood|wit|oranje|rose|mousserend|zoet|versterkt","grapes":["druif",...],"country":"land","region":"regio","appellation":"appellation of null","drink_from":2024,"drink_to":2032,"value_eur":28,"value_low":24,"value_high":34,"value_confidence":"hoog|middel|laag","pairing":["gerecht 1","gerecht 2","gerecht 3","gerecht 4"],"note":"één zin in het Nederlands over stijl en karakter","score_seen":"92 Parker" of null}
-drink_from/drink_to is jouw beste schatting van het drinkvenster (jaartallen) op basis van wijn, appellation, kwaliteit en jaargang. type: lees de kleur van het etiket (rosso, rouge, tinto, bianco, blanc, blanco) of leid hem af uit druiven en appellation; een Sangiovese of Nebbiolo is rood, een Vermentino wit. Is de kleur echt niet af te leiden, dan null in plaats van een gok. value_eur is de geschatte marktwaarde per fles in euro's van déze jaargang op dit moment (${YR()}) op de Europese markt (winkel of veiling), niet de introductieprijs. Reken met wat leeftijd doet: geklasseerde en bewaarwijnen worden duurder, eenvoudige wijnen zijn bijna niets meer waard zodra ze over hun venster zijn. value_low/value_high is een eerlijke bandbreedte; bij een wijn ouder dan acht jaar of een die je niet goed kent maak je die band breed. value_confidence: hoog als je deze producent en cuvée echt kent, middel bij een bekende appellation met een producent die je niet kent, laag als je de prijs eigenlijk raadt. Kies bij twijfel laag; een eerlijk "weet ik niet" is meer waard dan een gok. score_seen alleen als er letterlijk een cijfer met bron op de foto staat (halslabel, sticker, schapkaartje), bijvoorbeeld "92 Parker"; nooit uit je geheugen. pairing in het Nederlands. ${styleNote()} Onleesbare of onbekende velden: null.`;
+{"name":"naam van de wijn/cuvée","producer":"producent/château/domaine","vintage":2019 of null bij NV,"type":"rood|wit|oranje|rose|mousserend|zoet|versterkt","grapes":["druif",...],"country":"land","region":"regio","appellation":"appellation of null","drink_from":2024,"drink_to":2032,"value_eur":28,"value_low":24,"value_high":34,"value_confidence":"hoog|middel|laag","pairing":["gerecht 1","gerecht 2","gerecht 3","gerecht 4"],"note":"één zin in het Nederlands over stijl en karakter","score_seen":"92 Parker" of null,"zoek_producent":"producent zoals een webshop hem noemt","zoek_naam":"wijnnaam zoals een webshop hem noemt"}
+zoek_producent en zoek_naam zijn de zoekidentiteit: de kortste vorm waaronder een winkel deze fles verkoopt. Laat eigenaars- en familienamen weg (Famille de Wulf), rechtsvormen (SARL, SCEA) en importeurs; kies Château of Domaine zoals de producent zichzelf noemt. zoek_naam is alleen de cuvéenaam, zonder Cuvée, AOP of appellation; heeft de wijn geen eigen cuvéenaam, herhaal dan zoek_producent. drink_from/drink_to is jouw beste schatting van het drinkvenster (jaartallen) op basis van wijn, appellation, kwaliteit en jaargang. type: lees de kleur van het etiket (rosso, rouge, tinto, bianco, blanc, blanco) of leid hem af uit druiven en appellation; een Sangiovese of Nebbiolo is rood, een Vermentino wit. Is de kleur echt niet af te leiden, dan null in plaats van een gok. value_eur is de geschatte marktwaarde per fles in euro's van déze jaargang op dit moment (${YR()}) op de Europese markt (winkel of veiling), niet de introductieprijs. Reken met wat leeftijd doet: geklasseerde en bewaarwijnen worden duurder, eenvoudige wijnen zijn bijna niets meer waard zodra ze over hun venster zijn. value_low/value_high is een eerlijke bandbreedte; bij een wijn ouder dan acht jaar of een die je niet goed kent maak je die band breed. value_confidence: hoog als je deze producent en cuvée echt kent, middel bij een bekende appellation met een producent die je niet kent, laag als je de prijs eigenlijk raadt. Kies bij twijfel laag; een eerlijk "weet ik niet" is meer waard dan een gok. score_seen alleen als er letterlijk een cijfer met bron op de foto staat (halslabel, sticker, schapkaartje), bijvoorbeeld "92 Parker"; nooit uit je geheugen. pairing in het Nederlands. ${styleNote()} Onleesbare of onbekende velden: null.`;
   const out = await callClaude([
     {type:'image', source:{type:'base64', media_type:'image/jpeg', data:b64}},
     {type:'text', text:prompt}
@@ -2142,8 +2143,11 @@ function plekHtml(w){
 function prijsSleutel(w){
   const n = x => String(x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
   const jaar = Number(w.vintage) || 0;
-  return `${n(w.producer)}|${n(w.name)}|${jaar || 'nv'}`;
+  /* sinds v82 op de zoekidentiteit van de scanner als die er is; oudere flessen houden producent en naam */
+  return `${n(w.zoekProducer || w.producer)}|${n(w.zoekNaam || w.name)}|${jaar || 'nv'}`;
 }
+/* wat er van een fles naar de server gaat om hem te herkennen: naam, producent, jaargang en de zoekidentiteit; geen notities, geen prijzen */
+const wijnId = w => ({name:w.name, producer:w.producer, vintage:w.vintage, zoekProducer:w.zoekProducer || undefined, zoekNaam:w.zoekNaam || undefined});
 /* Mag een prijs uit de gedeelde tabel deze fles overschrijven? Nooit een zelf ingevulde waarde of
    aankoopprijs ('eigen'). Wel een fles zonder bron, een gemeenschapsprijs ('samen', de tabel kent de
    bron), en een eerder opgezochte prijs ('zoek') zodra de tabel een nieuwer datapunt heeft: zo komt een
@@ -2162,7 +2166,7 @@ async function prijzenUitTabel(wines){
   try{
     const res = await fnFetch('ai', {
       method:'POST', headers:{ 'content-type':'application/json' },
-      body: JSON.stringify({ kind:'prijscache', wines: wines.slice(0, 100).map(w => ({name:w.name, producer:w.producer, vintage:w.vintage})) })
+      body: JSON.stringify({ kind:'prijscache', wines: wines.slice(0, 100).map(wijnId) })
     });
     if(!res.ok) return 0;
     d = await res.json().catch(() => ({}));
@@ -2202,12 +2206,12 @@ async function prijsNaScan(w){
 function deelBetaald(w){
   if(!S.settings.deelPrijzen || !(Number(w.price) > 0) || typeof loggedIn !== 'function' || !loggedIn()) return;
   fnFetch('ai', { method:'POST', headers:{ 'content-type':'application/json' },
-    body: JSON.stringify({ kind:'betaald', wine:{name:w.name, producer:w.producer, vintage:w.vintage}, price:Number(w.price) }) }).catch(() => {});
+    body: JSON.stringify({ kind:'betaald', wine:wijnId(w), price:Number(w.price) }) }).catch(() => {});
 }
 async function deelAlles(){
   const lijst = S.wines.filter(w => Number(w.price) > 0).slice(0, 200);
   let n = 0;
-  for(const w of lijst){ try{ const r = await fnFetch('ai', { method:'POST', headers:{ 'content-type':'application/json' }, body: JSON.stringify({ kind:'betaald', wine:{name:w.name, producer:w.producer, vintage:w.vintage}, price:Number(w.price) }) }); if(r.ok) n++; }catch(_){} }
+  for(const w of lijst){ try{ const r = await fnFetch('ai', { method:'POST', headers:{ 'content-type':'application/json' }, body: JSON.stringify({ kind:'betaald', wine:wijnId(w), price:Number(w.price) }) }); if(r.ok) n++; }catch(_){} }
   toast(n ? `${n} ${plur(n, 'aankoopprijs', 'aankoopprijzen')} gedeeld` : 'Nog geen aankoopprijzen om te delen', null, null, 5000);
 }
 INP.prijsAuto = el => { S.settings.prijsAuto = !!el.checked; save(true); };
@@ -2238,7 +2242,7 @@ Regels voor het antwoord, in deze volgorde:
 3. Alleen als je van deze wijn helemaal geen enkele prijs vindt: {"value":null,"note":"reden"}.
 Antwoord als allerlaatste met alleen dit JSON-object, zonder tekst ervoor of erna en zonder codeblok:
 {"value":42,"low":38,"high":48,"source":"naam van de winkel of site","url":"adres van de pagina waar de prijs staat","vintage_found":2014,"size_seen":"75cl|50cl|37.5cl|magnum|onbekend","confidence":"hoog|middel|laag","note":"één korte zin in het Nederlands over waar de prijs vandaan komt, met de flesmaat als die geen 75 cl was"}${STIJLREGELS}`;
-  const out = await callClaude([{type:'text', text:prompt}], 1500, diep ? 'prijsdiep' : 'prijs', null, {web:true, wine:{name:w.name, producer:w.producer, vintage:w.vintage, appellation:w.appellation, region:w.region, country:w.country, est:(w.valueSrc === 'ai' && w.value != null) ? w.value : null}, refresh: w.valueSrc === 'zoek'});
+  const out = await callClaude([{type:'text', text:prompt}], 1500, diep ? 'prijsdiep' : 'prijs', null, {web:true, wine:{...wijnId(w), appellation:w.appellation, region:w.region, country:w.country, type:w.type, est:(w.valueSrc === 'ai' && w.value != null) ? w.value : null}, refresh: w.valueSrc === 'zoek'});
   return parsePrijs(out);
 }
 /* Het model mag om het JSON heen praten of citeren; we nemen het laatste object met "value". */
@@ -3533,6 +3537,8 @@ ACT.scanAdd = async () => {
   const pr = proefLees();
   if(d.location) S.settings.lastLocation = d.location;
   const w = { id:uid(), ...d, qty:formQty, pairing:lijstOk(scan.data&&scan.data.pairing, 8, 120).length ? lijstOk(scan.data.pairing, 8, 120) : (recalcPairing||[]), photo:!!scan.thumb, addedAt:Date.now() };
+  /* de zoekidentiteit van de scanner (v82): de vorm waaronder een winkel de fles verkoopt, voor de prijstabel en de zoeklaag */
+  if(scan.data){ const zp = tekstOk(scan.data.zoek_producent, 200), zn = tekstOk(scan.data.zoek_naam, 200); if(zp) w.zoekProducer = zp; if(zn) w.zoekNaam = zn; }
   if(scan.data && scan.data.value_low != null) w.valueLow = Math.round(scan.data.value_low);
   if(scan.data && scan.data.value_high != null) w.valueHigh = Math.round(scan.data.value_high);
   if(recalcValueRange){ w.valueLow = recalcValueRange.low; w.valueHigh = recalcValueRange.high; }
@@ -3564,6 +3570,7 @@ ACT.scanMerge = async () => {
   const m = scan.match && findWine(scan.match.id);
   if(!m){ toast('Deze fles ligt niet meer in je kelder'); return; }
   m.qty = (m.qty||0) + formQty;
+  if(scan.data && !m.zoekProducer){ const zp = tekstOk(scan.data.zoek_producent, 200), zn = tekstOk(scan.data.zoek_naam, 200); if(zp){ m.zoekProducer = zp; if(zn) m.zoekNaam = zn; } }
   /* gekozen vakken tellen alleen als ze bij het rek van de bestaande fles horen */
   if(formVakken.size && formVakLoc && rekVan(formVakLoc)){ if(!m.location) m.location = formVakLoc; if(m.location === formVakLoc) rekVoegToe(formVakLoc, m.id, [...formVakken]); }
   if((document.getElementById('scanTonight')||{}).checked && !onTable(m.id)){ if(!S.tonight) S.tonight = []; S.tonight.push({wineId:m.id, at:Date.now()}); }
