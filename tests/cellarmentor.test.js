@@ -43,7 +43,7 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, estimateWindow, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, estimateWindow, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
@@ -328,4 +328,27 @@ test('schoonDoc: verkeerde types in caches en tafel breken de app niet, score en
 test('schoonWijn: valueAt is een datum of niets', () => {
   assert.equal(C.schoonWijn({ name: 'x', valueAt: 'nonsense' }).valueAt, undefined);
   assert.equal(C.schoonWijn({ name: 'x', valueAt: '2026-09-15' }).valueAt, '2026-09-15');
+});
+
+/* ================= open detailvenster ververst zichzelf na een prijs (v85) ================= */
+test('detail: prijsvak toont bezig en daarna de prijs, ook met een venster open', () => {
+  const w = C.schoonWijn({ id: 'w-vers', name: 'Testwijn', producer: 'Test', vintage: 2020, qty: 1 });
+  C.S.wines.push(w);
+  assert.match(C.waardeBlok(w), /Nog geen prijs met bron/);
+  C.prijsBezig.add(w.id);
+  assert.match(C.waardeBlok(w), /zoekt de prijs/);
+  assert.doesNotMatch(C.plekHtml(w) || '', /data-act="prijsZoek"/, 'geen tweede zoekopdracht voor dezelfde fles');
+  /* een open detail: alleen de gemerkte vakken worden herschreven */
+  const vak = { dataset: { prijsvak: w.id }, innerHTML: 'oud' }, plek = { dataset: { plekvak: w.id }, innerHTML: 'oud' }, vreemd = { dataset: { prijsvak: 'bestaat-niet' }, innerHTML: 'oud' };
+  const oud = ctx.document.querySelectorAll;
+  ctx.document.querySelectorAll = sel => sel.includes('prijsvak') ? [vak, vreemd] : [plek];
+  try {
+    C.prijsBezig.delete(w.id);
+    w.value = 42; w.valueSrc = 'zoek'; w.valueBron = { name: 'Gall', url: 'https://www.gall.nl/x' };
+    C.versPrijsvakken();
+  } finally { ctx.document.querySelectorAll = oud; C.S.wines.pop(); }
+  assert.match(vak.innerHTML, /42/);
+  assert.match(vak.innerHTML, /Gall/);
+  assert.notEqual(plek.innerHTML, 'oud');
+  assert.equal(vreemd.innerHTML, 'oud', 'een vak van een fles die er niet meer ligt blijft met rust');
 });

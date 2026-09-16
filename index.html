@@ -2187,6 +2187,7 @@ function waardeBlok(w){
   const koop = w.price ? `gekocht voor ${money(w.price)}` : '';
   const samen = (w.samen && w.samen.n >= 2 && w.valueSrc !== 'samen') ? `<div class="small">${w.samen.n} CellarMentor-gebruikers betaalden ${money(w.samen.low)} tot ${money(w.samen.high)}</div>` : '';
   /* geen bron: geen groot getal. De schatting van het model staat klein en heet wat hij is. */
+  if(!b && prijsBezig.has(w.id)) return `<div class="waarde"><span class="pulse">${ik('zoek')} De sommelier zoekt de prijs bij wijnhandels…</span>${samen}</div>`;
   if(!b) return `<div class="waarde"><span>Nog geen prijs met bron.${ind ? ` Indicatie van de sommelier: ${money(ind.low)} tot ${money(ind.high)}, geen echte prijs.` : ''}</span>${samen}</div>`;
   const oud = w.vintage && (YR() - w.vintage) >= 8;
   const lo = Number(w.valueLow) || Math.round(b * (oud ? 0.7 : 0.8)), hi = Number(w.valueHigh) || Math.round(b * (oud ? 1.3 : 1.2));
@@ -2210,8 +2211,9 @@ function plekHtml(w){
   /* Opnieuw opzoeken kan altijd (sinds v81): wie een prijs ziet die niet klopt hoeft niet een jaar te wachten.
      De server beschermt de gedeelde tabel: een eigen rij mag je verversen, die van een ander alleen binnen
      0,4× tot 2,5× of als hij verouderd is. */
-  const zoek = aiReady()
-    ? `<button class="linkbtn" data-act="prijsZoek" data-id="${w.id}" id="prijsBtn">${ik('zoek')} ${w.valueSrc === 'zoek' ? 'Opnieuw opzoeken' : 'Prijs opzoeken'}${ownKey() ? '' : ' · ' + creditCost('prijs') + ' credit'}</button>` : '';
+  const zoek = !aiReady() ? ''
+    : prijsBezig.has(w.id) ? `<span class="small pulse">${ik('zoek')} Zoeken bij wijnhandels…</span>`
+    : `<button class="linkbtn" data-act="prijsZoek" data-id="${w.id}" id="prijsBtn">${ik('zoek')} ${w.valueSrc === 'zoek' ? 'Opnieuw opzoeken' : 'Prijs opzoeken'}${ownKey() ? '' : ' · ' + creditCost('prijs') + ' credit'}</button>`;
   /* staat hij op tafel, dan is "plek" letterlijk: waar ligt hij, zodat je hem kunt pakken */
   const tafel = onTable(w.id);
   if(!zin && !chips.length && !zoek && !tafel) return '';
@@ -2401,15 +2403,32 @@ function pasPrijsToe(w, r){
 }
 /* Voor welke flessen loont opzoeken: oud, of aan de bovenkant van de kelder. */
 const prijsWaardig = w => (w.vintage && YR() - w.vintage >= 8) || !!plekInKelder(w);
+/* Welke flessen nu een prijs zoeken op de achtergrond: het detail toont dat, en de knop "Prijs opzoeken"
+   staat zolang uit (anders kost dezelfde fles twee credits). */
+const prijsBezig = new Set();
+/* Een open detailvenster ter plekke bijwerken (v85). Zolang een venster open staat tekent renderTenzijFormulier
+   niets, dus na een prijs op de achtergrond bleef daar "Nog geen prijs met bron" staan; de lijst erachter komt
+   pas bij het sluiten (renderNaSluiten). Alleen de vakken die van de prijs afhangen, zonder het venster te
+   sluiten en zonder stap in de geschiedenis. */
+function versPrijsvakken(){
+  if(typeof document === 'undefined' || !document.querySelectorAll) return;
+  for(const [vak, html] of [['prijsvak', waardeBlok], ['plekvak', plekHtml]]){
+    for(const el of document.querySelectorAll(`[data-${vak}]`)){ const w = findWine(el.dataset[vak]); if(w) el.innerHTML = html(w); }
+  }
+}
 async function prijsAchteraf(w, meld, diep){
+  if(prijsBezig.has(w.id)) return false;   /* loopt al */
   if(meld) toast(diep ? 'Diep zoeken bij wijnhandels en veilingen…' : 'Prijs zoeken bij wijnhandels…', null, null, 20000);
+  prijsBezig.add(w.id); versPrijsvakken();
   try{
     const r = await aiPrijs(w, diep);
+    prijsBezig.delete(w.id);
     if(pasPrijsToe(findWine(w.id) || w, r)){ save(); renderTenzijFormulier(); toast(`Prijs opgezocht: ${money(w.value)}${w.valueBron.name ? ' · ' + w.valueBron.name : ''}`, null, null, 5000); return true; }
     /* de zoeklaag vond niets: één tik voor de zware zoekagent, die verder kijkt */
     if(meld && !diep) toast('Geen prijs gevonden bij wijnhandels. Dieper zoeken?', ownKey() ? 'Zoek diep' : `Zoek diep · ${creditCost('prijsdiep')} credits`, () => prijsAchteraf(w, true, true), 9000);
     else if(meld) toast(r && r.note ? 'Geen prijs gevonden: ' + String(r.note).slice(0, 80) : 'Geen prijs gevonden', null, null, 5000);
   }catch(e){ if(meld) toast('Opzoeken mislukte: ' + String(e.message || e).slice(0, 90), null, null, 6000); }
+  finally{ prijsBezig.delete(w.id); versPrijsvakken(); }
   return false;
 }
 ACT.prijsZoek = async el => {
@@ -2468,9 +2487,9 @@ function openDetail(id){
         <button class="stepbtn" style="width:32px;height:32px;font-size:17px" data-act="qtyPlus" data-id="${w.id}" aria-label="Fles erbij">+</button>
       </div>
       <span class="loc">${(()=>{ const vk = rekVakken(w.location, w.id); return `${esc(w.location||'geen locatie')}${vk.length?` · <span class="tnum">${vakKort(vk)}</span>`:''}${rekVan(w.location)?`<br><button type="button" class="small" data-act="rekOpen" data-n="${esc(w.location)}" data-id="${w.id}" style="color:var(--acc-ink)">Bekijk rek ›</button>`:''}`; })()}</span></div>
-    ${waardeBlok(w)}
+    <div data-prijsvak="${w.id}">${waardeBlok(w)}</div>
     ${w.note?`<p style="font-size:13.5px;color:var(--ink2);margin:4px 0 10px">${esc(w.note)}</p>`:''}
-    ${plekHtml(w)}
+    <div data-plekvak="${w.id}">${plekHtml(w)}</div>
     <div class="eyebrow mb8">Schenken</div>${serveHtml(w)}
     ${(w.pairing&&w.pairing.length)?`<div class="eyebrow mb8 mt14">Lekker bij</div><div class="grapes" style="margin-bottom:12px">${w.pairing.map(p=>`<span class="grape">${esc(p)}</span>`).join('')}</div>`:''}
     ${(()=>{ const recs=(S.recipeCache||[]).filter(r=>r.wineId===w.id); return recs.length?`<div class="eyebrow mb8">Opgeslagen recepten</div><div class="panel" style="margin-bottom:12px;padding:6px 15px">${recs.map(r=>`<button class="rowline" style="width:100%;text-align:left" data-act="recipeOpen" data-k="${esc(r.key)}"><span class="a"><div class="t">${ik('boek')} ${esc(r.recipe.title||r.dish)}</div><div class="u">${Number(r.persons)||0} personen${r.recipe.time?' · '+esc(r.recipe.time):''}</div></span><span class="z" style="color:var(--ink3)">›</span></button>`).join('')}</div>`:''; })()}
@@ -5283,7 +5302,7 @@ async function applyRemote(remote){
   adoptDoc(remote); renderTenzijFormulier(); await pullPhotos();
 }
 /* een sync of prijsronde op de achtergrond mag een formulier in bewerking niet wissen */
-function renderTenzijFormulier(){ if(UI.tab === 'scan' && scan.stage === 'confirm') return; if(sheets.length) return; render(); }
+function renderTenzijFormulier(){ if(UI.tab === 'scan' && scan.stage === 'confirm') return; if(sheets.length){ versPrijsvakken(); return; } render(); }
 const shrinks = (van, naar) => van >= 5 && naar < Math.max(1, Math.ceil(van * 0.2)); /* >80% zou verdwijnen */
 /* Ook een historie of verlanglijst kan in één klap verdwijnen, en die zijn net zo
    min terug te halen als de flessen zelf. Alle drie apart wegen. */
@@ -6026,7 +6045,7 @@ const EN = {
   'Bedenktijd: heb je binnen veertien dagen nog geen credits gebruikt en wil je er toch vanaf, dan krijg je je geld terug.':'Cooling-off: if you have not used any credits within fourteen days and want out after all, you get your money back.',
   'voor':'for', 'btw inbegrepen.':'VAT included.', 'worden dat er':'that becomes', 'Foto\'s van een':'Photos of a', 'Lijst met flessen':'List of bottles',
   /* prijzen met bron (6 sep) */
-  'Nog geen prijs met bron.':'No sourced price yet.', 'je aankoopprijs':'your purchase price', 'Prijs opzoeken':'Look up price', 'Prijs opzoeken · 1 credit':'Look up price · 1 credit', 'Opnieuw opzoeken · 1 credit':'Look up again · 1 credit',
+  'Nog geen prijs met bron.':'No sourced price yet.', 'De sommelier zoekt de prijs bij wijnhandels…':'The sommelier is looking up the price at wine merchants…', 'je aankoopprijs':'your purchase price', 'Prijs opzoeken':'Look up price', 'Prijs opzoeken · 1 credit':'Look up price · 1 credit', 'Opnieuw opzoeken · 1 credit':'Look up again · 1 credit',
   'Prijs zoeken bij wijnhandels…':'Looking up the price at wine merchants…', 'Diep zoeken bij wijnhandels en veilingen…':'Searching deeper at merchants and auctions…', 'Zoeken bij wijnhandels…':'Searching wine merchants…',
   'Geen prijs gevonden bij wijnhandels. Dieper zoeken?':'No price found at wine merchants. Search deeper?', 'Zoek diep':'Search deeper', 'Zoek diep · 5 credits':'Search deeper · 5 credits', 'Zoek op · 1 credit':'Look up · 1 credit',
   'Geen prijs met bron. Opzoeken bij wijnhandels?':'No sourced price. Look it up at wine merchants?', 'Niets gevonden. Dieper zoeken · 5 credits':'Nothing found. Search deeper · 5 credits', 'Niets gevonden. Dieper zoeken':'Nothing found. Search deeper', 'Opnieuw proberen':'Try again', 'Streepjescode scannen':'Scan barcode', 'Staat op de achterkant. Een winkel zet dat nummer bij het product, dus dan is de fles precies te vinden.':'It is on the back. Shops list that number with the product, so the bottle can be found exactly.', 'Richt op de streepjescode, liggend of staand, zo groot mogelijk in beeld':'Point at the barcode, sideways or upright, as large as possible', 'Nog niets herkend: dichterbij, of tik op de knop en laat de sommelier de cijfers lezen (1 credit)':'Nothing recognised yet: closer, or tap the button and let the sommelier read the digits (1 credit)', 'De sommelier leest de streepjescode…':'The sommelier is reading the barcode…', 'Geen streepjescode te lezen op deze foto. Probeer het nog eens met de cijfers scherp in beeld':'No barcode readable in this photo. Try again with the digits sharp in view',
