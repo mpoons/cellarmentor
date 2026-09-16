@@ -43,7 +43,7 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, jaargangOordeel, streekVan, STREKEN, JAARTABEL, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
@@ -336,6 +336,23 @@ test('jaargangOordeel: rood en wit uit de Bourgogne worden apart beoordeeld', ()
   const wt = C.jaargangOordeel({ vintage: 2014, type: 'wit', region: 'Bourgogne', appellation: 'Meursault', name: 'x' });
   assert.match(r.streek, /rood/);
   assert.match(wt.streek, /wit/);
+});
+test('de jaargangtabel scheidt gecontroleerde jaren van eigen schattingen', () => {
+  /* Een plus achter het niveau betekent: tegen minstens twee onafhankelijke bronnen gelegd.
+     De app zegt dat per fles tegen de gebruiker, dus het mag niet door elkaar lopen. */
+  const champ = { vintage: 2008, type: 'mousserend', region: 'Champagne', name: 'x' };
+  assert.equal(C.jaargangOordeel(champ).bron, true, 'Champagne 2008 is nagetrokken');
+  const geschat = { vintage: 1979, type: 'mousserend', region: 'Champagne', name: 'x' };
+  assert.equal(C.jaargangOordeel(geschat).bron, false, '1979 staat er nog als eigen schatting');
+  /* elke gemarkeerde jaargang hoort ook een niveau te hebben */
+  for (const [streek, jaren] of Object.entries(C.JAARBRON)) {
+    for (const jaar of Object.keys(jaren)) {
+      assert.ok(C.JAARTABEL[streek][jaar] >= 1, streek + ' ' + jaar + ' is gemarkeerd zonder niveau');
+    }
+  }
+  const totaal = Object.values(C.JAARTABEL).reduce((n, j) => n + Object.keys(j).length, 0);
+  const bron = Object.values(C.JAARBRON).reduce((n, j) => n + Object.keys(j).length, 0);
+  assert.ok(bron > 180 && bron < totaal, `${bron} van ${totaal} jaren gecontroleerd; klopt dat nog?`);
 });
 test('de jaargangtabel is goed gevormd: bekende streken, geldige jaren en niveaus', () => {
   const keys = new Set();
