@@ -232,14 +232,46 @@
  },
  "per_streek": {
   "alentejo": {
+   "2007": [
+    "Adega Regional de Colares",
+    "Torre do Frade"
+   ],
+   "2012": [
+    "Quinta do Mouro"
+   ],
+   "2013": [
+    "Sociedade Agricola D Diniz"
+   ],
+   "2014": [
+    "Herdade de São Miguel",
+    "Terra d’Alter"
+   ],
+   "2015": [
+    "Herdade de São Miguel",
+    "Vale da Capucha",
+    "Casal Figueira"
+   ],
+   "2016": [
+    "Herdade de São Miguel",
+    "Esporão",
+    "José Maria da Fonseca",
+    "Fitapreta",
+    "Quinta da Chocapalha",
+    "Herdade do Esporão"
+   ],
+   "2017": [
+    "Herdade do Esporão"
+   ],
    "2019": [
     "Herdade Aldeia de Cima"
    ],
    "2021": [
-    "XXVI Talhas"
+    "XXVI Talhas",
+    "Herdade do Esporão"
    ],
    "2022": [
-    "Quinta do Montalto"
+    "Quinta do Montalto",
+    "Herdade do Esporão"
    ]
   },
   "alsace": {
@@ -251,6 +283,12 @@
    ],
    "2018": [
     "Zind Humbrecht"
+   ],
+   "2020": [
+    "Dopff"
+   ],
+   "2022": [
+    "Albert Mann"
    ]
   },
   "argentinie": {
@@ -609,7 +647,31 @@
     "Rouget",
     "Troplong Mondot",
     "Trotte Vieille",
-    "Vieux Chateau Certan"
+    "Vieux Chateau Certan",
+    "Château Latour",
+    "Château Lafite Rothschild",
+    "Château Margaux",
+    "Château Mouton Rothschild",
+    "Château Cos d'Estournel",
+    "Château Haut-Brion",
+    "Château Léoville Barton",
+    "Château Pavie Decesse",
+    "Château Pichon Longueville Comtesse de Lalande",
+    "Château Calon Ségur",
+    "Château Duhart-Milon",
+    "Château Léoville-Las Cases",
+    "Château Pavie Macquin",
+    "Château Saint-Pierre",
+    "Château Quinault L'Enclos",
+    "Château Beychevelle",
+    "Château Ducru-Beaucaillou",
+    "Château La Mission Haut-Brion",
+    "Château Pontet-Canet",
+    "Château La Lagune",
+    "Château Montrose",
+    "Château Troplong Mondot",
+    "Château Pavie",
+    "Château Lynch-Bages"
    ],
    "2007": [
     "Angélus",
@@ -678,7 +740,16 @@
     "Château Figeac"
    ],
    "2017": [
-    "Château d'Yquem"
+    "Château d'Yquem",
+    "Château Margaux",
+    "Château Latour",
+    "Château Lafite Rothschild",
+    "Château Léoville Las Cases",
+    "Château Palmer",
+    "Château Ducru-Beaucaillou",
+    "Château Montrose",
+    "Château Mouton Rothschild",
+    "Château Haut-Bailly"
    ],
    "2018": [
     "Château Mouton Rothschild",
@@ -729,7 +800,24 @@
     "Château Pichon Baron",
     "Château Bélair-Monange",
     "Château Clinet",
-    "Clos Fourtet"
+    "Clos Fourtet",
+    "Château Deyrem-Valentin",
+    "Château Malescasse",
+    "Château Belle-Vue",
+    "Chateau Caronne Ste-Gemme",
+    "Château Le Crock",
+    "Château Haut-Bages-Monpelou",
+    "Château Bonalgue",
+    "Château Laroze",
+    "Château Beaumont",
+    "Château Grand Tayac",
+    "Château La Garde",
+    "Château d'Yquem",
+    "Château Coutet",
+    "Château Couhins-Lurton",
+    "Château Climens",
+    "Château Lafaurie-Peyraguey",
+    "Château Malartic-Lagravière"
    ],
    "2019": [
     "Château Cos d'Estournel",
@@ -1145,7 +1233,8 @@
     "Château de Rayne Vigneau",
     "Clos des Lunes",
     "Château Bastor-Lamontagne",
-    "Château de Rolland"
+    "Château de Rolland",
+    "Château Bauduc"
    ],
    "2022": [
     "Château Lafite Rothschild",
@@ -1203,7 +1292,66 @@
     "Château Smith Haut Lafitte",
     "Château Trotanoy",
     "Clos du Clocher",
-    "Clos Fourtet"
+    "Clos Fourtet",
+    "Château d'Issan",
+    "Château Giscours",
+    "Château Cantenac Brown",
+    "Château Durfort-Vivens",
+    "Château Marquis d'Alesme",
+    "Château Monbrison",
+    "Château Labégorce",
+    "Château Prieuré-Lichine",
+    "Château Dauzac",
+    "Château Marquis de Terme",
+    "Château Kirwan",
+    "Château Desmirail",
+    "Château Siran",
+    "Château Le Coteau",
+    "Château Malescot St Exupéry",
+    "Château Haut-Brion",
+    "Château Malartic-Lagravière",
+    "Château Haut-Bailly",
+    "Domaine de Chevalier",
+    "Château La Garde",
+    "Château Couhins-Lurton",
+    "Château Bouscaut",
+    "Château Larrivet Haut-Brion",
+    "Château La Louvière",
+    "Château Brown",
+    "Château Pape Clément",
+    "Château Guillot Clauzel",
+    "Château Hosanna",
+    "Château Clinet",
+    "Château Séraphine",
+    "Château Feytit-Clinet",
+    "Château Latour à Pomerol",
+    "Château Beauregard",
+    "Château Trotte Vieille",
+    "Château La Gaffelière",
+    "Château Pavie",
+    "Château Larcis Ducasse",
+    "Château Pavie Macquin",
+    "Château Ausone",
+    "Château La Dominique",
+    "Château Valandraud",
+    "Château Fonplégade",
+    "Château Croix de Labrie",
+    "Château Bellefont-Belcier",
+    "Château Jean Faure",
+    "Le Dôme",
+    "Château de Pressac",
+    "Château Dassault",
+    "Château Canon-la-Gaffelière",
+    "Château St-Georges Côte Pavie",
+    "Château Léoville-Las Cases",
+    "Château Léoville Barton",
+    "Château Ducru-Beaucaillou",
+    "Château Lagrange",
+    "Château Léoville Poyferré",
+    "Château Beychevelle",
+    "Château Langoa Barton",
+    "Château Talbot",
+    "Château Saint-Pierre"
    ],
    "2023": [
     "Château La Mission Haut-Brion",
@@ -1972,7 +2120,8 @@
    "2017": [
     "Domaine Laurent Martray",
     "Jane Eyre",
-    "Domaine de la Pirolette"
+    "Domaine de la Pirolette",
+    "Domaine Frantz Chagnoleau"
    ],
    "2018": [
     "Château de la Chaize",
@@ -2105,7 +2254,31 @@
     "Roland Lavantureux",
     "Domaine Corinne Perchaud",
     "Domaine Jean-Marc Brocard",
-    "Domaine Nathalie & Gilles Fèvre"
+    "Domaine Nathalie & Gilles Fèvre",
+    "Domaine Laurent et Céline Notton",
+    "Julien Brocard",
+    "Pascal Bouchard",
+    "J Moreau & Fils",
+    "Domaine Bernard Defaix",
+    "Domaine Jean Collet & Fils",
+    "Domaine Sébastien Dampt",
+    "Domaine Grossot",
+    "Clotilde Davenne",
+    "Domaine Roy",
+    "Domaine Moreau-Naudet",
+    "Louis Jadot",
+    "Domaine du Colombier",
+    "Domaine Bernard Beaufumé",
+    "Christophe et Fils",
+    "Closerie des Alisiers",
+    "Domaine Soupé",
+    "Stéphanie & Vincent Michelet",
+    "Domaine Camille & Laurent Schaller",
+    "Domaine Besson",
+    "Domaine Laroche",
+    "Charly Nicolle",
+    "Domaine Jean Claude Courtault",
+    "Domaine de Vauroux"
    ],
    "2020": [
     "Domaine François Raveneau",
@@ -2185,7 +2358,26 @@
     "Domaine des Marrans",
     "Arnaud Aucoeur",
     "Domaine Romy",
-    "Clos du Vieux Bourg"
+    "Clos du Vieux Bourg",
+    "00 Wines",
+    "Antoine et Laurent Robin",
+    "Guy et Olivier Alexandre",
+    "Domaine Bardet et Fils",
+    "Millet Père et Fils",
+    "Sylvain Mosnier",
+    "Domaine de Mauperthuis",
+    "Domaine Jolly",
+    "Dominique Gruhier",
+    "Christophe et Fils",
+    "Domaine Jean Dauvissat",
+    "Domaine Marsoif",
+    "Domaine Gabrielle",
+    "Charlène & Laurent Pinson",
+    "Daniel Dampt",
+    "Domaine de la Mandelière",
+    "Domaine Gérard Tremblay",
+    "Domaine Laurent et Céline Notton",
+    "Stephane Aladame"
    ],
    "2021": [
     "Château de Grand Pré",
@@ -2299,7 +2491,8 @@
     "Domaine 47°N 3°E",
     "Domaine Laroche",
     "Régnard",
-    "Domaine des Peregrins"
+    "Domaine des Peregrins",
+    "Jean Chartron"
    ],
    "2024": [
     "Rijckaert",
@@ -2321,7 +2514,15 @@
     "Domaine Hubert Lignier",
     "Louis Jadot",
     "Maison Millemann",
-    "Philippe Pacalet"
+    "Philippe Pacalet",
+    "Domaine des Comtes Lafon",
+    "Benjamin Leroux",
+    "Domaine Pierre Vincent",
+    "Bouchard Père & Fils",
+    "Domaine Alvina Pernot",
+    "Domaine de Montille",
+    "Domaine Joseph Drouhin",
+    "Pierre-Yves Colin-Morey"
    ]
   },
   "bourgogne_w": {
@@ -2684,6 +2885,28 @@
     "Thacher",
     "Field Recordings",
     "Villa Creek"
+   ],
+   "2022": [
+    "Saxum Vineyards",
+    "Calcareous",
+    "Giornata",
+    "Tablas Creek",
+    "Clos Solène",
+    "Hubba Wines",
+    "Booker",
+    "Brecon Estate",
+    "Caelesta",
+    "Daou",
+    "Denner",
+    "J Dusi",
+    "J Lohr",
+    "L'Aventure",
+    "Ledge Vineyards",
+    "Patrimony",
+    "Adelaida",
+    "Caliza",
+    "Thibido",
+    "Turley"
    ]
   },
   "ca_noord": {
@@ -2722,6 +2945,11 @@
     "CedarCreek"
    ]
   },
+  "champagne": {
+   "2016": [
+    "00 Wines"
+   ]
+  },
   "chili_centraal": {
    "2015": [
     "Miguel Torres"
@@ -2742,11 +2970,44 @@
    ],
    "2018": [
     "Viñedos de Alcohuaz"
+   ],
+   "2024": [
+    "Viñedos Veramonte"
    ]
   },
   "chili_zuid": {
    "2021": [
     "Mauricio Gonzalez"
+   ]
+  },
+  "dao_bairrada": {
+   "2012": [
+    "Vadio"
+   ],
+   "2013": [
+    "Vadio"
+   ],
+   "2014": [
+    "Caminhos Cruzados",
+    "Quinta do Correio",
+    "Quinta das Bágeiras"
+   ],
+   "2015": [
+    "Casca Wines",
+    "António Canto Moniz",
+    "Antonio Madeira"
+   ],
+   "2016": [
+    "Druida",
+    "Casa de Mouraz",
+    "Filipa Pato",
+    "Quinta da Boavista"
+   ],
+   "2019": [
+    "Niepoort"
+   ],
+   "2020": [
+    "Niepoort"
    ]
   },
   "douro": {
@@ -2756,8 +3017,33 @@
    "1927": [
     "Real Companhia Velha"
    ],
+   "1937": [
+    "Quinta do Noval"
+   ],
+   "1966": [
+    "Quinta do Noval"
+   ],
+   "1976": [
+    "Quinta do Noval"
+   ],
    "1985": [
     "Graham's"
+   ],
+   "1994": [
+    "Quinta do Noval"
+   ],
+   "1995": [
+    "Quinta do Noval",
+    "Quinta do Vesúvio"
+   ],
+   "2000": [
+    "Quinta do Noval"
+   ],
+   "2003": [
+    "Quinta do Noval"
+   ],
+   "2004": [
+    "Niepoort"
    ],
    "2005": [
     "Warre's"
@@ -2768,14 +3054,59 @@
    "2008": [
     "Taylor's"
    ],
+   "2009": [
+    "Quinta do Vesúvio"
+   ],
+   "2012": [
+    "M Chapoutier (Portugal)",
+    "Esporão",
+    "Quinta do Sagrado",
+    "Quinta do Vesúvio"
+   ],
+   "2013": [
+    "Alves de Sousa"
+   ],
+   "2014": [
+    "Wine & Soul",
+    "Casa Ferreirinha",
+    "Quinta do Passadouro",
+    "Niepoort",
+    "Quinta da Romaneira",
+    "Quinta do Ataíde"
+   ],
    "2015": [
+    "Prats & Symington",
+    "Casa Ferreirinha",
+    "Symington",
+    "Niepoort",
+    "Quinta do Noval",
+    "Quinta do Vesúvio",
     "Ramos Pinto"
    ],
-   "2019": [
+   "2016": [
+    "Wine & Soul",
+    "Niepoort",
     "Quinta do Noval"
    ],
+   "2017": [
+    "Niepoort"
+   ],
+   "2018": [
+    "Niepoort"
+   ],
+   "2019": [
+    "Niepoort",
+    "Quinta do Vesúvio",
+    "Quinta do Noval"
+   ],
+   "2020": [
+    "Niepoort",
+    "Quinta do Vesúvio"
+   ],
    "2021": [
-    "El3mento"
+    "El3mento",
+    "Niepoort",
+    "Quinta do Murças"
    ]
   },
   "douro_port": {
@@ -3254,13 +3585,37 @@
     "Dr Loosen"
    ],
    "2018": [
-    "Heinrichshof"
+    "Heinrichshof",
+    "Maximin Grünhaus"
+   ],
+   "2019": [
+    "Maximin Grünhaus"
+   ],
+   "2020": [
+    "Maximin Grünhaus"
+   ],
+   "2021": [
+    "Maximin Grünhaus",
+    "Weingut Scheuermann"
+   ],
+   "2022": [
+    "Maximin Grünhaus"
+   ],
+   "2024": [
+    "Bischel",
+    "Joh. Bapt. Schäfer",
+    "Kranz",
+    "Georg Mosbacher",
+    "Knewitz"
    ]
   },
   "griekenland": {
    "2021": [
     "Acheon",
     "Menexes"
+   ],
+   "2022": [
+    "Ousyra Winery"
    ]
   },
   "griekenland_noord": {
@@ -3274,6 +3629,12 @@
    ]
   },
   "languedoc": {
+   "1969": [
+    "Mas Amiel"
+   ],
+   "2001": [
+    "Cave l'Etoile"
+   ],
    "2013": [
     "Les Clos Perdus"
    ],
@@ -3284,7 +3645,9 @@
     "Château Ollieux Romanis",
     "Château d’Aussières",
     "Domaine Sainte-Croix",
-    "Château La Baronne"
+    "Château La Baronne",
+    "Domaine Fontanel",
+    "Domaine Paul Meunier-Centernach"
    ],
    "2016": [
     "Maxime Magnon",
@@ -3294,35 +3657,274 @@
     "Clos de l’Anhel"
    ],
    "2017": [
-    "Domaine Sainte Marie des Crozes"
+    "Domaine Sainte Marie des Crozes",
+    "Domaine Danjou-Banessy"
+   ],
+   "2018": [
+    "Roche Lacour"
+   ],
+   "2019": [
+    "Domaine de l'Agly",
+    "Château de l'Ou",
+    "Vallée des Aigles"
+   ],
+   "2020": [
+    "Domaine de Mouscaillo",
+    "Domaine de Cébène",
+    "Mas Amiel"
+   ],
+   "2021": [
+    "Domaine du Pas de l'Escalette",
+    "Mas Bruguière",
+    "Domaine Balansa",
+    "Domaine Danjou-Banessy",
+    "Mas Amiel",
+    "Domaine Mas Cremat",
+    "Les Vignerons de Caramany",
+    "Domaine de la Meunerie",
+    "Clos del Rey"
+   ],
+   "2022": [
+    "Domaine J Laurens",
+    "Domaine de Petit Roubié",
+    "Château Ollieux Romanis",
+    "Domaine Jones",
+    "Château de Caraguilhes",
+    "Château de Cazeneuve",
+    "Château de Valflaunès",
+    "Clos du Gravillas",
+    "Laurent Miquel",
+    "Maxime Magnon",
+    "Domaine Ledogar",
+    "Divineo",
+    "Domaine Danjou-Banessy",
+    "Domaine du Lendemain",
+    "Domaine Spiaggia",
+    "Le Clos d'Elpis"
+   ],
+   "2023": [
+    "Château Coupe-Roses",
+    "Château d'Anglès",
+    "Domaine Ollier Taillefer",
+    "J Laurens",
+    "Mas Amiel"
+   ],
+   "2024": [
+    "Famille Fabre",
+    "Jonquères d'Oriola"
    ]
   },
   "loire": {
+   "2005": [
+    "Domaine Luneau-Papin"
+   ],
+   "2009": [
+    "Famille Lieubeau"
+   ],
+   "2010": [
+    "Jo Landron"
+   ],
+   "2012": [
+    "Domaine de la Pépière"
+   ],
+   "2013": [
+    "Les Bêtes Curieuses"
+   ],
+   "2014": [
+    "Domaine Luneau-Papin",
+    "Les Bêtes Curieuses",
+    "Domaine de la Pépière",
+    "Bruno Cormerais"
+   ],
+   "2015": [
+    "Domaine Brégeon",
+    "Famille Lieubeau"
+   ],
+   "2016": [
+    "Gadais Père & Fils",
+    "Chéreau Carré",
+    "Barreau"
+   ],
    "2017": [
-    "Damien Pinon"
+    "Damien Pinon",
+    "Domaine de la Pépière",
+    "Jo Landron",
+    "Les Bêtes Curieuses",
+    "Domaine de La Bretonnière"
    ],
    "2018": [
     "Domaine des Baumard",
-    "Jean-Max Roger"
+    "Domaine Le Fay d'Homme",
+    "Domaine La Fay d'Homme",
+    "Jean-Max Roger",
+    "Jo Landron",
+    "Chéreau Carré",
+    "Jean Aubron"
+   ],
+   "2019": [
+    "Domaine des Baumard",
+    "Jérémie Huchet",
+    "Domaine de la Butte",
+    "Domaine de la Noblaie",
+    "Vincent Pinard",
+    "Bonnet-Huteau",
+    "Domaine Yannick Amirault",
+    "André Dezat & Fils",
+    "Jérémie Mourat",
+    "Alphonse Mellot",
+    "Château de Targé",
+    "Domaine des Rochelles",
+    "Château de Villeneuve",
+    "Château du Hureau",
+    "Domaine Grosbois",
+    "Domaine de la Cotelleraie",
+    "Clément & Florian Berthier",
+    "Domaine de la Taille aux Loups",
+    "Pierre Luneau-Papin",
+    "Domaine des Forges",
+    "Vignoble Alain Robert",
+    "Couly-Dutheil",
+    "Anthony Girard",
+    "Domaine d'Orfeuilles",
+    "Domaine Alain Cailbourdin",
+    "Louis-Egard de Pineux, Château de Bonnezeaux",
+    "Famille Lieubeau",
+    "Château du Cléray",
+    "Philippe Socheleau, Domaine des Deux Vallées",
+    "Château la Morinière",
+    "Joseph de Maistre, Le Prieuré de Saint-Céols",
+    "Domaine des Pothiers",
+    "Famille Bourgeois"
    ],
    "2020": [
+    "Domaine du Bel Air",
+    "Charles Joguet",
+    "Domaine Belargus",
+    "Domaine Guiberteau",
+    "Famille Lieubeau",
+    "Domaine des Pothiers",
+    "Matthieu & Renaud Mabillot",
+    "Bertrand Minchin",
+    "Château Pierre-Bise",
+    "Domaine de la Cotelleraie",
+    "Domaine de la Noblaie",
+    "Domaine des Rochelles",
+    "Jean-François Mérieau",
+    "Les Vignerons de Saint-Pourçain",
+    "Cellier de Beaujardin",
+    "Domaine de La Bonnelière",
+    "Domaine Claude Lafond",
+    "Domaine de la Taille aux Loups",
+    "Alphonse Mellot",
+    "André et Edmond Figeat",
+    "Château Gaudrelle",
+    "Domaine Eric Crochet",
+    "Domaine Marchand & Fils",
+    "Caves de Pouilly",
+    "Domaine la Bonnelière",
+    "Cave de Sancerre",
+    "Château de Villeneuve",
+    "Pascal Jolivet",
+    "Jean-Max Roger",
+    "Domaine Paul Buisse",
+    "Domaine de Villargeau",
     "Henri Bourgeois",
-    "Alphonse Mellot"
+    "Domaine Luneau-Papin",
+    "Vincent Caillé",
+    "Domaine de L'Ecu"
+   ],
+   "2021": [
+    "La Grange Tiphaine",
+    "Domaine Grosbois",
+    "Château de Suronde",
+    "Clos de l'Ecotard"
    ],
    "2022": [
     "Domaine Philippe Gilbert",
+    "Domaine des Roches Neuves",
+    "Vincent Pinard",
+    "Domaine des Pothiers",
+    "Domaine Yannick Amirault",
+    "Jonathan Maunoury",
+    "Domaine de la Noblaie",
+    "Domaine des Sables Verts",
+    "Domaine Pellé",
+    "Domaine Théo Blet",
+    "Domaine Bernard Fleuriet & Fils",
+    "Domaine du Clos Naudin",
+    "Domaine Ogereau",
+    "Domaine du Bouchot",
+    "Domaine du Closel",
+    "François et Julien Pinon",
+    "Alphonse Mellot",
+    "Domaine Claude Riffault",
+    "Domaine François Crochet",
+    "Domaine Julien Braud",
+    "François Chidaine",
+    "Henri Bourgeois",
+    "La Grange Tiphaine",
+    "Michel Redde et Fils",
+    "Château de Plaisance",
+    "Domaine Arnaud Lambert",
+    "Domaine de Rocheville",
+    "Domaine Pierre Luneau Papin",
+    "Domaine Fouassier",
+    "Jonathan Didier Pabiot",
+    "Sébastien Brunet",
+    "Domaine Cady",
     "François Crochet",
-    "Daniel Chotard"
+    "Daniel Chotard",
+    "Domaine Cordaillat",
+    "Marc Pesnot",
+    "Domaine de la Pépière",
+    "Domaine Ménard-Gaborit",
+    "Jo Landron",
+    "Jérémie Huchet"
    ],
    "2023": [
+    "Domaine des Roches Neuves",
+    "Domaine de la Noblaie",
+    "Domaine des Sables Verts",
+    "Domaine du Bel Air",
+    "Matthieu & Renaud Mabillot",
+    "Domaine Minchin",
+    "Domaine Brégeon",
+    "Domaine Huet",
+    "Domaine Denis Jamain",
+    "Domaine Julien Braud",
+    "Domaine Le Fay d'Homme",
+    "Anthony Girard",
     "Paul Prieur & Fils",
     "Domaine Claude Riffault",
-    "Domaine Vacheron"
+    "Domaine Vacheron",
+    "Landron-Chartier",
+    "Complemen'Terre",
+    "Pierre-Marie & Marie Luneau",
+    "Rémi Sédès"
    ]
   },
   "napa": {
+   "1979": [
+    "Spring Mountain Vineyard"
+   ],
+   "1988": [
+    "Spring Mountain Vineyard"
+   ],
+   "1992": [
+    "Spring Mountain Vineyard"
+   ],
+   "1999": [
+    "Spring Mountain Vineyard"
+   ],
+   "2002": [
+    "Spring Mountain Vineyard"
+   ],
    "2009": [
-    "Cuvaison"
+    "Cuvaison",
+    "Spring Mountain Vineyard"
+   ],
+   "2012": [
+    "Spring Mountain Vineyard"
    ],
    "2013": [
     "Dunn Vineyards",
@@ -3333,9 +3935,145 @@
    ],
    "2014": [
     "Truchard"
+   ],
+   "2015": [
+    "Spring Mountain Vineyard"
+   ],
+   "2018": [
+    "Hourglass",
+    "Turnbull",
+    "Chateau Montelena",
+    "Fisher Vineyards",
+    "Jones Winery & Vineyard",
+    "Barlow",
+    "Canard Vineyard",
+    "Meteor Vineyard",
+    "Sodaro",
+    "Farella",
+    "Castello di Amorosa",
+    "Bougetz",
+    "Rocca",
+    "Anderson's Conn Valley Vineyards",
+    "Purlieu",
+    "Lokoya",
+    "Pilcrow",
+    "Bravante",
+    "La Jota",
+    "Metzker Family Estates",
+    "O'Shaughnessy Estate",
+    "Luna Vineyards",
+    "Clif Family",
+    "Brandlin",
+    "Mt Brave",
+    "Mount Veeder Winery",
+    "Darioush",
+    "Dalla Valle Vineyards",
+    "Gallica",
+    "Groth",
+    "Nemerever",
+    "Tamber Bey",
+    "Inglenook",
+    "Mathew Bruno",
+    "SR Tonella",
+    "Scattered Peaks",
+    "Frog's Leap",
+    "Grgich Hills Estate",
+    "William Harrison",
+    "Corison",
+    "Merryvale",
+    "Tuck Beckstoffer Estate",
+    "Pellet Estate",
+    "Salvestrin",
+    "Boeschen",
+    "Chimney Rock",
+    "Clos du Val",
+    "Shafer",
+    "Malk",
+    "Blackbird",
+    "Gibbs Vineyards",
+    "Buehler",
+    "Whitehall Lane",
+    "Duckhorn Vineyards",
+    "Hesperian",
+    "Round Pond",
+    "St Supéry",
+    "Textbook",
+    "Conn Creek"
+   ],
+   "2019": [
+    "Spring Mountain Vineyard"
+   ],
+   "2020": [
+    "Harlan Estate",
+    "Spottswoode",
+    "Paul Hobbs",
+    "Quintessa",
+    "Screaming Eagle",
+    "Cathiard Vineyard",
+    "Corison",
+    "Favia",
+    "Morisoli Vineyard",
+    "Morlet Family Vineyards",
+    "Stag's Leap Wine Cellars",
+    "B Cellars",
+    "Harbison",
+    "Kanpai Wines",
+    "Wappo Hill",
+    "Beringer",
+    "Clos Pegase",
+    "Monticello Vineyards",
+    "Pride Mountain Vineyards",
+    "The Setting",
+    "Vine Hill Ranch",
+    "Beaulieu Vineyard",
+    "Black Stallion",
+    "Dalla Valle Vineyards",
+    "Salvestrin",
+    "Stags' Leap",
+    "Whitehall Lane"
+   ],
+   "2022": [
+    "Davies Vineyards",
+    "Macauley Vineyard",
+    "Shafer",
+    "Stone the Crows",
+    "Ackerman Family Vineyards",
+    "Flora Springs",
+    "Force & Grace",
+    "Gallica",
+    "Jayson by Pahlmeyer",
+    "Keever Vineyards",
+    "Sequoia Grove",
+    "Silverado Vineyards",
+    "The Vice",
+    "Maxville Winery",
+    "Michael Mondavi Family Estate",
+    "Purlieu",
+    "Spottswoode",
+    "Grounded Wine Co.",
+    "Raymond Vineyards",
+    "Black Stallion",
+    "Honig Vineyard & Winery",
+    "Whitehall Lane"
    ]
   },
   "nieuwzeeland": {
+   "2016": [
+    "Escarpment",
+    "Felton Road",
+    "Fromm",
+    "Gibbston Valley",
+    "Maude",
+    "Rod McDonald",
+    "Two Paddocks",
+    "Ata Rangi",
+    "Black Estate",
+    "Dry River",
+    "Te Mata",
+    "Valli",
+    "Cambridge Road",
+    "Pegasus Bay"
+   ],
    "2017": [
     "Eradus"
    ],
@@ -3346,9 +4084,33 @@
   "oostenrijk": {
    "2020": [
     "Heidi Shröck"
+   ],
+   "2022": [
+    "Weingut Langmann"
    ]
   },
   "oregon": {
+   "2016": [
+    "Lingua Franca",
+    "00 Wines"
+   ],
+   "2018": [
+    "00 Wines",
+    "Antica Terra",
+    "Domaine Serene",
+    "Johan Vineyards",
+    "Bryn Mawr Vineyards"
+   ],
+   "2019": [
+    "00 Wines",
+    "Walter Scott",
+    "Bergström",
+    "Evening Land",
+    "Lingua Franca",
+    "Domaine Drouhin",
+    "Evesham Wood",
+    "Hayden Fig"
+   ],
    "2021": [
     "Beckham Estate",
     "Delmas",
@@ -3358,7 +4120,56 @@
     "Rotie Cellars",
     "Sleight of Hand Cellars",
     "God Only Knows",
-    "Pášxa"
+    "Pášxa",
+    "00 Wines"
+   ],
+   "2022": [
+    "Arterberry Maresh",
+    "Hundred Suns",
+    "Evesham Wood",
+    "Haden Fig",
+    "Granville",
+    "Lingua Franca",
+    "Ponzi Vineyards",
+    "Benton-Lane",
+    "Et Fille",
+    "Lange",
+    "Résonance",
+    "Walter Scott",
+    "Beaux Frères",
+    "Bethel Heights",
+    "Cristom Vineyards",
+    "Tan Fruit",
+    "Martin Woods",
+    "Morgen Long",
+    "Nicolas Jay",
+    "Sequitur",
+    "Archery Summit",
+    "Bergström",
+    "Domaine Divio",
+    "Eyrie Vineyards",
+    "Grochau Cellars"
+   ],
+   "2023": [
+    "Bethel Heights",
+    "Granville",
+    "Walter Scott",
+    "White Walnut Vineyard",
+    "Audeant",
+    "Beaux Frères",
+    "Cristom Vineyards",
+    "Crowley",
+    "Goodfellow Family Cellars",
+    "Martin Woods",
+    "Résonance",
+    "Tan Fruit",
+    "Evening Land",
+    "Haden Fig",
+    "Eyrie Vineyards",
+    "Arabilis",
+    "Division Wine Making Co",
+    "Ponzi Vineyards",
+    "Domaine Serene"
    ]
   },
   "piemonte": {
@@ -3551,7 +4362,13 @@
     "Luigi Pira",
     "Mauro Veglio",
     "Paolo Manzone",
-    "Pio Cesare"
+    "Pio Cesare",
+    "Massolino",
+    "Vietti",
+    "Bartolo Mascarello",
+    "Figli Luigi Oddero",
+    "Tenuta Santa Caterina",
+    "La Barbatella"
    ],
    "2019": [
     "Massolino",
@@ -3602,11 +4419,33 @@
     "Fontanafredda",
     "Simone Scaletta",
     "Sobrero",
-    "Franco Conterno"
+    "Franco Conterno",
+    "Giuseppe Rinaldi",
+    "GB Burlotto",
+    "La Raia",
+    "Le Pianelle",
+    "Margherita Otto"
    ],
    "2020": [
     "Michele Chiarlo",
-    "Castello Banfi"
+    "Castello Banfi",
+    "Francesco Iandolo",
+    "Fletcher",
+    "Muraje",
+    "Valfaccenda"
+   ],
+   "2021": [
+    "Lalù"
+   ]
+  },
+  "portugal": {
+   "2015": [
+    "The Azores Wine Co.",
+    "Filipa Pato",
+    "Casa da Passarella"
+   ],
+   "2016": [
+    "Azores Wine Company"
    ]
   },
   "provence": {
@@ -3664,7 +4503,8 @@
     "Château Beaulieu",
     "Domaine de la Croix",
     "Domaine de Saint Ser",
-    "Mas de Cadenet"
+    "Mas de Cadenet",
+    "Château Gassier"
    ],
    "2020": [
     "La Bastide Blanche",
@@ -3683,12 +4523,40 @@
     "Moulin de la Roque",
     "Château Pas du Cerf",
     "Château Angueiroun",
-    "Château du Rouët"
+    "Château du Rouët",
+    "Château de Pibarnon"
    ],
    "2022": [
     "Château Paquette",
     "Domaine La Fouquette",
-    "Marrenon"
+    "Marrenon",
+    "Bastide de Fave"
+   ],
+   "2023": [
+    "Clos Cibonne",
+    "Château Cavalier",
+    "Château d’Esclans",
+    "Domaine Alône",
+    "Domaine Le Songe du Don Bosco",
+    "Château Paquette",
+    "Mas St-Berthe"
+   ],
+   "2024": [
+    "Château Les Mesclances",
+    "Château Angueiroun",
+    "Domaine La Courtade",
+    "Domaine La Tourraque",
+    "Domaines Ott",
+    "Barton & Guestier",
+    "Château de Berne",
+    "Château de Galoupet",
+    "Château la Mascaronne",
+    "Château Saint-Esprit",
+    "Château Vignelaure",
+    "Terres Ailées de Maitres Vigneron de Gonfaron",
+    "Maison St Aix",
+    "Artesans",
+    "Château Maïme"
    ]
   },
   "rhone_n": {
@@ -3721,7 +4589,20 @@
     "Domaine Rostaing",
     "Gabriel Meffre",
     "Cave de Tain",
-    "Domaine Alain Voge"
+    "Domaine Alain Voge",
+    "Domaine Clape",
+    "Domaine Jean-Paul Jamet",
+    "Domaine du Tunnel",
+    "Domaine Johann Michel",
+    "Domaine JL Chave",
+    "M Chapoutier",
+    "Domaine Niero",
+    "Stéphane Montez du Monteillet",
+    "E Guigal",
+    "Domaine Chambeyron",
+    "Domaine Bernard Burgaud",
+    "Stéphane Ogier",
+    "Tardieu-Laurent"
    ],
    "2019": [
     "Château-Grillet",
@@ -3761,8 +4642,11 @@
     "Domaine Bott",
     "Domaine Michelas St Jemms",
     "Domaine Mucyn",
-    "Domaine Gonon",
     "Domaine JL Chave",
+    "Domaine du Colombier",
+    "Domaine Yann Chave",
+    "Jean-Claude & Nicolas Fayolle",
+    "Domaine Gonon",
     "Lionel Faury",
     "Domaine Coursodon",
     "Domaine de Monteillet",
@@ -3809,7 +4693,18 @@
     "Domaine Laurent Habrard",
     "Domaine Les 4 Vents",
     "Emmanuel Darnaud",
-    "Maison Les Alexandrins"
+    "Maison Les Alexandrins",
+    "Domaine JL Chave",
+    "Domaine Belle",
+    "Delas",
+    "Château-Grillet",
+    "Domaine Gaylord Machon",
+    "Domaine Jolivet",
+    "Domaine Gonon",
+    "Vignobles Chirat",
+    "Domaine Coursodon",
+    "Martine & Christian Rouchier",
+    "Domaine Guy Farge"
    ],
    "2021": [
     "M Chapoutier",
@@ -3846,7 +4741,16 @@
     "David Reynaud",
     "Domaine du Colombier",
     "Domaine Esprit",
-    "Domaine Les 4 Vents"
+    "Domaine Les 4 Vents",
+    "Domaine JL Chave",
+    "Cave de Tain",
+    "Domaine Philippe & Vincent Jaboulet",
+    "Domaine Coursodon",
+    "Domaine Gonon",
+    "Domaine Mucyn",
+    "Vignobles Chirat",
+    "Domaine Alain Voge",
+    "Martine & Christian Rouchier"
    ],
    "2022": [
     "M Chapoutier",
@@ -3891,7 +4795,19 @@
     "Domaine Laurent Fayolle",
     "Domaine Marc Sorrel",
     "Brotte",
-    "Emmanuel Darnaud"
+    "Emmanuel Darnaud",
+    "Domaine JL Chave",
+    "Domaine Gonon",
+    "Domaine Coursodon",
+    "Domaine Jolivet",
+    "Maison Bruyère & David",
+    "Domaine du Chêne",
+    "Le Prieuré d'Arras",
+    "Lionel Faury",
+    "Martine & Christian Rouchier",
+    "Hugo & Pauline Villa",
+    "Septentria",
+    "Vignobles Chirat"
    ],
    "2023": [
     "M Chapoutier",
@@ -3919,7 +4835,13 @@
     "Domaine Melody",
     "Domaine Vendome",
     "Domaine Yann Chave",
-    "Domaine Gaylord Machon"
+    "Domaine Gaylord Machon",
+    "Domaine JL Chave",
+    "Famille Garon",
+    "Domaine du Colombier",
+    "Emmanuel Darnaud",
+    "Domaine Gonon",
+    "Domaine Jolivet"
    ],
    "2024": [
     "M Chapoutier",
@@ -3927,7 +4849,29 @@
     "Domaine Belle",
     "Franck Balthazar",
     "Domaine JP Jamet",
-    "Domaine Clape"
+    "Domaine Clape",
+    "Domaine Gonon",
+    "Domaine Bernard Gripa",
+    "Pierre-Jean Villa",
+    "Aurélien Chatagnier",
+    "Domaine Benoît Roseau",
+    "Domaine Coursodon",
+    "E Guigal",
+    "Stéphane Ogier",
+    "Cave de Tain",
+    "Domaine Jolivet",
+    "Emmanuel Darnaud",
+    "Hugo & Pauline Villa",
+    "Yves Cuilleron",
+    "Vignobles Chirat",
+    "Domaine Eric & Joël Durand",
+    "Domaine Farge",
+    "Domaine Laurent Habrard",
+    "Domaine Mucyn",
+    "J Boutin",
+    "Luyton-Fleury",
+    "Pierre Gaillard",
+    "Jeanne Gaillard"
    ]
   },
   "rhone_z": {
@@ -3941,6 +4885,10 @@
     "Domaine de la Vieille Julienne",
     "Domaine de la Janasse",
     "Domaine Saint Préfert"
+   ],
+   "2017": [
+    "Domaine du Grand Tinel",
+    "Domaine de la Biscarelle"
    ],
    "2018": [
     "Château de Beaucastel",
@@ -3959,7 +4907,11 @@
     "Domaine de la Janasse",
     "Domaine des Bosquets",
     "Château de St Cosme",
-    "Domaine du Terme"
+    "Domaine du Terme",
+    "Domaine de la Charbonnière",
+    "Domaine du Grand Tinel",
+    "Mousset Barrot",
+    "Clos du Mont-Olivet"
    ],
    "2019": [
     "Château de Beaucastel",
@@ -3993,7 +4945,29 @@
     "Domaine Les Ondines",
     "Clos de Caveau",
     "Domaine des Bernardins",
-    "Domaine la Ligière"
+    "Domaine la Ligière",
+    "Château de Montfaucon",
+    "Domaine Coudoulis",
+    "Domaine La Lôyane",
+    "Domaine Pelaquié",
+    "Les Vignobles Assemat",
+    "Château d'Aqueria",
+    "Domaine de la Mordorée",
+    "Domaine des Carabiniers",
+    "Domaine Chaume-Arnaud",
+    "Domaine de Montine",
+    "Domaine Alary",
+    "Domaine Les Grands Bois",
+    "Domaine Romain Roche",
+    "Domaine La Luminaille",
+    "Domaine Brusset",
+    "Domaine Beau Mistral",
+    "Domaine de Verquière",
+    "Domaine des Amadieu",
+    "Domaine des Escaravailles",
+    "Tardieu-Laurent",
+    "Clos St Michel",
+    "Camille Cayran"
    ],
    "2020": [
     "Château Sixtine",
@@ -4054,10 +5028,38 @@
     "Domaine la Ligière",
     "Domaine des Bernardins",
     "Domaine La Ferme St-Martin",
+    "Domaine Alary",
+    "Domaine Richaud",
+    "Domaine Constant Duquesnoy",
+    "Domaine des Amadieu",
+    "Domaine La Péquélette",
+    "Domaine la Soumade",
+    "Crous Saint Martin",
+    "Domaine Chaume-Arnaud",
+    "Domaine la Collière",
+    "Domaine La Luminaille",
+    "Domaine Pique-Basse",
+    "Château de Rouanne",
+    "Domaine A Berthet-Rayne",
+    "Domaine Beau Mistral",
+    "Domaine Brusset",
+    "Domaine Les Hautes Cances",
+    "Domaine Lafond",
+    "Domaine des Carabiniers",
+    "Domaine Maby",
+    "Château la Croix des Pins",
     "Domaine André Mathieu",
     "Domaine de la Solitude",
     "Le Clos du Caillou",
-    "Domaine Moulin-la-Viguerie"
+    "Domaine Moulin-la-Viguerie",
+    "Domaine Bois de Boursan",
+    "Domaine Jean Royer",
+    "Famille Perrin",
+    "Domaine Marquis Ravardel",
+    "Famille Brunier",
+    "Domaine Giraud",
+    "Hommage à J Duèze",
+    "Olivier & Lafond"
    ],
    "2021": [
     "Château de Vaudieu",
@@ -4072,7 +5074,34 @@
     "La Bastide St-Dominique",
     "Le Clos du Caillou",
     "Domaine de Cristia",
-    "Domaine de la Vieille Julienne"
+    "Domaine de la Vieille Julienne",
+    "Château de Montfaucon",
+    "Domaine de la Mordorée",
+    "Domaine Coudoulis",
+    "Domaine Maby",
+    "Domaine Lafond Roc-Epine",
+    "Château d'Aqueria",
+    "Les Vignerons de Tavel",
+    "Château de Manissy",
+    "Château la Genestière",
+    "Grandes Serres",
+    "Les Vignerons du Castelas",
+    "Domaine des Carabiniers",
+    "Domaine A Berthet-Rayne",
+    "Domaine la Ligière",
+    "Clos de Caveau",
+    "Domaine des Bernardins",
+    "Château Redortier",
+    "Château de la Gardine",
+    "Domaine Benedetti",
+    "Domaine Chante Cigale",
+    "Domaine du Bosquet des Papes",
+    "Le Vieux Donjon",
+    "Domaine de Panisse",
+    "Domaine Gramenon",
+    "Domaine Giraud",
+    "Château Fargueirol",
+    "Domaine Roger Sabon"
    ],
    "2022": [
     "Clos des Papes",
@@ -4111,7 +5140,36 @@
     "Domaine la Garrigue",
     "Domaine Le Sang des Cailloux",
     "Domaine la Ligière",
-    "Domaine La Ferme St-Martin"
+    "Domaine La Ferme St-Martin",
+    "Château de Manissy",
+    "Domaine Lafond",
+    "Domaine des Carabiniers",
+    "Prieuré de Montézargues",
+    "Château de Montfaucon",
+    "Domaine de Castel Oualou",
+    "Rocca Maura",
+    "Château d'Aqueria",
+    "Domaine Elodie Balme",
+    "Domaine des Escaravailles",
+    "Domaine Fond Croze",
+    "Domaine Gramiller",
+    "Domaine la Collière",
+    "Domaine la Soumade",
+    "Domaine Brusset",
+    "Domaine de Verquière",
+    "Domaine La Luminaille",
+    "Domaine Alary",
+    "Domaine Les Hautes Cances",
+    "Domaine Richaud",
+    "Pierre Amadieu",
+    "Domaine Clos Romane",
+    "Boutinot",
+    "Domaine A Berthet-Rayne",
+    "Domaine Chaume-Arnaud",
+    "Domaine Jaume",
+    "Domaine du Père Caboche",
+    "Château Mont-Redon",
+    "Domaine le Prieuré des Papes"
    ],
    "2023": [
     "Domaine de Beaurenard",
@@ -4143,7 +5201,25 @@
     "Domaine des Bernardins",
     "Château la Croix des Pins",
     "Château Redortier",
-    "Domaine l'Anglore"
+    "Domaine l'Anglore",
+    "Château Boucarut",
+    "Château de Montfaucon",
+    "Château d'Aqueria",
+    "Domaine Coudoulis",
+    "Domaine des Carabiniers",
+    "Château de Sannes",
+    "Domaine des Escaravailles",
+    "Domaine La Luminaille",
+    "Domaine la Soumade",
+    "Domaine Richaud",
+    "Domaine A Berthet-Rayne",
+    "Domaine Alary",
+    "Château de Rouanne",
+    "Domaine l'Ancienne École",
+    "Domaine Serre Besson",
+    "Famille Perrin",
+    "Domaine Maby",
+    "Domaine de Mourchon"
    ],
    "2024": [
     "Château de la Gardine",
@@ -4178,8 +5254,32 @@
     "Domaine Brusset",
     "Domaine La Bouïssière",
     "Moulin de la Gardette",
-    "Clos des Papes",
-    "Domaine l'Anglore"
+    "Château d'Aqueria",
+    "Domaine de la Mordorée",
+    "Château de Montfaucon",
+    "Château Boucarut",
+    "Alain Jaume & Fils",
+    "Domaine Giraud",
+    "Domaine l'Anglore",
+    "Roc des Pins",
+    "Château de Manissy",
+    "Prieuré de Montézargues",
+    "Domaine de l’Oratoire St Martin",
+    "Domaine Les Hautes Cances",
+    "Domaine Alary",
+    "Domaine Richaud",
+    "Domaine Clos Romane",
+    "Domaine de la Tête Noire",
+    "Domaine des Escaravailles",
+    "Domaine du Trapadis",
+    "Domaine Elodie Balme",
+    "La Ferme du Mont",
+    "Clos des Papes"
+   ]
+  },
+  "ribera": {
+   "2021": [
+    "Bodegas Pinea"
    ]
   },
   "rioja": {
@@ -4191,6 +5291,12 @@
     "Bodegas Vinedos",
     "Marques de Cacéres",
     "Ortega Ezquerro"
+   ],
+   "2021": [
+    "Bodegas Caudalia"
+   ],
+   "2024": [
+    "Faustino Rivero Ulecia"
    ]
   },
   "santorini": {
@@ -4379,7 +5485,8 @@
     "Château Laville"
    ],
    "2017": [
-    "Berry Bros & Rudd"
+    "Berry Bros & Rudd",
+    "Château Rieussec"
    ],
    "2018": [
     "Château Doisy-Daëne",
@@ -4395,7 +5502,8 @@
     "Château de Fargues",
     "Château Bastor-Lamontagne",
     "L'Or du Ciron",
-    "Château d'Yquem"
+    "Château d'Yquem",
+    "Château d'Arche"
    ],
    "2019": [
     "Château Doisy-Daëne",
@@ -4517,10 +5625,35 @@
     "Enfield Wine Co",
     "Korbin Kameron",
     "Moon Hollow",
-    "Hanzell Vineyards"
+    "Hanzell Vineyards",
+    "Far Mountain"
    ],
    "2022": [
-    "Hanzell Vineyards"
+    "Hanzell Vineyards",
+    "Freeman",
+    "Ridge Vineyards",
+    "Little Trouble Wine Co.",
+    "Auteur"
+   ],
+   "2023": [
+    "Cobb",
+    "Freeman",
+    "Ernest Vineyards",
+    "Desire Lines",
+    "Marine Layer",
+    "Arnot-Roberts",
+    "Knights Bridge",
+    "Rodney Strong",
+    "Crossbarn",
+    "Lioco",
+    "Ryme Cellars",
+    "Hirsch Vineyards",
+    "Peay Vineyards",
+    "Copain",
+    "Kutch"
+   ],
+   "2024": [
+    "Flowers"
    ]
   },
   "spanje_midden": {
@@ -4553,6 +5686,22 @@
   "sudwest": {
    "2019": [
     "Domaine Castéra"
+   ],
+   "2022": [
+    "Clos d'Audhuy",
+    "Château Famaey",
+    "Domaine La Bérangeraie",
+    "Château la Croisille",
+    "Château Lamartine",
+    "Le Clos d'un Jour",
+    "Mas del Périé",
+    "Vinovalie"
+   ],
+   "2023": [
+    "Clos Triguedina",
+    "Clos la Coutale",
+    "Domaine la Calmette",
+    "Stéphane Revel"
    ]
   },
   "tokaj": {
@@ -4678,7 +5827,8 @@
     "Castello di Monsanto",
     "Le Cinciole",
     "Tolaini",
-    "Col d'Orcia"
+    "Col d'Orcia",
+    "Podere Il Palazzino"
    ],
    "2017": [
     "Fèlsina",
@@ -4736,11 +5886,17 @@
     "San Polo",
     "Camigliano",
     "Casanuova delle Cerbaie",
-    "Elia Palazzesi"
+    "Elia Palazzesi",
+    "Istine"
    ],
    "2019": [
     "Biondi-Santi",
-    "Castell'in Villa"
+    "Castell'in Villa",
+    "Terreno",
+    "Le Cinciole",
+    "Monteraponi",
+    "Querciabella",
+    "I Fabbri"
    ],
    "2020": [
     "Il Marroneto",
@@ -4783,7 +5939,11 @@
     "Salicutti",
     "Giuseppe Gorelli",
     "Castello Banfi",
-    "Castell'in Villa"
+    "Castell'in Villa",
+    "Istine",
+    "Maurizio Alongi",
+    "La Montanina",
+    "Castello di Ama"
    ],
    "2021": [
     "Masseto",
@@ -4841,7 +6001,31 @@
     "I Fabbri",
     "Le Cinciole",
     "Castello di Monsanto",
-    "Val delle Corti"
+    "Val delle Corti",
+    "Poggerino",
+    "Rocca di Montegrossi",
+    "Monte Bernardi",
+    "Principe Corsini Villa Le Corti",
+    "Istine",
+    "San Giusto a Rentennano",
+    "L'Erta di Radda",
+    "Montecalvi",
+    "Fattoria Pomona",
+    "Tenuta Gracciano della Seta",
+    "Poliziano",
+    "Boscarelli",
+    "Edoardo Maria Vannutelli",
+    "Tenuta Trerose",
+    "Frescobaldi",
+    "Fattoria La Braccesca",
+    "Maria Caterina Dei",
+    "Manvi",
+    "Tenuta Golo",
+    "Le Bèrne",
+    "Bindella",
+    "Le Bertille",
+    "Fattoria del Cerro",
+    "Fattoria della Talosa"
    ],
    "2022": [
     "Masseto",
@@ -4858,7 +6042,12 @@
     "Maurizio Alongi",
     "Monteraponi",
     "San Giusto a Rentennano",
-    "Fattoria Cigliano di Sopra"
+    "Fattoria Cigliano di Sopra",
+    "Barone Ricasoli",
+    "Bibbiano",
+    "Principe Corsini Villa Le Corti",
+    "Antinori",
+    "San Felice"
    ],
    "2023": [
     "Castello di Monsanto",
@@ -4869,6 +6058,9 @@
     "Castello di Volpaia",
     "Montesecondo",
     "Banfi"
+   ],
+   "2024": [
+    "Fattoria Uccelliera"
    ]
   },
   "veneto": {
@@ -4917,6 +6109,46 @@
    "2019": [
     "Tedeschi",
     "Cantina di Negrar"
+   ],
+   "2024": [
+    "Masi"
+   ]
+  },
+  "vinho_verde": {
+   "2015": [
+    "Aphros",
+    "Luis Seabra",
+    "Casa de Mouraz"
+   ],
+   "2016": [
+    "Quinta de Soalheiro"
+   ],
+   "2019": [
+    "Anselmo Mendes",
+    "Sem Igual"
+   ],
+   "2020": [
+    "Quinta de Soalheiro",
+    "Quinta do Regueiro",
+    "Aveleda",
+    "Val das Ares",
+    "Falua"
+   ],
+   "2021": [
+    "Quinta da Raza",
+    "Luis Seabra",
+    "Quinta do Ameal",
+    "Quinta de Covela",
+    "A & D Wines",
+    "Quinta da Palmirinha",
+    "Casal de Ventozela",
+    "Aphros"
+   ],
+   "2022": [
+    "Quinta do Ameal",
+    "Portugal Boutique Winery",
+    "Quinta de Azevedo",
+    "Adega Cooperativa Ponte Barco e Arcos de Valdevez"
    ]
   },
   "washington": {
@@ -5158,6 +6390,26 @@
    ],
    "2008": [
     "Woodward Canyon"
+   ],
+   "2018": [
+    "Andrew Will",
+    "Quilceda Creek",
+    "Columbia Crest"
+   ],
+   "2020": [
+    "DeLille Cellars",
+    "Quilceda Creek",
+    "Cadence",
+    "Doubleback",
+    "Trothe",
+    "Avennia",
+    "Kevin White Winery",
+    "Leonetti Cellar",
+    "Liminal",
+    "Valdemar Estates",
+    "Abeja",
+    "Figgins Family",
+    "L'Ecole No 41"
    ],
    "2021": [
     "Gård",
@@ -5646,6 +6898,9 @@
    "2019": [
     "Spice Route",
     "Rustenberg"
+   ],
+   "2021": [
+    "Copper Lining"
    ]
   }
  },
@@ -5653,14 +6908,23 @@
  "uitgever": "Decanter",
  "urls": {
   "alentejo": {
+   "2007": "https://www.decanter.com/premium/portugals-native-reds-best-buys-8-25-377759/",
+   "2012": "https://www.decanter.com/premium/portugals-native-reds-best-buys-8-25-377759/",
+   "2013": "https://www.decanter.com/premium/portugals-native-reds-best-buys-8-25-377759/",
+   "2014": "https://www.decanter.com/premium/portugals-native-reds-best-buys-8-25-377759/",
+   "2015": "https://www.decanter.com/premium/portuguese-white-wine-389001/",
+   "2016": "https://www.decanter.com/premium/producer-profile-esporao-13-top-wines-to-try-510673/",
+   "2017": "https://www.decanter.com/premium/producer-profile-esporao-13-top-wines-to-try-510673/",
    "2019": "https://www.decanter.com/premium/amphora-and-clay-wines-20-ancient-and-modern-styles-to-seek-out-512790/",
-   "2021": "https://www.decanter.com/premium/amphora-and-clay-wines-20-ancient-and-modern-styles-to-seek-out-512790/",
-   "2022": "https://www.decanter.com/premium/amphora-and-clay-wines-20-ancient-and-modern-styles-to-seek-out-512790/"
+   "2021": "https://www.decanter.com/premium/producer-profile-esporao-13-top-wines-to-try-510673/",
+   "2022": "https://www.decanter.com/premium/producer-profile-esporao-13-top-wines-to-try-510673/"
   },
   "alsace": {
    "1996": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/",
    "2008": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/",
-   "2018": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/"
+   "2018": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/",
+   "2020": "https://www.decanter.com/premium/the-rise-of-cremant-the-top-bottles-to-seek-out-569190/",
+   "2022": "https://www.decanter.com/premium/the-rise-of-cremant-the-top-bottles-to-seek-out-569190/"
   },
   "argentinie": {
    "2007": "https://www.decanter.com/premium/south-american-ageworthy-wines-12-recommendations-for-your-cellar-485995/",
@@ -5716,12 +6980,12 @@
    "2008": "https://www.decanter.com/learn/vintage-guides/2009-vintage-guide-for-bordeaux-260665/",
    "2009": "https://www.decanter.com/premium/best-bordeaux-2009-wines-rated-408981/",
    "2010": "https://www.decanter.com/premium/best-bordeaux-anniversary-wines-from-10-60-years-436626/",
-   "2017": "https://www.decanter.com/premium/discovering-dry-white-wines-from-sauternes-plus-18-to-seek-out-505301/",
-   "2018": "https://www.decanter.com/premium/bordeaux-2018-in-bottle-full-overview-plus-top-scoring-wines-451158/",
+   "2017": "https://www.decanter.com/premium/top-bordeaux-2017-wines-in-bottle-left-bank-431734/",
+   "2018": "https://www.decanter.com/premium/top-scoring-2018-bordeaux-dry-whites-re-tasted-in-the-bottle-451450/",
    "2019": "https://www.decanter.com/premium/best-st-julien-2019-wines-tasted-en-primeur-440049/",
    "2020": "https://www.decanter.com/premium/discovering-dry-white-wines-from-sauternes-plus-18-to-seek-out-505301/",
-   "2021": "https://www.decanter.com/premium/discovering-dry-white-wines-from-sauternes-plus-18-to-seek-out-505301/",
-   "2022": "https://www.decanter.com/premium/bordeaux-2022-our-en-primeur-verdict-and-top-scoring-wines-504025/",
+   "2021": "https://www.decanter.com/premium/the-rise-of-cremant-the-top-bottles-to-seek-out-569190/",
+   "2022": "https://www.decanter.com/premium/the-best-st-julien-2022-in-bottle-552669/",
    "2023": "https://www.decanter.com/premium/best-st-julien-2023-wines-tasted-en-primeur-528836/",
    "2024": "https://www.decanter.com/premium/bordeaux-2024-full-vintage-review-and-top-scoring-wines-556399/"
   },
@@ -5749,14 +7013,14 @@
    "2002": "https://www.decanter.com/learn/vintage-guides/1962-vintage-guide-for-red-burgundy-118021/",
    "2015": "https://www.decanter.com/premium/beaujolais-top-scoring-st-amour-regnie-julienas-and-chenas-2018-wines-455349/",
    "2016": "https://www.decanter.com/premium/beaujolais-top-scoring-brouilly-cote-de-brouilly-2018-wines-455305/",
-   "2017": "https://www.decanter.com/premium/beaujolais-top-scoring-st-amour-regnie-julienas-and-chenas-2018-wines-455349/",
+   "2017": "https://www.decanter.com/premium/the-rise-of-cremant-the-top-bottles-to-seek-out-569190/",
    "2018": "https://www.decanter.com/premium/best-value-2018-white-burgundy-en-primeur-to-buy-428567/",
-   "2019": "https://www.decanter.com/premium/chablis-2019-full-vintage-report-and-top-scoring-wines-447781/",
-   "2020": "https://www.decanter.com/premium/discovering-white-beaujolais-10-wines-to-try-505974/",
+   "2019": "https://www.decanter.com/premium/top-scoring-premier-cru-chablis-2019-448020/",
+   "2020": "https://www.decanter.com/premium/the-rise-of-cremant-the-top-bottles-to-seek-out-569190/",
    "2021": "https://www.decanter.com/premium/discovering-white-beaujolais-10-wines-to-try-505974/",
    "2022": "https://www.decanter.com/premium/discovering-white-beaujolais-10-wines-to-try-505974/",
-   "2023": "https://www.decanter.com/premium/chablis-2023-vintage-report-and-best-of-the-new-wines-545771/",
-   "2024": "https://www.decanter.com/premium/gevrey-chambertin-2024-the-best-of-the-years-crisp-and-fresh-wines-572399/"
+   "2023": "https://www.decanter.com/premium/the-rise-of-cremant-the-top-bottles-to-seek-out-569190/",
+   "2024": "https://www.decanter.com/premium/meursault-2024-top-picks-from-a-host-of-ageworthy-wines-572390/"
   },
   "bourgogne_w": {
    "1961": "https://www.decanter.com/learn/vintage-guides/burgundy-vintage-guide/1961-vintage-guide-for-white-burgundy-118050/",
@@ -5789,7 +7053,8 @@
    "2015": "https://www.decanter.com/premium/find-best-californian-pinot-noir-331838/",
    "2019": "https://www.decanter.com/premium/adelaida-vineyard-winery-plus-10-wines-to-try-507535/",
    "2020": "https://www.decanter.com/premium/adelaida-vineyard-winery-plus-10-wines-to-try-507535/",
-   "2021": "https://www.decanter.com/premium/adelaida-district-2021-report-and-top-scoring-wines-516111/"
+   "2021": "https://www.decanter.com/premium/adelaida-district-2021-report-and-top-scoring-wines-516111/",
+   "2022": "https://www.decanter.com/premium/paso-robles-2022-vintage-best-wines-from-a-challenging-year-542775/"
   },
   "ca_noord": {
    "2014": "https://www.decanter.com/premium/find-best-californian-pinot-noir-331838/",
@@ -5804,6 +7069,9 @@
    "2018": "https://www.decanter.com/premium/canadian-riesling-the-top-scoring-wines-452469/",
    "2019": "https://www.decanter.com/premium/canadian-riesling-the-top-scoring-wines-452469/"
   },
+  "champagne": {
+   "2016": "https://www.decanter.com/premium/oregons-00-wines-producer-profile-and-18-wines-to-try-522367/"
+  },
   "chili_centraal": {
    "2015": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/",
    "2016": "https://www.decanter.com/premium/south-american-ageworthy-wines-12-recommendations-for-your-cellar-485995/",
@@ -5812,21 +7080,47 @@
   },
   "chili_kust": {
    "2015": "https://www.decanter.com/premium/south-american-ageworthy-wines-12-recommendations-for-your-cellar-485995/",
-   "2018": "https://www.decanter.com/premium/south-american-ageworthy-wines-12-recommendations-for-your-cellar-485995/"
+   "2018": "https://www.decanter.com/premium/south-american-ageworthy-wines-12-recommendations-for-your-cellar-485995/",
+   "2024": "https://www.decanter.com/premium/the-20-best-roses-from-beyond-provence-this-year-560342/"
   },
   "chili_zuid": {
    "2021": "https://www.decanter.com/premium/amphora-and-clay-wines-20-ancient-and-modern-styles-to-seek-out-512790/"
   },
+  "dao_bairrada": {
+   "2012": "https://www.decanter.com/premium/portugals-native-reds-best-buys-8-25-377759/",
+   "2013": "https://www.decanter.com/premium/portugals-native-reds-best-buys-8-25-377759/",
+   "2014": "https://www.decanter.com/premium/portuguese-white-wine-389001/",
+   "2015": "https://www.decanter.com/premium/portuguese-white-wine-389001/",
+   "2016": "https://www.decanter.com/premium/portuguese-white-wine-389001/",
+   "2019": "https://www.decanter.com/premium/niepoort-producer-profile-and-10-top-wines-to-try-501918/",
+   "2020": "https://www.decanter.com/premium/niepoort-producer-profile-and-10-top-wines-to-try-501918/"
+  },
   "douro": {
    "1896": "https://www.decanter.com/premium/seasonal-ports-15-of-the-finest-bottles-to-try-this-winter-468190/",
    "1927": "https://www.decanter.com/premium/seasonal-ports-15-of-the-finest-bottles-to-try-this-winter-468190/",
+   "1937": "https://www.decanter.com/premium/quinta-do-noval-port-404580/",
+   "1966": "https://www.decanter.com/premium/quinta-do-noval-port-404580/",
+   "1976": "https://www.decanter.com/premium/quinta-do-noval-port-404580/",
    "1985": "https://www.decanter.com/premium/seasonal-ports-15-of-the-finest-bottles-to-try-this-winter-468190/",
+   "1994": "https://www.decanter.com/premium/quinta-do-noval-port-404580/",
+   "1995": "https://www.decanter.com/premium/quinta-do-vesuvio-producer-profile-and-eight-wines-to-seek-out-520973/",
+   "2000": "https://www.decanter.com/premium/quinta-do-noval-port-404580/",
+   "2003": "https://www.decanter.com/premium/quinta-do-noval-port-404580/",
+   "2004": "https://www.decanter.com/premium/niepoort-producer-profile-and-10-top-wines-to-try-501918/",
    "2005": "https://www.decanter.com/premium/seasonal-ports-15-of-the-finest-bottles-to-try-this-winter-468190/",
    "2007": "https://www.decanter.com/premium/seasonal-ports-15-of-the-finest-bottles-to-try-this-winter-468190/",
    "2008": "https://www.decanter.com/premium/seasonal-ports-15-of-the-finest-bottles-to-try-this-winter-468190/",
+   "2009": "https://www.decanter.com/premium/quinta-do-vesuvio-producer-profile-and-eight-wines-to-seek-out-520973/",
+   "2012": "https://www.decanter.com/premium/quinta-do-vesuvio-producer-profile-and-eight-wines-to-seek-out-520973/",
+   "2013": "https://www.decanter.com/premium/portugals-native-reds-best-buys-8-25-377759/",
+   "2014": "https://www.decanter.com/premium/portugals-native-reds-best-buys-8-25-377759/",
    "2015": "https://www.decanter.com/premium/seasonal-ports-15-of-the-finest-bottles-to-try-this-winter-468190/",
+   "2016": "https://www.decanter.com/premium/quinta-do-noval-port-404580/",
+   "2017": "https://www.decanter.com/premium/niepoort-producer-profile-and-10-top-wines-to-try-501918/",
+   "2018": "https://www.decanter.com/premium/niepoort-producer-profile-and-10-top-wines-to-try-501918/",
    "2019": "https://www.decanter.com/premium/seasonal-ports-15-of-the-finest-bottles-to-try-this-winter-468190/",
-   "2021": "https://www.decanter.com/premium/amphora-and-clay-wines-20-ancient-and-modern-styles-to-seek-out-512790/"
+   "2020": "https://www.decanter.com/premium/quinta-do-vesuvio-producer-profile-and-eight-wines-to-seek-out-520973/",
+   "2021": "https://www.decanter.com/premium/producer-profile-esporao-13-top-wines-to-try-510673/"
   },
   "douro_port": {
    "1960": "https://www.decanter.com/learn/vintage-guides/port-vintage-guide-2000-2022-493922/",
@@ -5885,10 +7179,16 @@
    "2007": "https://www.decanter.com/learn/vintage-guides/germany/1970-vintage-guide-for-germany-117754/",
    "2008": "https://www.decanter.com/learn/vintage-guides/germany/1970-vintage-guide-for-germany-117754/",
    "2017": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/",
-   "2018": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/"
+   "2018": "https://www.decanter.com/premium/maximin-grunhaus-producer-profile-and-wines-to-try-520392/",
+   "2019": "https://www.decanter.com/premium/maximin-grunhaus-producer-profile-and-wines-to-try-520392/",
+   "2020": "https://www.decanter.com/premium/maximin-grunhaus-producer-profile-and-wines-to-try-520392/",
+   "2021": "https://www.decanter.com/premium/the-20-best-roses-from-beyond-provence-this-year-560342/",
+   "2022": "https://www.decanter.com/premium/maximin-grunhaus-producer-profile-and-wines-to-try-520392/",
+   "2024": "https://www.decanter.com/premium/top-five-best-value-grosses-gewachs-to-try-569599/"
   },
   "griekenland": {
-   "2021": "https://www.decanter.com/premium/amphora-and-clay-wines-20-ancient-and-modern-styles-to-seek-out-512790/"
+   "2021": "https://www.decanter.com/premium/amphora-and-clay-wines-20-ancient-and-modern-styles-to-seek-out-512790/",
+   "2022": "https://www.decanter.com/premium/the-20-best-roses-from-beyond-provence-this-year-560342/"
   },
   "griekenland_noord": {
    "2020": "https://www.decanter.com/premium/amphora-and-clay-wines-20-ancient-and-modern-styles-to-seek-out-512790/"
@@ -5897,33 +7197,70 @@
    "2019": "https://www.decanter.com/premium/amphora-and-clay-wines-20-ancient-and-modern-styles-to-seek-out-512790/"
   },
   "languedoc": {
+   "1969": "https://www.decanter.com/premium/walls-roussillons-old-vines-are-its-best-drought-defence-534912/",
+   "2001": "https://www.decanter.com/premium/walls-roussillons-old-vines-are-its-best-drought-defence-534912/",
    "2013": "https://www.decanter.com/premium/corbieres-profile-and-wines-406475/",
    "2014": "https://www.decanter.com/premium/corbieres-profile-and-wines-406475/",
-   "2015": "https://www.decanter.com/premium/corbieres-profile-and-wines-406475/",
+   "2015": "https://www.decanter.com/premium/walls-roussillons-old-vines-are-its-best-drought-defence-534912/",
    "2016": "https://www.decanter.com/premium/corbieres-profile-and-wines-406475/",
-   "2017": "https://www.decanter.com/premium/corbieres-profile-and-wines-406475/"
+   "2017": "https://www.decanter.com/premium/walls-roussillons-old-vines-are-its-best-drought-defence-534912/",
+   "2018": "https://www.decanter.com/premium/the-rise-of-cremant-the-top-bottles-to-seek-out-569190/",
+   "2019": "https://www.decanter.com/premium/walls-roussillons-old-vines-are-its-best-drought-defence-534912/",
+   "2020": "https://www.decanter.com/premium/walls-roussillons-old-vines-are-its-best-drought-defence-534912/",
+   "2021": "https://www.decanter.com/premium/walls-roussillons-old-vines-are-its-best-drought-defence-534912/",
+   "2022": "https://www.decanter.com/premium/walls-roussillons-old-vines-are-its-best-drought-defence-534912/",
+   "2023": "https://www.decanter.com/premium/walls-roussillons-old-vines-are-its-best-drought-defence-534912/",
+   "2024": "https://www.decanter.com/premium/the-20-best-roses-from-beyond-provence-this-year-560342/"
   },
   "loire": {
-   "2017": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/",
-   "2018": "https://www.decanter.com/premium/sincere-sancerre-a-loire-revival-and-eight-wines-to-seek-out-560528/",
-   "2020": "https://www.decanter.com/premium/sincere-sancerre-a-loire-revival-and-eight-wines-to-seek-out-560528/",
-   "2022": "https://www.decanter.com/premium/sincere-sancerre-a-loire-revival-and-eight-wines-to-seek-out-560528/",
-   "2023": "https://www.decanter.com/premium/sincere-sancerre-a-loire-revival-and-eight-wines-to-seek-out-560528/"
+   "2005": "https://www.decanter.com/premium/magic-in-muscadet-20-crus-communaux-wines-to-try-479639/",
+   "2009": "https://www.decanter.com/premium/magic-in-muscadet-20-crus-communaux-wines-to-try-479639/",
+   "2010": "https://www.decanter.com/premium/magic-in-muscadet-20-crus-communaux-wines-to-try-479639/",
+   "2012": "https://www.decanter.com/premium/magic-in-muscadet-20-crus-communaux-wines-to-try-479639/",
+   "2013": "https://www.decanter.com/premium/magic-in-muscadet-20-crus-communaux-wines-to-try-479639/",
+   "2014": "https://www.decanter.com/premium/magic-in-muscadet-20-crus-communaux-wines-to-try-479639/",
+   "2015": "https://www.decanter.com/premium/magic-in-muscadet-20-crus-communaux-wines-to-try-479639/",
+   "2016": "https://www.decanter.com/premium/the-enduring-appeal-of-muscadet-18-fabulous-wines-to-try-548525/",
+   "2017": "https://www.decanter.com/premium/the-enduring-appeal-of-muscadet-18-fabulous-wines-to-try-548525/",
+   "2018": "https://www.decanter.com/premium/the-enduring-appeal-of-muscadet-18-fabulous-wines-to-try-548525/",
+   "2019": "https://www.decanter.com/premium/new-release-loire-white-wines-the-best-from-2019-and-2020-460577/",
+   "2020": "https://www.decanter.com/premium/the-enduring-appeal-of-muscadet-18-fabulous-wines-to-try-548525/",
+   "2021": "https://www.decanter.com/premium/loire-valley-2023-vintage-report-white-wines-and-the-best-new-releases-542456/",
+   "2022": "https://www.decanter.com/premium/the-enduring-appeal-of-muscadet-18-fabulous-wines-to-try-548525/",
+   "2023": "https://www.decanter.com/premium/the-enduring-appeal-of-muscadet-18-fabulous-wines-to-try-548525/"
   },
   "napa": {
-   "2009": "https://www.decanter.com/premium/find-best-californian-pinot-noir-331838/",
+   "1979": "https://www.decanter.com/premium/spring-mountain-vineyard-producer-profile-10-wines-to-try-495221/",
+   "1988": "https://www.decanter.com/premium/spring-mountain-vineyard-producer-profile-10-wines-to-try-495221/",
+   "1992": "https://www.decanter.com/premium/spring-mountain-vineyard-producer-profile-10-wines-to-try-495221/",
+   "1999": "https://www.decanter.com/premium/spring-mountain-vineyard-producer-profile-10-wines-to-try-495221/",
+   "2002": "https://www.decanter.com/premium/spring-mountain-vineyard-producer-profile-10-wines-to-try-495221/",
+   "2009": "https://www.decanter.com/premium/spring-mountain-vineyard-producer-profile-10-wines-to-try-495221/",
+   "2012": "https://www.decanter.com/premium/spring-mountain-vineyard-producer-profile-10-wines-to-try-495221/",
    "2013": "https://www.decanter.com/premium/californian-cabernet-2013-top-five-wines-vintage-331886/",
-   "2014": "https://www.decanter.com/premium/find-best-californian-pinot-noir-331838/"
+   "2014": "https://www.decanter.com/premium/find-best-californian-pinot-noir-331838/",
+   "2015": "https://www.decanter.com/premium/spring-mountain-vineyard-producer-profile-10-wines-to-try-495221/",
+   "2018": "https://www.decanter.com/premium/napa-valley-cabernet-value-2018-wines-under-50-50-447659/",
+   "2019": "https://www.decanter.com/premium/spring-mountain-vineyard-producer-profile-10-wines-to-try-495221/",
+   "2020": "https://www.decanter.com/premium/napa-cabernet-2020-vintage-report-and-top-recommendations-510257/",
+   "2022": "https://www.decanter.com/premium/napa-cabernet-2022-best-value-wines-of-the-vintage-558159/"
   },
   "nieuwzeeland": {
+   "2016": "https://www.decanter.com/premium/new-zealand-2016-red-pinot-395870/",
    "2017": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/",
    "2021": "https://www.decanter.com/premium/felton-road-producer-profile-and-12-wines-to-try-494032/"
   },
   "oostenrijk": {
-   "2020": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/"
+   "2020": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/",
+   "2022": "https://www.decanter.com/premium/the-20-best-roses-from-beyond-provence-this-year-560342/"
   },
   "oregon": {
-   "2021": "https://www.decanter.com/premium/columbia-valley-2021-vintage-report-overview-of-washington-and-oregon-plus-top-scoring-wines-541116/"
+   "2016": "https://www.decanter.com/premium/oregons-00-wines-producer-profile-and-18-wines-to-try-522367/",
+   "2018": "https://www.decanter.com/premium/oregon-chardonnay-441484/",
+   "2019": "https://www.decanter.com/premium/oregon-chardonnay-441484/",
+   "2021": "https://www.decanter.com/premium/oregons-00-wines-producer-profile-and-18-wines-to-try-522367/",
+   "2022": "https://www.decanter.com/premium/oregons-willamette-valley-2022-chardonnay-report-and-20-wines-to-try-535901/",
+   "2023": "https://www.decanter.com/premium/willamette-valley-2023-vintage-report-a-year-of-exquisite-chardonnay-and-the-20-best-wines-568933/"
   },
   "piemonte": {
    "1978": "https://www.decanter.com/learn/vintage-guides/piedmont-vintage-guide/1970-vintage-guide-for-italy-piedmont-117772/",
@@ -5945,42 +7282,55 @@
    "2013": "https://www.decanter.com/premium/barolo-entering-a-new-era-407185/",
    "2014": "https://www.decanter.com/premium/barolo-entering-a-new-era-407185/",
    "2015": "https://www.decanter.com/premium/barolo-entering-a-new-era-407185/",
-   "2018": "https://www.decanter.com/premium/barolo-2018-vintage-report-483558/",
-   "2019": "https://www.decanter.com/premium/barolo-riserva-2019-morris-25-top-picks-553215/",
-   "2020": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/"
+   "2018": "https://www.decanter.com/premium/piedmonts-up-and-comers-plus-the-10-bottles-to-seek-out-515936/",
+   "2019": "https://www.decanter.com/premium/piedmonts-up-and-comers-plus-the-10-bottles-to-seek-out-515936/",
+   "2020": "https://www.decanter.com/premium/piedmonts-up-and-comers-plus-the-10-bottles-to-seek-out-515936/",
+   "2021": "https://www.decanter.com/premium/piedmonts-up-and-comers-plus-the-10-bottles-to-seek-out-515936/"
+  },
+  "portugal": {
+   "2015": "https://www.decanter.com/premium/portuguese-white-wine-389001/",
+   "2016": "https://www.decanter.com/premium/portuguese-white-wine-389001/"
   },
   "provence": {
    "2015": "https://www.decanter.com/premium/best-provence-rose-panel-tasting-results-440033/",
    "2016": "https://www.decanter.com/premium/best-provence-rose-panel-tasting-results-440033/",
    "2017": "https://www.decanter.com/premium/best-provence-rose-panel-tasting-results-440033/",
    "2018": "https://www.decanter.com/premium/discovering-the-micro-crus-of-provence-plus-12-wines-to-seek-out-507167/",
-   "2019": "https://www.decanter.com/premium/discovering-the-micro-crus-of-provence-plus-12-wines-to-seek-out-507167/",
+   "2019": "https://www.decanter.com/premium/provence-rose-this-summers-best-buys-462712/",
    "2020": "https://www.decanter.com/premium/discovering-the-micro-crus-of-provence-plus-12-wines-to-seek-out-507167/",
-   "2021": "https://www.decanter.com/premium/discovering-the-micro-crus-of-provence-plus-12-wines-to-seek-out-507167/",
-   "2022": "https://www.decanter.com/premium/discovering-the-micro-crus-of-provence-plus-12-wines-to-seek-out-507167/"
+   "2021": "https://www.decanter.com/premium/provence-rose-this-summers-best-buys-462712/",
+   "2022": "https://www.decanter.com/premium/provence-rose-this-summers-best-buys-462712/",
+   "2023": "https://www.decanter.com/premium/provence-rose-this-summers-best-buys-462712/",
+   "2024": "https://www.decanter.com/premium/provence-rose-this-summers-best-buys-462712/"
   },
   "rhone_n": {
    "2016": "https://www.decanter.com/premium/cote-rotie-2016-wines-top-scorers-381653/",
-   "2018": "https://www.decanter.com/premium/best-value-northern-rhone-2018-top-buys-427958/",
+   "2018": "https://www.decanter.com/premium/northern-rhone-2018-report-427781/",
    "2019": "https://www.decanter.com/premium/saint-peray-2019-report-and-top-scoring-wines-448220/",
-   "2020": "https://www.decanter.com/premium/crozes-hermitage-2020-report-and-top-scoring-wines-470291/",
-   "2021": "https://www.decanter.com/premium/crozes-hermitage-2021-report-and-top-scoring-wines-492950/",
-   "2022": "https://www.decanter.com/premium/crozes-hermitage-2022-report-and-top-scoring-wines-515494/",
-   "2023": "https://www.decanter.com/premium/crozes-hermitage-2023-report-and-top-scoring-wines-543884/",
-   "2024": "https://www.decanter.com/premium/rhone-2024-en-primeur-full-report-and-the-vintages-top-scoring-wines-570196/"
+   "2020": "https://www.decanter.com/premium/st-joseph-2020-report-and-top-scoring-wines-470280/",
+   "2021": "https://www.decanter.com/premium/st-joseph-2021-report-and-top-scoring-wines-492947/",
+   "2022": "https://www.decanter.com/premium/st-joseph-2022-report-and-top-scoring-wines-515472/",
+   "2023": "https://www.decanter.com/premium/st-joseph-2023-report-and-top-scoring-wines-543881/",
+   "2024": "https://www.decanter.com/premium/st-joseph-2024-report-and-top-scoring-wines-570200/"
   },
   "rhone_z": {
    "2016": "https://www.decanter.com/premium/best-rhone-2016-wines-380918/",
-   "2018": "https://www.decanter.com/premium/southern-rhone-2018-report-top-scorers-427802/",
-   "2019": "https://www.decanter.com/premium/gigondas-vacqueyras-beaumes-de-venise-2019-report-and-top-scoring-wines-448197/",
-   "2020": "https://www.decanter.com/premium/southern-rhone-2020-full-report-and-top-scoring-wines-470004/",
-   "2021": "https://www.decanter.com/premium/chateauneuf-du-pape-2021-report-and-top-scoring-wines-492933/",
-   "2022": "https://www.decanter.com/premium/gigondas-vacqueyras-beaumes-de-venise-2022-report-and-top-scoring-wines-515534/",
-   "2023": "https://www.decanter.com/premium/rhone-2023-en-primeur-full-vintage-report-and-top-scoring-wines-543853/",
+   "2017": "https://www.decanter.com/premium/walls-26-value-chateauneuf-du-pape-wines-to-try-512279/",
+   "2018": "https://www.decanter.com/premium/walls-26-value-chateauneuf-du-pape-wines-to-try-512279/",
+   "2019": "https://www.decanter.com/premium/walls-26-value-chateauneuf-du-pape-wines-to-try-512279/",
+   "2020": "https://www.decanter.com/premium/walls-26-value-chateauneuf-du-pape-wines-to-try-512279/",
+   "2021": "https://www.decanter.com/premium/walls-26-value-chateauneuf-du-pape-wines-to-try-512279/",
+   "2022": "https://www.decanter.com/premium/walls-26-value-chateauneuf-du-pape-wines-to-try-512279/",
+   "2023": "https://www.decanter.com/premium/the-20-best-roses-from-beyond-provence-this-year-560342/",
    "2024": "https://www.decanter.com/premium/rhone-2024-en-primeur-full-report-and-the-vintages-top-scoring-wines-570196/"
   },
+  "ribera": {
+   "2021": "https://www.decanter.com/premium/the-20-best-roses-from-beyond-provence-this-year-560342/"
+  },
   "rioja": {
-   "2006": "https://www.decanter.com/learn/vintage-guides/spain-rioja/2005-rioja/2005-vintage-guide-for-spain-rioja-115073/"
+   "2006": "https://www.decanter.com/learn/vintage-guides/spain-rioja/2005-rioja/2005-vintage-guide-for-spain-rioja-115073/",
+   "2021": "https://www.decanter.com/premium/the-20-best-roses-from-beyond-provence-this-year-560342/",
+   "2024": "https://www.decanter.com/premium/the-20-best-roses-from-beyond-provence-this-year-560342/"
   },
   "santorini": {
    "2020": "https://www.decanter.com/premium/amphora-and-clay-wines-20-ancient-and-modern-styles-to-seek-out-512790/"
@@ -6018,8 +7368,8 @@
    "2008": "https://www.decanter.com/learn/vintage-guides/2009-vintage-guide-for-bordeaux-260665/",
    "2015": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/",
    "2016": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/",
-   "2017": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/",
-   "2018": "https://www.decanter.com/premium/bordeaux-2018-in-bottle-full-overview-plus-top-scoring-wines-451158/",
+   "2017": "https://www.decanter.com/premium/top-bordeaux-2017-wines-in-bottle-left-bank-431734/",
+   "2018": "https://www.decanter.com/premium/premium-home/bordeaux-2018-wines-in-bottle-best-value-wines-under-20-28-451531/",
    "2019": "https://www.decanter.com/premium/best-bordeaux-2019-wines-best-value-whites-440422/",
    "2020": "https://www.decanter.com/premium/best-sauternes-and-barsac-2020-wines-tasted-en-primeur-458157/",
    "2022": "https://www.decanter.com/premium/best-sauternes-and-barsac-2022-wines-tasted-en-primeur-504754/",
@@ -6037,8 +7387,10 @@
    "2018": "https://www.decanter.com/premium/sonoma-cabernet-sauvignon-producers-styles-wines-to-try-507510/",
    "2019": "https://www.decanter.com/premium/sonoma-countys-best-kept-secret-moon-mountain-district-528811/",
    "2020": "https://www.decanter.com/premium/sonoma-countys-best-kept-secret-moon-mountain-district-528811/",
-   "2021": "https://www.decanter.com/premium/sonoma-countys-best-kept-secret-moon-mountain-district-528811/",
-   "2022": "https://www.decanter.com/premium/sonoma-countys-best-kept-secret-moon-mountain-district-528811/"
+   "2021": "https://www.decanter.com/premium/the-best-sonoma-county-wines-for-50-or-less-552982/",
+   "2022": "https://www.decanter.com/premium/the-best-sonoma-county-wines-for-50-or-less-552982/",
+   "2023": "https://www.decanter.com/premium/the-best-sonoma-county-wines-for-50-or-less-552982/",
+   "2024": "https://www.decanter.com/premium/the-best-sonoma-county-wines-for-50-or-less-552982/"
   },
   "spanje_midden": {
    "2020": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/",
@@ -6052,7 +7404,9 @@
    "2019": "https://www.decanter.com/premium/aged-albarinos-bottles-to-try-466262/"
   },
   "sudwest": {
-   "2019": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/"
+   "2019": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/",
+   "2022": "https://www.decanter.com/premium/the-different-shades-of-cahors-the-regions-malbec-rebirth-and-12-recommendations-567578/",
+   "2023": "https://www.decanter.com/premium/the-different-shades-of-cahors-the-regions-malbec-rebirth-and-12-recommendations-567578/"
   },
   "tokaj": {
    "2016": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/"
@@ -6076,14 +7430,15 @@
    "2003": "https://www.decanter.com/learn/vintage-guides/2008-vintage-guide-for-italy-tuscany-114821/",
    "2007": "https://www.decanter.com/learn/vintage-guides/2008-vintage-guide-for-italy-tuscany-114821/",
    "2008": "https://www.decanter.com/learn/vintage-guides/2008-vintage-guide-for-italy-tuscany-114821/",
-   "2016": "https://www.decanter.com/premium/brunello-di-montalcino-riserva-2018-recommendations-522492/",
+   "2016": "https://www.decanter.com/premium/new-chianti-classico-releases-2023-top-recommendations-best-value-picks-502395/",
    "2017": "https://www.decanter.com/premium/brunello-di-montalcino-2017-vintage-report-and-top-scoring-wines-473252/",
-   "2018": "https://www.decanter.com/premium/brunello-di-montalcino-riserva-2018-recommendations-522492/",
-   "2019": "https://www.decanter.com/premium/chianti-classico-riserva-new-releases-top-picks-in-2025-558861/",
-   "2020": "https://www.decanter.com/premium/chianti-classico-annata-new-releases-the-wines-to-buy-in-2025-558840/",
-   "2021": "https://www.decanter.com/premium/chianti-classico-riserva-new-releases-top-picks-in-2025-558861/",
-   "2022": "https://www.decanter.com/premium/chianti-classico-riserva-new-releases-top-picks-in-2025-558861/",
-   "2023": "https://www.decanter.com/premium/chianti-classico-annata-new-releases-the-wines-to-buy-in-2025-558840/"
+   "2018": "https://www.decanter.com/premium/new-chianti-classico-releases-top-scorers-and-best-value-picks-458260/",
+   "2019": "https://www.decanter.com/premium/new-chianti-classico-releases-in-2024-top-picks-for-the-table-and-cellar-528108/",
+   "2020": "https://www.decanter.com/premium/new-chianti-classico-releases-in-2024-top-picks-for-the-table-and-cellar-528108/",
+   "2021": "https://www.decanter.com/premium/vino-nobile-di-montepulciano-2021-vintage-snapshot-15-top-picks-527688/",
+   "2022": "https://www.decanter.com/premium/new-chianti-classico-releases-in-2024-top-picks-for-the-table-and-cellar-528108/",
+   "2023": "https://www.decanter.com/premium/chianti-classico-annata-new-releases-the-wines-to-buy-in-2025-558840/",
+   "2024": "https://www.decanter.com/premium/the-20-best-roses-from-beyond-provence-this-year-560342/"
   },
   "veneto": {
    "2011": "https://www.decanter.com/premium/amarone-for-christmas-30-great-bottles-to-try-518907/",
@@ -6093,7 +7448,16 @@
    "2016": "https://www.decanter.com/premium/amarone-for-christmas-30-great-bottles-to-try-518907/",
    "2017": "https://www.decanter.com/premium/amarone-for-christmas-30-great-bottles-to-try-518907/",
    "2018": "https://www.decanter.com/premium/amarone-for-christmas-30-great-bottles-to-try-518907/",
-   "2019": "https://www.decanter.com/premium/amarone-for-christmas-30-great-bottles-to-try-518907/"
+   "2019": "https://www.decanter.com/premium/amarone-for-christmas-30-great-bottles-to-try-518907/",
+   "2024": "https://www.decanter.com/premium/the-20-best-roses-from-beyond-provence-this-year-560342/"
+  },
+  "vinho_verde": {
+   "2015": "https://www.decanter.com/premium/portuguese-white-wine-389001/",
+   "2016": "https://www.decanter.com/premium/portuguese-white-wine-389001/",
+   "2019": "https://www.decanter.com/premium/vinho-verde-20-of-the-best-tasted-and-rated-508493/",
+   "2020": "https://www.decanter.com/premium/vinho-verde-20-of-the-best-tasted-and-rated-508493/",
+   "2021": "https://www.decanter.com/premium/vinho-verde-20-of-the-best-tasted-and-rated-508493/",
+   "2022": "https://www.decanter.com/premium/vinho-verde-20-of-the-best-tasted-and-rated-508493/"
   },
   "washington": {
    "1985": "https://www.decanter.com/learn/vintage-guides/washington-vintage-guide/1985-vintage-guide-for-washington-state-cabernet-sauvignon-116905/",
@@ -6119,6 +7483,8 @@
    "2006": "https://www.decanter.com/learn/vintage-guides/washington-vintage-guide/1985-vintage-guide-for-washington-state-cabernet-sauvignon-116905/",
    "2007": "https://www.decanter.com/learn/vintage-guides/washington-vintage-guide/1985-vintage-guide-for-washington-state-cabernet-sauvignon-116905/",
    "2008": "https://www.decanter.com/learn/vintage-guides/washington-vintage-guide/1985-vintage-guide-for-washington-state-cabernet-sauvignon-116905/",
+   "2018": "https://www.decanter.com/premium/washington-2018-reds-top-scoring-wines-from-horse-heaven-hills-462400/",
+   "2020": "https://www.decanter.com/premium/washington-state-2020-vintage-report-and-top-scoring-wines-513877/",
    "2021": "https://www.decanter.com/premium/columbia-valley-2021-vintage-report-overview-of-washington-and-oregon-plus-top-scoring-wines-541116/"
   },
   "zuidafrika": {
@@ -6139,7 +7505,8 @@
    "2007": "https://www.decanter.com/learn/vintage-guides/south-africa-vintage-guide/1990-vintage-guide-for-red-south-africa-116461/",
    "2008": "https://www.decanter.com/learn/vintage-guides/south-africa-vintage-guide/1990-vintage-guide-for-red-south-africa-116461/",
    "2017": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/",
-   "2019": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/"
+   "2019": "https://www.decanter.com/premium/best-sweet-wines-from-around-the-world-30-bottles-to-seek-out-470130/",
+   "2021": "https://www.decanter.com/premium/the-20-best-roses-from-beyond-provence-this-year-560342/"
   }
  }
 }
