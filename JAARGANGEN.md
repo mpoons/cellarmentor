@@ -202,14 +202,22 @@ dit bestand moet voorkomen. De toets die het ving was simpel — tel wat de rege
 of die lijst er geloofwaardig uitziet.
 
 **Producenten die een criticus bij de besten noemt.** Decanters jaargangsgidsen zetten per jaar een
-lijst "Best Producers" of "Best wines": 1444 vermeldingen over 153 jaargangen in Bordeaux,
-Sauternes, beide Bourgognes, Duitsland en port. Dat is iets anders dan een puntenscore — het is een
+lijst "Best Producers" of "Best wines": 2239 vermeldingen over 226 jaargangen in elf streken —
+Bordeaux, Sauternes, beide Bourgognes, Duitsland, port, Piemonte, Toscane, Rioja, Washington en
+Zuid-Afrika. Dat is iets anders dan een puntenscore — het is een
 lijst namen uit een gepubliceerde gids, geen cijfer aan één fles — en het is wat de app in staat
 stelt te zeggen dat Decanter Château Climens bij de beste wijnen van 1988 noemt. De koppeling is
 streng: streek én jaargang moeten al kloppen, en de naam moet in de producent of de wijnnaam staan
 en niet in de appellation. Dat laatste is nodig omdat anders elke fles uit Margaux zou matchen op
 château Margaux. De lijsten dekken vooral 1960 tot 2008, want Decanters recente jaargangstukken
-hebben dat blok niet; voor oude flessen is het juist daar het meest waard.
+hebben dat blok niet; voor oude flessen is het juist daar het meest waard. Vinous heeft voor recente
+jaargangen vergelijkbare lijsten, maar die mogen we niet overnemen: wel naar linken, niet citeren.
+
+**Eén voorbehoud dat in de formulering zit ingebakken.** De jaargangstaat van Berry Bros is een
+momentopname van 2026; Decanters jaargangsgidsen dateren van het jaar waarin ze geschreven zijn.
+Hun "Keep" bij een 2001 betekende toen "bewaar deze nog" en betekent nu "deze had bewaarpotentieel",
+niet "is vandaag nog niet toe". De app beweert daarom niets over vandaag en zegt "volgens X heeft
+2001 in Zuid-Afrika nog bewaarpotentieel". Dat is bij beide bronnen waar en veroudert niet mee.
 
 Wat hier nadrukkelijk **niet** in staat is een puntenkaart. Berry Bros' cijfers en Decanters `x/5`
 zijn gelezen om er een eigen oordeel uit af te leiden, en staan niet in de app.
