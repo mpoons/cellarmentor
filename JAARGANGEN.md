@@ -97,6 +97,29 @@ Deze punten kwamen uit de ronde als sterke aanwijzingen die de lat van twee bron
 6. **De Douro is de pijnlijkste lacune.** De lijst gedeclareerde vintagejaren is normaal het makkelijkst hard te maken publieke feit dat er is, en juist die kon deze ronde niet worden bevestigd. Begin daar, bij het IVDP en bij de declaratiepagina's van Symington en Fladgate.
 7. **Duitsland 1999, 2003 en 2013 staan mogelijk te hoog** volgens de Decanter-gids, en voor Duitsland liggen droge en zoete riesling in sommige jaren ver uiteen (1988, 1994, 2003, 2010). De app onderscheidt die twee al in `vensterBasis`, dus een aparte rij voor droog en zoet is hier de logische volgende stap, zoals bij de Bourgogne al gebeurd is.
 
+## Wanneer een streek gesplitst moet worden
+
+Een streek verdient een eigen rij zodra bronnen melden dat de jaargangen er echt uiteenlopen, en niet eerder. Pauillac en Saint-Julien scheiden is zinloos, want die volgen elkaar bijna perfect; splitsen verdubbelt dan alleen het controlewerk en levert twee halfleeg rijen op. Het mechanisme is er wel: `STREKEN` gaat op volgorde van specifiek naar algemeen, dus een rij met de appellations van de rechteroever vóór de rij `bordeaux` werkt, en het veld `t:[...]` beperkt een rij tot bepaalde types, zoals bij de Bourgogne rood en wit.
+
+**Eerst de streken die nu wéér niet kunnen kloppen, want daar is één getal per definitie fout.** Dit zijn rijen die gebieden samenvatten die geen gedeeld weer hebben, en die hebben voorrang boven fijnmazigheid elders:
+
+- `australie` is nu één rij voor een heel continent. Margaret River en de Barossa liggen 2700 km van elkaar.
+- `californie` loopt van Napa tot Santa Barbara, en de rookschade van 2020 sloeg per gebied verschillend toe: het onderzoek van 16 sep vond dat de valleivloer van Sonoma relatief gespaard bleef terwijl Napa voor late rode druiven vrijwel volledig werd geraakt.
+- `chili` loopt van Limarí tot Itata, ruim 1300 km.
+- `italie_noord` vat Alto Adige tot Abruzzo samen.
+- `zuiditalie` vat de Etna en Puglia samen, twee volstrekt verschillende klimaten.
+- `portugal` vat Vinho Verde tot Alentejo samen.
+
+**Daarna de splitsingen waar bronnen op 16 september een echte divergentie meldden.** Deze zijn onderbouwd en niet bedacht:
+
+- **Bordeaux linker- tegenover rechteroever.** 1998 (rechteroever uitstekend, Médoc kwam tekort), 2001 (zelfde patroon milder) en 2011 (Cabernet Franc rechts redelijk, links miste fenolische rijpheid).
+- **Duitsland droog tegenover zoet.** 1988 en 1994 gaven botrytis en dus superieure Spätlese tot TBA; 2003 en 2010 waren juist lastig voor droog. De app onderscheidt droge en restzoete riesling al in `vensterBasis`, dus de tabel kan meteen mee.
+- **Loire in droog wit, zoete Chenin en rood.** 2003 tilde Cabernet Franc naar een nieuw niveau terwijl Chenin leed onder meeldauw en rijpingsproblemen, en 2000 en 2006 waren in de Elzas net zo: zwak voor droog, uitstekend voor botrytis.
+- **Elzas droog tegenover Vendanges Tardives en SGN**, om dezelfde reden.
+- **Toscane in Brunello, Chianti en Bolgheri**, want kust en binnenland lopen in hete jaren uiteen.
+
+Laat het onderzoek de divergentie zelf rapporteren in plaats van vooraf te beslissen. De opdracht hoort te zijn: meld per streek of bronnen melden dat deelgebieden of kleuren uiteenlopen, en zo ja voor welke jaren. Splits pas als het antwoord ja is en er voor beide helften data ligt.
+
 ## Hoe je een volgende ronde draait
 
 1. Laat het onderzoek per streekgroep doen, met de bronnenlat hierboven en de eis van twee onafhankelijke bronnen per jaar. Geef de huidige waarden mee, zodat er bevestigd of tegengesproken wordt in plaats van opnieuw bedacht.
