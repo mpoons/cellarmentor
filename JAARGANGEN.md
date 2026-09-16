@@ -179,16 +179,39 @@ kunnen lopen.
 
 **Rijpheid per streek en jaargang.** Berry Bros zet bij elk jaar een rijpheidscode (Not ready,
 Ready – youthful, Ready – at best, Ready – mature) en Decanter een woord (Keep, Drink now, Drink
-soon). Samen 702 jaren over zeventien streken, waarvan er 598 in de controle hieronder zitten (voor de overige streken is geen ijkfles gedefinieerd). De tabel wordt **maar één kant op gebruikt**: hij mag
-verhinderen dat de app "Over de piek?" zegt, en nooit een venster inkorten. Dat is geen willekeur
-maar de risicokeuze die dit bestand al maakte: te vroeg "over de piek" roepen laat iemand een goede
-fles weggooien, terwijl een fles die volgens de app nog kan wachten bij de eerste slok
-gecontroleerd wordt. Het effect is 25 streek-jaargangen die anders een waarschuwing hadden
-gekregen: Bordeaux 1982, 1986, 1988, 1993 en 1994, witte Bourgogne 1993 tot 2000, rode Bourgogne
-1991, de Loire 1985, 1988 en 1989, Argentinië 2001 en negen Zuid-Afrikaanse jaargangen. Precies de
-klacht waaruit dit hele onderdeel is ontstaan. Zijn twee bronnen het oneens, dan wint degene die de
-wijn het meeste leven geeft; Berry Bros noemt Bordeaux 1982 op z'n best en Decanter zegt "Drink
-soon", en de tabel houdt de eerste aan.
+soon). Samen 702 jaren over zeventien streken, waarvan er 702 in de controle hieronder zitten. De
+tabel wordt **maar één kant op gebruikt**: hij mag verhinderen dat de app "Over de piek?" zegt, en
+nooit een venster inkorten. Dat is geen willekeur maar de risicokeuze die dit bestand al maakte: te
+vroeg "over de piek" roepen laat iemand een goede fles weggooien, terwijl een fles die volgens de
+app nog kan wachten bij de eerste slok gecontroleerd wordt.
+
+**En elke uitspraak telt vanaf het jaar waarin hij is gedaan.** Dat klinkt vanzelfsprekend en was
+het niet. De kaart van Berry Bros is van 2026 en gaat over nu; de jaargangsgidsen van Decanter niet.
+154 van de gedateerde regels komen uit gidsen die voor het laatst in 2015 zijn herzien, en hun
+"Keep" bij een 1997 ging over een wijn van achttien jaar — niet over een wijn van negenentwintig.
+Elke regel draagt daarom een peiljaar, en de app rekent uit tot welke leeftijd de uitspraak reikt:
+de leeftijd bij het schrijven plus het deel van het drinkplateau dat er toen nog lag (heel bij "nog
+niet toe", 0,7 bij "jong maar open", 0,4 bij "op z'n best"). De lengte van dat plateau komt uit het
+venster van de fles zelf, zodat een port anders wordt doorgerekend dan een Sancerre. Reikt de
+uitspraak niet tot vandaag, dan onderdrukt hij niets meer. Zei de bron juist dat de tijd drong,
+dan bevestigt hij de waarschuwing in plaats van hem te negeren.
+
+Botsen twee bronnen, dan wint sinds deze ronde **de jongste waarneming**, en pas bij een gelijk
+peiljaar de stand die de wijn het meeste leven geeft. Dat corrigeerde 25 streek-jaargangen die als
+actueel werden behandeld terwijl de jongste bron iets anders zei: zes in Bordeaux, acht in de rode
+Bourgogne, vijf in de witte, en zes in Zuid-Afrika waar Decanter in 2015 "Keep" schreef en Berry
+Bros de wijn in 2026 rijp noemt. Wat overblijft zijn achttien onderdrukte waarschuwingen —
+Argentinië 2001, Bordeaux 1982, 1986, 1988 en 1994, witte Bourgogne 2000, de Loire 1985, 1988 en
+1989, Washington 1999, 2000, 2002, 2003 en 2006, en Zuid-Afrika 2001, 2003, 2004 en 2005 — waarvan
+er dertien op een bron van dit jaar rusten en vijf op een Decanter-gids uit 2015 of 2019 die ver
+genoeg vooruit reikt. Dat verschil staat nu ook op het scherm: "Berry Bros & Rudd noemt 1982 in
+Bordeaux nu op z'n best" tegenover "Decanter noemde 1999 in Washington State in 2015 nog niet op
+dronk". De lezer ziet het jaartal en kan zelf wegen.
+
+**Een tweede val bij dezelfde bron.** De publicatiedatum van die gidsen is onbruikbaar: bij 270 van
+de 277 is `article:published_time` gelijk aan de jaargang die de gids bespreekt, want Decanter heeft
+ze teruggedateerd. Een gids over 1962 draagt 1962 als publicatiejaar. Alleen
+`article:modified_time` zegt iets, en die staat voor 240 gidsen op 2015.
 
 **Eén vertaalfout hoort hier vastgelegd, want hij was niet zichtbaar in de code maar wel in de
 uitkomst.** In de eerste opzet werd Decanters "Drink now" gelezen als "op z'n best". De controle
@@ -213,14 +236,23 @@ château Margaux. De lijsten dekken vooral 1960 tot 2008, want Decanters recente
 hebben dat blok niet; voor oude flessen is het juist daar het meest waard. Vinous heeft voor recente
 jaargangen vergelijkbare lijsten, maar die mogen we niet overnemen: wel naar linken, niet citeren.
 
-**Eén voorbehoud dat in de formulering zit ingebakken.** De jaargangstaat van Berry Bros is een
-momentopname van 2026; Decanters jaargangsgidsen dateren van het jaar waarin ze geschreven zijn.
-Hun "Keep" bij een 2001 betekende toen "bewaar deze nog" en betekent nu "deze had bewaarpotentieel",
-niet "is vandaag nog niet toe". De app beweert daarom niets over vandaag en zegt "volgens X heeft
-2001 in Zuid-Afrika nog bewaarpotentieel". Dat is bij beide bronnen waar en veroudert niet mee.
+**Welke uitspraken verouderen en welke niet.** Dat onderscheid loopt door dit hele onderdeel heen.
+Dat een jaargang warm was, of dat een producent dat jaar tot de besten werd gerekend, blijft waar
+zolang het waar was; zulke zinnen gaan ongewijzigd mee, met het jaartal erbij. Een uitspraak over
+rijpheid gaat over de wijn zoals die was toen het stuk verscheen, en moet worden doorgerekend. Van
+de 448 citaten bevatten er maar drie rijpheidstaal, dus die scheiding kostte bijna niets — maar het
+is wel de reden dat die drie niet onder een fles staan en in het blad erachter met het aantal jaren
+dat erbij hoort.
 
-Wat hier nadrukkelijk **niet** in staat is een puntenkaart. Berry Bros' cijfers en Decanters `x/5`
-zijn gelezen om er een eigen oordeel uit af te leiden, en staan niet in de app.
+**En wat er wél in stond, maar er niet in hoorde.** De vorige versie van dit onderdeel toonde in elf
+citaten precies het cijfer dat deze app niet overneemt: "Languedoc 2022 vintage rating: 4.5 / 5",
+"Barossa Shiraz 2023 vintage rating: 4/5", en rijen als "2023 4/5 2022 3/5 2021 5/5". Vijf andere
+"citaten" waren wijnnamen uit een kop — "Sogrape Casa Ferreirinha Barca Velha 2011 Douro, Portugal"
+— die onder een fles lezen als een oordeel dat er niet is. De keuze lette op bronlaag en zinslengte
+en niet op wát er stond. Dat is nu een filter met een test eronder: minstens vijf woorden, geen
+cijferpatroon, niet meer dan 55% hoofdletterwoorden, hoogstens twee jaartallen. Twintig van de 448
+streek-jaargangen raakten daarmee hun citaat kwijt, en dat is de goede ruil. Berry Bros' cijfers en
+Decanters `x/5` zijn gelezen om er een eigen oordeel uit af te leiden, en staan niet in de app.
 
 ## Hoe onafhankelijk is een bron eigenlijk
 

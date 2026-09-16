@@ -31,6 +31,10 @@ from pathlib import Path
 WORTEL = Path(__file__).resolve().parent.parent
 BRON = WORTEL / 'cellarmentor.html'
 GEWEIGERD = {'Wine Spectator'}
+# Uitgevers die hun tekst niet gekopieerd willen zien. Bij die twee toont de app de naam en de
+# link, en niet hun zin. Een zin die niemand te zien krijgt is minder waard dan een zin die dat
+# wel doet, dus bij gelijke geschiktheid wint een uitgever die wel geciteerd mag worden.
+STIL = {'Vinous', 'The Wine Cellar Insider'}
 MAX_CITAAT = 115
 
 
@@ -39,15 +43,81 @@ def basis(url):
     return m.group(1) if m else ''
 
 
+# Zinnen waarin een bron iets over rijpheid zegt in plaats van over het karakter van de jaargang.
+# Een oordeel over een jaargang veroudert niet ("een warm jaar met rijpe tannines" blijft waar),
+# maar "drink now" uit 2015 slaat op een wijn die toen elf jaar jonger was. Zulke citaten gaan
+# daarom niet op de kaart bij de fles, alleen in het blad erachter, met het jaartal erbij.
+RIJPTAAL = re.compile(
+    r"\b(drink(ing)? (now|up|soon)|ready to drink|ready now|past (its|their) (best|peak|prime)|"
+    r"should be drunk|at (its|their) (best|peak|prime)|cellar (until|for)|will keep|"
+    r"keeps? (for|until)|needs? (more )?time|will need time|approachable|over the hill|fading|"
+    r"hold (until|for)|not ready|years? (of (life|ageing|aging)|to go))\b", re.I)
+
+
+# Een citaat moet een zin zijn die iets beweert, geen naam en geen cijfer. Twee dingen worden
+# hier hard tegengehouden.
+#
+#   Puntenscores. De opdracht verbiedt ze en toch stonden ze in de app: elf citaten toonden
+#   "Languedoc 2022 vintage rating: 4.5 / 5" of een rij "2023 4/5 2022 3/5". Dat is precies het
+#   cijfer dat we niet overnemen, alleen binnengekomen via de achterdeur van een citaat.
+#
+#   Naamregels. "Sogrape Casa Ferreirinha Barca Velha 2011 Douro, Portugal" is een wijnnaam uit een
+#   kop, geen oordeel. Onder een fles leest dat als een uitspraak die er niet is.
+SCORE = re.compile(r'\d+(?:[.,]\d+)?\s*/\s*(?:5|10|20|100)\b|\b\d{2,3}\s*(?:points?|pts)\b'
+                   r'|\brating:?\s*\d|\b\d{2,3}[-\u2013]\d{2,3}\s*(?:points?|pts)\b', re.I)
+
+
+def zegt_iets(zin):
+    woorden = re.findall(r"[A-Za-z\u00c0-\u024f][A-Za-z\u00c0-\u024f'\-]*", zin)
+    if SCORE.search(zin) or len(woorden) < 5:
+        return False
+    # een kop of een wijnnaam staat vol hoofdletters; een zin niet
+    if sum(1 for w in woorden if w[0].isupper()) / len(woorden) > 0.55:
+        return False
+    # een rij jaartallen is een tabel, geen zin
+    if len(re.findall(r'\b(?:19|20)\d\d\b', zin)) > 2:
+        return False
+    return True
+
+
+# Woorden waarmee een schrijver een oordeel velt. Van de 448 citaten bevatten er 276 er geen:
+# dat zijn zinnen als "in the heatwave year of 2018", waar is maar nietszeggend onder een fles.
+# Bij gelijke geschiktheid wint de zin die iets vindt. En een zin die het tegenovergestelde vindt
+# van wat wij hebben vastgesteld gaat achteraan: onder een uitzonderlijk Barolo 2004 stond
+# "The only niggle was the abundant crop", en dat leest als een app die zichzelf tegenspreekt.
+LOF = re.compile(r'\b(excellent|outstanding|superb|magnificent|great|greatest|exceptional|brilliant'
+                 r'|stunning|stunners|remarkable|classic|fine|finest|beautiful|glorious|sublime'
+                 r'|legendary|memorable|impressive|successful|perfect|thrilling|profound|benchmark)\b', re.I)
+KRITIEK = re.compile(r'\b(difficult|poor|disastrous|dilute[d]?|weak|thin|disappointing|challenging'
+                     r'|tricky|uneven|patchy|variable|modest|unripe|niggle|worst|failure)\b', re.I)
+
+
 def kies_citaat(bevinding):
-    """Eén vindplaats per streek-jaargang: laag A gaat voor, en daarbinnen het citaat dat nog een
-    hele gedachte bevat maar kort genoeg is om onder een fles te passen."""
+    """Eén vindplaats per streek-jaargang. Laag A gaat voor. Daarbinnen telt eerst of het stuk een
+    terugblik is: de opdracht zegt dat een retrospectief oordeel zwaarder weegt dan een en-primeur,
+    en met een jaartal bij elke vindplaats is dat nu ook machinaal te zien. Daarna de lengte: lang
+    genoeg voor een hele gedachte, kort genoeg om onder een fles te passen."""
     kand = [b for b in bevinding['bronnen'] if b['uitgever'] not in GEWEIGERD]
     if not kand:
         return None
+    kand = [b for b in kand if zegt_iets(b['citaat'])]
+    if not kand:
+        return None
     laagA = [b for b in kand if b['laag'] == 'A'] or kand
-    goed = [b for b in laagA if 30 <= len(b['citaat']) <= MAX_CITAAT]
-    return (goed or sorted(laagA, key=lambda b: len(b['citaat'])))[0]
+
+    niveau = bevinding['niveau']
+
+    def rang(b):
+        zin, jaar = b['citaat'], b.get('jaar')
+        past = 0 if 30 <= len(zin) <= MAX_CITAAT else 1
+        lof, kritiek = bool(LOF.search(zin)), bool(KRITIEK.search(zin))
+        # een zin die het omgekeerde vindt van ons eigen niveau spreekt de app tegen
+        botst = 1 if ((niveau >= 4 and kritiek and not lof) or (niveau <= 2 and lof and not kritiek)) else 0
+        oordeelt = 0 if (lof or kritiek) else 1
+        terugblik = 0 if (jaar and jaar - bevinding['jaar'] >= 3) else 1
+        return (past, botst, 1 if b['uitgever'] in STIL else 0, oordeelt, terugblik, len(zin))
+
+    return sorted(laagA, key=rang)[0]
 
 
 def bouw():
@@ -60,23 +130,36 @@ def bouw():
         u = keus['uitgever']
         uitgevers.setdefault(u, basis(keus['url']))
         citaat.setdefault(b['streek'], {})[b['jaar']] = {
-            'u': u, 'p': keus['url'][len(uitgevers[u]):], 't': keus['citaat']}
+            'u': u, 'p': keus['url'][len(uitgevers[u]):], 't': keus['citaat'],
+            'y': keus.get('jaar'), 'r': 1 if RIJPTAAL.search(keus['citaat']) else 0}
 
-    rijp, rijpbron = {}, {}
+    # Een rijpheidsuitspraak is een waarneming op een moment, geen eigenschap van de wijn.
+    # Daarom wordt naast de stand ook het peiljaar bewaard: het jaar waarin de bron het schreef.
+    # Berry Bros heeft één peiljaar voor de hele kaart, Decanter een peiljaar per gids.
+    # Botsen twee bronnen, dan wint de jongste waarneming; bij een gelijk peiljaar de stand die
+    # de wijn het meeste leven geeft. Dat laatste is de risicokeuze van deze app: te vroeg "over
+    # de piek" roepen laat iemand een goede fles weggooien, terwijl een fles die volgens de app
+    # nog kan wachten bij de eerste slok gecontroleerd wordt.
+    CODE = {'bbr': 'B', 'decanter': 'D'}
+    rijp = {}
     for pad in sorted((WORTEL / 'bronnen').glob('rijpheid-*.json')):
-        naam = {'bbr': 'Berry Bros & Rudd', 'decanter': 'Decanter'}[pad.stem.split('-', 1)[1]]
-        for streek, jaren in json.loads(pad.read_text(encoding='utf-8')).items():
-            for jaar, stand in jaren.items():
-                # Zijn twee bronnen het oneens over de rijpheid, dan wint de bron die de wijn nog
-                # het meeste leven geeft. Dat is geen optimisme maar de risicokeuze van deze app:
-                # te vroeg "over de piek" roepen laat iemand een goede fles weggooien, terwijl een
-                # fles die volgens de app nog kan wachten bij de eerste slok gecontroleerd wordt.
-                # Berry Bros noemt Bordeaux 1982 op zijn best, Decanter zegt "Drink soon"; de tabel
-                # houdt dan de eerste aan.
+        sleutel = pad.stem.split('-', 1)[1]
+        code = CODE[sleutel]
+        rauw = json.loads(pad.read_text(encoding='utf-8'))
+        per = rauw.get('per_streek', rauw)
+        vast = rauw.get('peiljaar')
+        for streek, jaren in per.items():
+            for jaar, w in jaren.items():
+                stand, peil = (w['stand'], w['peiljaar']) if isinstance(w, dict) else (w, vast)
+                if peil is None:
+                    raise SystemExit(f'{pad.name}: {streek} {jaar} heeft geen peiljaar')
                 oud = rijp.setdefault(streek, {}).get(int(jaar))
-                rijp[streek][int(jaar)] = int(stand) if oud is None else min(oud, int(stand))
-            rijpbron[streek] = naam if streek not in rijpbron or rijpbron[streek] == naam \
-                else rijpbron[streek] + ' en ' + naam
+                if oud is None or peil > oud[1] or (peil == oud[1] and stand < oud[0]):
+                    rijp[streek][int(jaar)] = (int(stand), int(peil), code)
+    rijpbron = {}
+    for streek, jaren in rijp.items():
+        codes = {c for _, _, c in jaren.values()}
+        rijpbron[streek] = ' en '.join(n for c, n in (('B', 'Berry Bros & Rudd'), ('D', 'Decanter')) if c in codes)
     prodpad = WORTEL / 'bronnen' / 'producenten.json'
     prod = json.loads(prodpad.read_text(encoding='utf-8')) if prodpad.exists() else {'per_streek': {}, 'urls': {}}
     return citaat, uitgevers, rijp, rijpbron, prod
@@ -91,24 +174,28 @@ def main():
     tekst = BRON.read_text(encoding='utf-8')
 
     rij_regels = ',\n'.join(
-        f"  {k}: '" + ' '.join(f'{j}:{rijp[k][j]}' for j in sorted(rijp[k])) + "'"
+        f"  {k}: '" + ' '.join('%d:%d:%d:%s' % ((j,) + rijp[k][j]) for j in sorted(rijp[k])) + "'"
         for k in sorted(rijp))
     cit_regels = ',\n'.join(
         f"  {k}: {{" + ', '.join(
-            f"{j}:{{u:{js(citaat[k][j]['u'])},p:{js(citaat[k][j]['p'])},t:{js(citaat[k][j]['t'])}}}"
+            f"{j}:{{u:{js(citaat[k][j]['u'])},p:{js(citaat[k][j]['p'])},t:{js(citaat[k][j]['t'])}"
+            + (f",y:{citaat[k][j]['y']}" if citaat[k][j]['y'] else '')
+            + (',r:1' if citaat[k][j]['r'] else '') + '}'
             for j in sorted(citaat[k])) + '}'
         for k in sorted(citaat))
     bas_regels = ',\n'.join(f'  {js(u)}: {js(b)}' for u, b in sorted(uitgevers.items()))
 
     vervang = [
         ('RIJP_TABEL', rij_regels),
-        ('RIJP_BRON', ',\n'.join(f'  {k}: {js(v)}' for k, v in sorted(rijpbron.items()))),
         ('CITAAT_BASIS', bas_regels),
         ('CITAAT', cit_regels),
         ('PROD_URL', ',\n'.join(f'  {k}: {js(v)}' for k, v in sorted(prod['urls'].items()) if k in prod['per_streek'])),
         ('PRODUCENT', ',\n'.join(
             f'  {k}: {{' + ', '.join(f'{j}:{js(namen)}' for j, namen in sorted(v.items(), key=lambda t: int(t[0]))) + '}'
             for k, v in sorted(prod['per_streek'].items()))),
+        ('PROD_JAAR', ',\n'.join(
+            f'  {k}: {{' + ', '.join(f'{j}:{y}' for j, y in sorted(v.items(), key=lambda t: int(t[0]))) + '}'
+            for k, v in sorted(prod.get('peiljaar', {}).items()))),
     ]
     for naam, regels in vervang:
         # de tabel staat er leeg als `const X = {};` of gevuld als een blok waarvan elke regel

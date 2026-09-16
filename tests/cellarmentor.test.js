@@ -43,7 +43,7 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, rijpheidVan, citaatVan, RIJPHEID, CITAAT, CITAAT_STIL, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, waardeSub, jaargangKloof, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, rijpheidVan, rijpheidReikt, rijpheidZin, citaatVan, RIJPHEID, CITAAT, CITAAT_STIL, PRODUCENT, genoemdDoor, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, waardeSub, jaargangKloof, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
@@ -426,6 +426,59 @@ test('rijpheid uit een bron houdt "Over de piek?" tegen, en nooit andersom', () 
     region: 'Champagne', appellation: 'Champagne', name: 'Brut', qty: 1, drinkFrom: C.YR() + 3, drinkTo: C.YR() + 20 };
   assert.equal(C.windowStatus(jong).k, 'jong');
 });
+test('een uitspraak over rijpheid telt vanaf het jaar waarin hij is gedaan', () => {
+  /* 154 van de Decanter-gidsen zijn voor het laatst herzien in 2015. Hun "Keep" bij een 1997 ging
+     over een wijn van achttien jaar, niet over een wijn van negenentwintig. De app rekende dat
+     verschil niet en behandelde 25 streek-jaargangen als actueel terwijl ze dat niet waren. */
+  const oud = { stand: 0, leeftijd: 18, peiljaar: 2015, jaar: 1997, vers: false,
+    bron: 'Decanter', streek: 'Zuid-Afrika', woord: 'nog niet op dronk' };
+  assert.equal(C.rijpheidReikt(oud, 12), 30, 'nog niet toe op zijn achttiende plus een plateau van twaalf');
+  assert.ok(C.rijpheidReikt(oud, 4) < 2026 - 1997, 'met een kort plateau reikt dezelfde zin niet tot nu');
+  const nu = { ...oud, stand: 2, leeftijd: 2026 - 1997, peiljaar: 2026, vers: true, bron: 'Berry Bros & Rudd' };
+  assert.ok(C.rijpheidReikt(nu, 12) >= 2026 - 1997, 'een kaart van dit jaar spreekt wel over vandaag');
+  /* en de zin zelf noemt het jaartal zodra hij niet van nu is */
+  assert.ok(C.rijpheidZin(oud).includes('2015'), 'een oude uitspraak draagt zijn jaartal');
+  assert.ok(!C.rijpheidZin(nu).includes('2026'), 'een uitspraak van nu hoeft dat niet');
+  assert.ok(C.rijpheidZin(nu).includes('nu'));
+  /* elke regel in de tabel draagt een peiljaar en een uitgever */
+  for (const k of Object.keys(C.RIJPHEID)) {
+    for (const j of Object.keys(C.RIJPHEID[k])) {
+      const e = C.RIJPHEID[k][j];
+      assert.ok(Number.isInteger(e.s) && e.s >= 0 && e.s <= 4, k + ' ' + j + ': stand klopt niet');
+      assert.ok(e.y >= +j && e.y <= C.YR(), k + ' ' + j + ': peiljaar ' + e.y + ' kan niet');
+      assert.ok(e.b === 'B' || e.b === 'D', k + ' ' + j + ': geen uitgever');
+    }
+  }
+});
+test('de naam van een uitgever staat niet op elke suggestiekaart', () => {
+  /* De kaart bij een suggestie toont label en sub. Zet je daar een uitgeversnaam in, dan staat
+     "volgens Berry Bros & Rudd" onder elke fles uit een onderzochte streek en leest niemand het
+     nog. De naam hoort in bron, en die wordt getoond waar iemand er om vraagt. */
+  const claret = { id: 's1', type: 'rood', vintage: 1982, grapes: ['cabernet sauvignon'],
+    region: 'Bordeaux', appellation: 'Pauillac', name: 'Pauillac', qty: 1 };
+  const r = C.estimateWindow(claret); claret.drinkFrom = r.from; claret.drinkTo = r.to;
+  const st = C.windowStatus(claret);
+  assert.equal(st.k, 'rijp');
+  assert.ok(!/Berry Bros|Decanter/.test(st.sub), 'sub blijft een feit: ' + st.sub);
+  assert.ok(/Berry Bros/.test(st.bron), 'de bron staat er wel, apart');
+});
+test('een citaat is een zin die iets beweert, geen puntenscore en geen wijnnaam', () => {
+  /* Dit stond fout in de app: elf citaten toonden Decanters cijfers ("Languedoc 2022 vintage
+     rating: 4.5 / 5", "2023 4/5 2022 3/5 ..."). Punten overnemen is precies wat deze app niet
+     doet, en via een citaat kwam het er alsnog in. */
+  const SCORE = /\d+([.,]\d+)?\s*\/\s*(5|10|20|100)\b|\b\d{2,3}\s*(points?|pts)\b|\brating:?\s*\d/i;
+  for (const k of Object.keys(C.CITAAT)) {
+    for (const j of Object.keys(C.CITAAT[k])) {
+      const zin = C.CITAAT[k][j].t;
+      assert.ok(!SCORE.test(zin), k + ' ' + j + ': puntenscore in een citaat \u2014 ' + zin);
+      const woorden = zin.match(/[A-Za-z\u00c0-\u024f][A-Za-z\u00c0-\u024f'-]*/g) || [];
+      assert.ok(woorden.length >= 5, k + ' ' + j + ': te kort om een bewering te zijn \u2014 ' + zin);
+      const hoofd = woorden.filter(w => w[0] === w[0].toUpperCase()).length;
+      assert.ok(hoofd / woorden.length <= 0.55, k + ' ' + j + ': leest als een naam \u2014 ' + zin);
+      assert.ok((zin.match(/\b(19|20)\d\d\b/g) || []).length <= 2, k + ' ' + j + ': een rij jaartallen \u2014 ' + zin);
+    }
+  }
+});
 test('citaten: de juiste bron bij de juiste fles, en niet citeren wie dat niet wil', () => {
   const saut = { id: 'c1', type: 'zoet', vintage: 2023, region: 'Bordeaux', appellation: 'Sauternes', name: 'Sauternes', qty: 1 };
   const c = C.citaatVan(saut);
@@ -434,11 +487,26 @@ test('citaten: de juiste bron bij de juiste fles, en niet citeren wie dat niet w
   assert.equal(c.jaar, 2023);
   /* Vinous zet onder elk artikel dat er niets uit gekopieerd mag worden. We noemen ze wel, we
      citeren ze niet: de lezer krijgt de vindplaats en een link naar het stuk zelf. */
-  const barolo = { id: 'c2', type: 'rood', vintage: 2018, region: 'Piemonte', appellation: 'Barolo', name: 'Barolo', qty: 1 };
+  let stilJaar = null;
+  for (const j of Object.keys(C.CITAAT.piemonte)) if (C.CITAAT.piemonte[j].u === 'Vinous') { stilJaar = +j; break; }
+  assert.ok(stilJaar, 'Piemonte heeft minstens één vindplaats bij Vinous');
+  const barolo = { id: 'c2', type: 'rood', vintage: stilJaar, region: 'Piemonte', appellation: 'Barolo', name: 'Barolo', qty: 1 };
   const b = C.citaatVan(barolo);
   assert.equal(b.uitgever, 'Vinous');
   assert.equal(b.tekst, null, 'van Vinous tonen we geen zin');
   assert.ok(b.url.includes('vinous.com'));
+  /* en van elke uitgever in CITAAT_STIL wordt nergens een zin getoond */
+  for (const k of Object.keys(C.CITAAT)) {
+    for (const j of Object.keys(C.CITAAT[k])) {
+      if (!C.CITAAT_STIL.includes(C.CITAAT[k][j].u)) continue;
+      const w = { id: 'c3', type: 'rood', vintage: +j, region: '', appellation: '', name: '', qty: 1 };
+      assert.equal(C.citaatVan({ ...w, ...eersteTrefwoord(k) }).tekst, null, k + ' ' + j + ': deze uitgever wil niet geciteerd worden');
+    }
+  }
+  function eersteTrefwoord(sleutel) {
+    const st = C.STREKEN.find(s => s.k === sleutel);
+    return { appellation: st.kw[0], type: (st.t && st.t[0]) || 'rood' };
+  }
   for (const k of Object.keys(C.CITAAT)) {
     for (const j of Object.keys(C.CITAAT[k])) {
       const e = C.CITAAT[k][j];

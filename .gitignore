@@ -3,3 +3,4 @@
 supabase/.temp/
 huisstijl-preview.html
 .claude/launch.json
+tools/__pycache__/
