@@ -213,7 +213,9 @@ def main():
         ('RIJP_TABEL', rij_regels),
         ('CITAAT_BASIS', bas_regels),
         ('CITAAT', cit_regels),
-        ('PROD_URL', ',\n'.join(f'  {k}: {js(v)}' for k, v in sorted(prod['urls'].items()) if k in prod['per_streek'])),
+        ('PROD_URL', ',\n'.join(
+            f'  {k}: {{' + ', '.join(f'{j}:{js(u)}' for j, u in sorted(v.items(), key=lambda t: int(t[0]))) + '}'
+            for k, v in sorted(prod.get('urls', {}).items()) if k in prod['per_streek'])),
         ('PRODUCENT', ',\n'.join(
             f'  {k}: {{' + ', '.join(f'{j}:{js(namen)}' for j, namen in sorted(v.items(), key=lambda t: int(t[0]))) + '}'
             for k, v in sorted(prod['per_streek'].items()))),

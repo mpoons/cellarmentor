@@ -452,6 +452,33 @@ test('streekVan leest afkortingen zoals ze op etiketten staan', () => {
   const zwitsers = C.streekVan(pak('Ermitage', { type: 'wit', region: 'Valais', country: 'Zwitserland' }));
   assert.ok(!zwitsers || zwitsers.k !== 'rhone_n', 'een Valais-Ermitage is geen noordelijke Rhône');
 });
+test('een producentnaam hoort bij dat huis, niet bij de buren met een langere naam', () => {
+  /* In Pomerol staan P\u00e9trus en La Fleur-P\u00e9trus naast elkaar, in Saint-\u00c9milion Pavie,
+     Pavie-Macquin en Pavie-Decesse. Dat zijn verschillende huizen. Zonder deze afvanger kreeg een
+     fles La Fleur-P\u00e9trus het oordeel over P\u00e9trus: van de 1471 treffers in een catalogus van
+     18.675 flessen waren er 390 van dat type. */
+  const fles = (producer, jaar) => ({ id: 'p1', type: 'rood', vintage: jaar, producer,
+    name: producer, region: 'Bordeaux', appellation: 'Pomerol', qty: 1 });
+  const echt = C.genoemdDoor(fles('Petrus', 2009));
+  if (echt) {
+    assert.equal(echt.naam, 'Petrus');
+    assert.equal(C.genoemdDoor(fles('Ch\u00e2teau La Fleur-P\u00e9trus', 2009)), null,
+      'La Fleur-P\u00e9trus is een ander huis dan P\u00e9trus');
+  }
+  /* en een appellation achter de naam mag juist wel: die plaatst de wijn, hij hernoemt hem niet */
+  const met = { id: 'p2', type: 'rood', vintage: 2009, producer: 'Petrus',
+    name: 'Petrus Pomerol', region: 'Bordeaux', appellation: 'Pomerol', qty: 1 };
+  if (echt) assert.ok(C.genoemdDoor(met), 'Petrus Pomerol is nog steeds Petrus');
+  /* elke naam in de tabel is lang genoeg om niet overal op te matchen */
+  for (const k of Object.keys(C.PRODUCENT)) {
+    for (const j of Object.keys(C.PRODUCENT[k])) {
+      for (const naam of C.PRODUCENT[k][j]) {
+        assert.ok(typeof naam === 'string' && naam.trim().length >= 4, k + ' ' + j + ': ' + naam);
+        assert.ok(!/&[a-z]+;|&#\d+;/i.test(naam), k + ' ' + j + ': niet ontsnapte html in ' + naam);
+      }
+    }
+  }
+});
 test('een gepubliceerde zin zonder niveau claimt ook geen niveau', () => {
   /* De jaargangsgidsen van Decanter leveren 231 streek-jaargangen waar het dossier niets heeft.
      Hun zin wordt getoond, hun cijfer niet: een afleiding uit dat cijfer haalde tegen de bekende
