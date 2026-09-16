@@ -129,6 +129,44 @@ twee stappen mis; hun "Red Bordeaux" tegen onze Bordeaux haalt 78 procent.
 komt uit wat een laag-A-bron kwalitatief zegt; de kaart bevestigt of spreekt tegen. Een kaart van
 één uitgever omrekenen naar onze schaal blijft verboden, en dat is niet hetzelfde als hem lezen.
 
+## Wat een uitgever zelf toestaat, en wat we daarmee doen
+
+Bereikbaar is niet hetzelfde als toegestaan, en dat onderscheid was er tot ronde drie niet. Het is
+op 16 september per uitgever nagekeken in hun eigen `robots.txt` en in de notities onder hun
+artikelen. Drie soorten antwoord, en drie verschillende manieren om ermee om te gaan.
+
+**Een uitgever die AI-verkeer weigert, gebruiken we niet.** `winespectator.com` zet in zijn
+`robots.txt` letterlijk `User-agent: ClaudeBot` met `Disallow: /` en hetzelfde voor
+`Anthropic-Client`. Dat is een expliciete weigering en daar is geen omweg voor die deugt: een
+andere user-agent meesturen omzeilt precies wat ze vragen. Wine Spectator is daarom uit het
+onderzoek gehaald. **Dat kost wat**: 24 jaren verloren hun hele onderbouwing en 22 zakten van twee
+bronnen naar één, vooral in de stille Douro, de Loire rond 2002-2013 en Sauternes 2016-2020. Dat is
+de prijs en die wordt betaald.
+
+`worldoffinewine.com` weigert ClaudeBot ook, maar alleen op `/wines/` en `/finewines/`, hun
+wijnranglijsten. De `/news-features/`-artikelen vallen daar niet onder en zijn wél gebruikt; blijf
+van die twee paden af. `decanter.com` heeft een AI-blok voor bytespider, mistralai, cohere, ai2bot,
+youbot, omgili, diffbot, kangaroo, img2dataset, amazonbot en meta-externalagent, en noemt ClaudeBot
+en GPTBot niet. `vinous.com`, `moselfinewines.com`, `larvf.com` en `bbr.com` hebben geen AI-regels.
+
+**Een uitgever die niet geciteerd wil worden, noemen we wel en citeren we niet.** Onder elk
+Vinous-artikel staat: "No portion of this article may be copied, shared or redistributed without
+prior consent from Vinous." De app toont bij die jaargangen dus de uitgever en een link naar het
+stuk, en niet hun zin. De lezer ziet nog steeds wie het oordeel draagt en komt met één tik bij het
+origineel uit, wat is wat die notitie beschermt. Van de 426 vindplaatsen in de app zijn er 237 op
+die manier stil.
+
+**Bij de rest staat een kort citaat, met bronvermelding en link.** Dat is waar het citaatrecht voor
+bestaat: een korte aanhaling uit een rechtmatig openbaar gemaakt werk, in dienst van een oordeel,
+met de bron erbij. Daar horen twee zelfopgelegde grenzen bij. De aanhaling blijft kort — vijf tot
+dertig woorden, en in de app hooguit één per streek-jaargang. En een kaart of database van een
+uitgever wordt niet overgenomen: de jaargangstaat van Berry Bros is gelezen om er een eigen
+rijpheidsoordeel uit af te leiden, maar zijn cijfers staan niet in de app.
+
+Deze regels staan ook in de code, zodat ze niet per ongeluk sneuvelen. `tools/zet-bronnen.py`
+weigert Wine Spectator, `CITAAT_STIL` in `cellarmentor.html` houdt de lijst uitgevers bij die wel
+genoemd maar niet geciteerd worden, en `tests/cellarmentor.test.js` controleert allebei.
+
 ## Wat nog niet lukt
 
 `cellartracker.com` geeft 405 op curl en 202 met een lege body op Chrome: een anti-botmaatregel van
