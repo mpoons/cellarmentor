@@ -43,7 +43,7 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, waardeSub, jaargangKloof, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, rijpheidVan, citaatVan, RIJPHEID, CITAAT, CITAAT_STIL, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, waardeSub, jaargangKloof, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
@@ -403,6 +403,52 @@ test('streekVan: brengt bekende appellations thuis, en niet bij de buren', () =>
       assert.equal(k, k.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''), 'uitzondering moet genormaliseerd zijn: ' + k);
     }
   }
+});
+test('rijpheid uit een bron houdt "Over de piek?" tegen, en nooit andersom', () => {
+  /* De aanleiding van het hele drinkvensterwerk was een verzamelaar die te horen kreeg dat zijn
+     flessen over de piek waren terwijl ze dat niet waren. Gemeten over 452 streek-jaargangen zei
+     de app dertien keer "Over de piek?" terwijl Berry Bros de wijn op z'n best noemde. Deze tabel
+     mag daarom één kant op werken: een venster verlengen, nooit inkorten. */
+  const claret = { id: 'r1', type: 'rood', vintage: 1982, grapes: ['cabernet sauvignon'],
+    region: 'Bordeaux', appellation: 'Pauillac', name: 'Pauillac', qty: 1 };
+  const r = C.estimateWindow(claret);
+  claret.drinkFrom = r.from; claret.drinkTo = r.to;
+  assert.ok(r.to < C.YR(), 'het venster van deze fles is volgens de regels allang afgelopen');
+  const rp = C.rijpheidVan(claret);
+  assert.equal(rp.stand, 2, 'Berry Bros noemt 1982 in Bordeaux op zijn best');
+  assert.equal(C.windowStatus(claret).k, 'rijp', 'dus geen "Over de piek?" maar "Op z\u2019n rijpst"');
+  /* zonder bronoordeel blijft de oude uitkomst staan */
+  const zonder = { ...claret, id: 'r2', region: 'Kosovo', appellation: '', name: 'x' };
+  assert.equal(C.rijpheidVan(zonder), null);
+  assert.equal(C.windowStatus(zonder).k, 'over', 'een streek zonder bronoordeel verandert niet');
+  /* de tabel kort nooit in: een fles die nog niet aan zijn venster toe is blijft "Nog te jong" */
+  const jong = { id: 'r3', type: 'mousserend', vintage: 2020, grapes: ['chardonnay'],
+    region: 'Champagne', appellation: 'Champagne', name: 'Brut', qty: 1, drinkFrom: C.YR() + 3, drinkTo: C.YR() + 20 };
+  assert.equal(C.windowStatus(jong).k, 'jong');
+});
+test('citaten: de juiste bron bij de juiste fles, en niet citeren wie dat niet wil', () => {
+  const saut = { id: 'c1', type: 'zoet', vintage: 2023, region: 'Bordeaux', appellation: 'Sauternes', name: 'Sauternes', qty: 1 };
+  const c = C.citaatVan(saut);
+  assert.ok(c && c.uitgever, 'Sauternes 2023 heeft een vindplaats');
+  assert.ok(c.url.startsWith('https://'), 'en een volledige link');
+  assert.equal(c.jaar, 2023);
+  /* Vinous zet onder elk artikel dat er niets uit gekopieerd mag worden. We noemen ze wel, we
+     citeren ze niet: de lezer krijgt de vindplaats en een link naar het stuk zelf. */
+  const barolo = { id: 'c2', type: 'rood', vintage: 2018, region: 'Piemonte', appellation: 'Barolo', name: 'Barolo', qty: 1 };
+  const b = C.citaatVan(barolo);
+  assert.equal(b.uitgever, 'Vinous');
+  assert.equal(b.tekst, null, 'van Vinous tonen we geen zin');
+  assert.ok(b.url.includes('vinous.com'));
+  for (const k of Object.keys(C.CITAAT)) {
+    for (const j of Object.keys(C.CITAAT[k])) {
+      const e = C.CITAAT[k][j];
+      assert.ok(e.u && e.p !== undefined && e.t, k + ' ' + j + ': vindplaats is niet compleet');
+      assert.ok(!/winespectator/i.test(e.p), 'Wine Spectator weigert ClaudeBot en hoort er niet in te staan');
+    }
+  }
+  /* zonder jaargang of zonder streek is er niets te citeren */
+  assert.equal(C.citaatVan({ id: 'c3', type: 'rood', region: 'Bordeaux', name: 'x' }), null);
+  assert.equal(C.citaatVan({ id: 'c4', type: 'rood', vintage: 2018, region: 'Kosovo', name: 'x' }), null);
 });
 test('vensterMigratie: zet alleen vensters recht die de oude regels zelf hebben bedacht', () => {
   const champ = { id: 'a1', type: 'mousserend', vintage: 2008, grapes: ['chardonnay', 'pinot noir'],
