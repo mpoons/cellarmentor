@@ -46,6 +46,22 @@ Een jaar dat niet in de tabel staat geeft niveau 3 zonder woord: "geen mening". 
 
 De 22 streken zonder enige controle zijn: Beaujolais, Provence, zuidwest Frankrijk, Jura, Veneto, Noord-Italië, Zuid-Italië, Priorat, noordwest Spanje, Jerez, Douro, Portugal, Oostenrijk, Tokaj, Griekenland, Oregon, Washington, Australië, Nieuw-Zeeland, Zuid-Afrika, Argentinië en Chili. Daar staat nog uitsluitend eigen schatting, en de app zegt dat ook.
 
+## Hoe onafhankelijk is een bron eigenlijk
+
+Dit is de vraag die de tabel maakt of breekt, en de ronde van 16 september leverde er een gemeten antwoord op. Een promotie-organisatie van een wijnland of een streek verklaart een jaargang vrijwel nooit slecht, want het is hun eigen sector. Wines of Chile, Wines of Argentina, WoSA, Wine Australia, New Zealand Winegrowers en Wines of Greece horen in die categorie. Het harde bewijs staat in de Ribera del Duero-reeks: het Consejo Regulador gaf in veertig jaar nooit een "Deficiente" en maar twee keer "Regular". Die schaal overnemen zou de app systematisch te hoog zetten. Tegelijk is Rioja het tegenvoorbeeld, want dat Consejo varieert zijn oordeel wel degelijk en dat bleek bruikbaar. De regel is dus niet dat je ze niet gebruikt, de regel is waarvoor je ze gebruikt.
+
+**Laag C, feiten en nooit de beslissende stem.** Promotie-organisaties en consejos zijn uitstekend en vaak gezaghebbend voor wat controleerbaar is: opbrengsten, neerslag, vorstdata, hittegolven, ziektedruk, startdatum van de oogst, hoeveel procent de oogst kromp. Dat zijn feiten waar ze geen belang bij hebben om ze te verdraaien, en ze publiceren zelfs een slechte opbrengst. Gebruik ze daarvoor, en laat het kwaliteitsniveau altijd door minstens één belangeloze bron bepalen.
+
+**Laag B, beslissende stem met korrel zout.** Handelaren met een lange publieke jaargangstaat (Berry Bros & Rudd, Farr Vintners, Justerini & Brooks, Corney & Barrow, iDealwine) willen verkopen, maar hun staat kost hen reputatie als hij niet klopt en ze zetten jaren wel degelijk lager: Berry Bros plaatste Bourgogne 2023 wit expliciet onder 2017, 2020 en 2022. Behandel hun láge oordelen als een sterk signaal en hun hoge met terughoudendheid.
+
+**Laag A, beslissende stem.** Critici met terugkijkende proeverijen en specialisten met een lange reeks: Vinous, Decanter, Jancis Robinson, World of Fine Wine, drinkrhone.com, Mosel Fine Wines. Die hebben er commercieel niets aan om een jaargang mooier te maken dan hij is.
+
+Twee regels die daar uit volgen en die bij de volgende ronde moeten gelden.
+
+**Geef een terugkijkende bron voorrang op een en-primeur-bron.** Een jaargang die tien jaar later opnieuw is geproefd is veel betrouwbaarder dan het oordeel bij de vatproef, en voor een kelderapp is juist dat terugkijkende oordeel wat telt. Bordeaux 2025 staat nu op en-primeur-oordelen en is daarmee voorlopig.
+
+**Het eerlijkste signaal dat er bestaat is de beslissing van de producent zelf.** Of de porthuizen een jaargang declareerden, of de champagnehuizen een vintage uitbrachten, of Barolo-producenten hun topwijn declasseerden: dat zijn kostbare keuzes die niemand maakt om marketingredenen. Een huis dat besluit zijn vlaggenschip een jaar niet te maken, zegt meer dan welke beschrijving ook. Dat is precies het signaal dat bij de Douro deze ronde niet hard te maken was, en dat is waarom de Douro bovenaan de werklijst staat.
+
 ## Gebruikte bronnen, per laag
 
 De ronde van 16 september gebruikte deze lagen, in deze voorkeursorde, met de eis van minstens twee onafhankelijke bronnen per jaar:
