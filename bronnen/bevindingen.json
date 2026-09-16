@@ -1,7 +1,7 @@
 {
  "ronde": 3,
  "datum": "2026-09-16",
- "toelichting": "Bevindingen van het jaargangonderzoek. Elk citaat is machinaal teruggevonden in de opgehaalde pagina op de datum hierboven. winespectator.com is weggelaten: die site weigert ClaudeBot en Anthropic-Client in robots.txt.",
+ "toelichting": "Bevindingen van het jaargangonderzoek van CellarMentor. Elk citaat is machinaal teruggevonden in de opgehaalde pagina op de datum hierboven. winespectator.com staat er niet in: die site weigert ClaudeBot en Anthropic-Client in robots.txt.",
  "bevindingen": [
   {
    "streek": "alentejo",
@@ -3111,6 +3111,26 @@
   },
   {
    "streek": "douro",
+   "jaar": 2009,
+   "niveau": 3,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "World of Fine Wine",
+     "laag": "A",
+     "url": "https://worldoffinewine.com/tasting-notes/niepoort-douro-wines-best-finest",
+     "citaat": "An August temperature spike accelerated the ripening process and produced rich, ripe wines."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/sogrape-legado-vertical-tasting-474786/",
+     "citaat": "With one exception (2009, a hot, dry year), the fruit purity and definition is excellent, as is the freshness."
+    }
+   ]
+  },
+  {
+   "streek": "douro",
    "jaar": 2011,
    "niveau": 5,
    "teken": "*",
@@ -3120,6 +3140,52 @@
      "laag": "A",
      "url": "https://worldoffinewine.com/tasting-notes/niepoort-douro-wines-best-finest",
      "citaat": "No shortage of oomph in this celebrated vintage."
+    }
+   ]
+  },
+  {
+   "streek": "douro",
+   "jaar": 2011,
+   "niveau": 5,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "World of Fine Wine",
+     "laag": "A",
+     "url": "https://worldoffinewine.com/tasting-notes/niepoort-douro-wines-best-finest",
+     "citaat": "A much-acclaimed vintage produced statuesque Vintage Ports (a general declaration) and impressively concentrated, structured Douro reds."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/good-value-douro-reds-417806/",
+     "citaat": "entries from 2011 – an outstanding year – were past their best"
+    },
+    {
+     "uitgever": "Wine Anorak",
+     "laag": "A",
+     "url": "https://wineanorak.com/2025/07/25/the-douro-wines-of-sograpes-casa-de-ferreininha-including-barca-velha-portugals-most-famous-table-wine/",
+     "citaat": "Sogrape Casa Ferreirinha Barca Velha 2011 Douro, Portugal"
+    }
+   ]
+  },
+  {
+   "streek": "douro",
+   "jaar": 2013,
+   "niveau": 2,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/good-value-douro-reds-417806/",
+     "citaat": "2013 Productive year. Promising until heavy late- September rains; flavour and tannin ripeness issues."
+    },
+    {
+     "uitgever": "World of Fine Wine",
+     "laag": "A",
+     "url": "https://worldoffinewine.com/tasting-notes/niepoort-douro-wines-best-finest",
+     "citaat": "The 2013 harvest began earlier than usual on August 19, to maintain high acidity and avoid high alcohol."
     }
    ]
   },
@@ -3139,7 +3205,145 @@
   },
   {
    "streek": "douro",
+   "jaar": 2014,
+   "niveau": 3,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/good-value-douro-reds-417806/",
+     "citaat": "2014 Unsettled weather throughout the year and the wettest September for 80 years resulted in less concentrated, juicy wines, the best elegant."
+    },
+    {
+     "uitgever": "World of Fine Wine",
+     "laag": "A",
+     "url": "https://worldoffinewine.com/tasting-notes/niepoort-douro-wines-best-finest",
+     "citaat": "An early September start to the vintage avoided rain that beset most later that month."
+    }
+   ]
+  },
+  {
+   "streek": "douro",
+   "jaar": 2015,
+   "niveau": 4,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/good-value-douro-reds-417806/",
+     "citaat": "2015 An even year produced consistent, very balanced wines, with lovely fruit and smooth, ripe tannins."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/chryseia-a-profile-of-portugals-icon-wine-and-new-releases-439311/",
+     "citaat": "A great Douro vintage with grapes sourced from Quintas de Roriz, da Perdiz and da Vila Velha."
+    },
+    {
+     "uitgever": "World of Fine Wine",
+     "laag": "A",
+     "url": "https://worldoffinewine.com/tasting-notes/niepoort-douro-wines-best-finest",
+     "citaat": "Quite tight-knit for 2015, with elegantly structuring, seamless tannins"
+    }
+   ]
+  },
+  {
+   "streek": "douro",
+   "jaar": 2016,
+   "niveau": 4,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/good-value-douro-reds-417806/",
+     "citaat": "2016 A wet winter and spring, hot, dry summer and welcome mid-September showers produced favourable ripening conditions. Excellent, well-structured reds with good acidity."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/douro-red-wines-panel-tasting-results-494591/",
+     "citaat": "Wine lovers who enjoy more mature bottles should seek out wines from 2016"
+    },
+    {
+     "uitgever": "World of Fine Wine",
+     "laag": "A",
+     "url": "https://worldoffinewine.com/tasting-notes/niepoort-douro-wines-best-finest",
+     "citaat": "A low-yielding vintage. A dry, hot summer and September rains interrupted the maturation process delaying vintage"
+    }
+   ]
+  },
+  {
+   "streek": "douro",
+   "jaar": 2017,
+   "niveau": 4,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/good-value-douro-reds-417806/",
+     "citaat": "2017 Exceptionally dry, warm and early (picking began in August). Flavour and tannin ripeness were advanced, but acid levels remained high, resulting in inky, well-concentrated, bright-fruited wines."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/the-douro-wines-an-evolution-423643/",
+     "citaat": "Particularly in 2017, the driest, earliest vintage on record."
+    },
+    {
+     "uitgever": "World of Fine Wine",
+     "laag": "A",
+     "url": "https://worldoffinewine.com/tasting-notes/niepoort-douro-wines-best-finest",
+     "citaat": "A very warm year; the harvesting for Charme started early on August 24."
+    }
+   ]
+  },
+  {
+   "streek": "douro",
    "jaar": 2018,
+   "niveau": 4,
+   "teken": "*",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/douro-red-wines-panel-tasting-results-494591/",
+     "citaat": "powerful wines from extremely dry and hot years like 2018, as well as more elegant wines from cooler vintages such as 2019"
+    }
+   ]
+  },
+  {
+   "streek": "douro",
+   "jaar": 2018,
+   "niveau": 3,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/good-value-douro-reds-417806/",
+     "citaat": "2018 Extreme weather (drought, rainfall, hail, heat) scythed production. Low yields mean the best wines will be concentrated. A growers’ year; be selective."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/douro-red-wines-panel-tasting-results-494591/",
+     "citaat": "included powerful wines from extremely dry and hot years like 2018"
+    },
+    {
+     "uitgever": "World of Fine Wine",
+     "laag": "A",
+     "url": "https://worldoffinewine.com/tasting-notes/niepoort-douro-wines-best-finest",
+     "citaat": "Very much at the delicate end of the spectrum for the Douro but with greater intensity of fruit than the 2014."
+    }
+   ]
+  },
+  {
+   "streek": "douro",
+   "jaar": 2019,
    "niveau": 4,
    "teken": "*",
    "bronnen": [
@@ -3155,13 +3359,51 @@
    "streek": "douro",
    "jaar": 2019,
    "niveau": 4,
-   "teken": "*",
+   "teken": "+",
    "bronnen": [
     {
      "uitgever": "Decanter",
      "laag": "A",
      "url": "https://www.decanter.com/premium/douro-red-wines-panel-tasting-results-494591/",
-     "citaat": "powerful wines from extremely dry and hot years like 2018, as well as more elegant wines from cooler vintages such as 2019"
+     "citaat": "included powerful wines from extremely dry and hot years like 2018, as well as more elegant wines from cooler vintages such as 2019"
+    },
+    {
+     "uitgever": "World of Fine Wine",
+     "laag": "A",
+     "url": "https://worldoffinewine.com/tasting-notes/niepoort-douro-wines-best-finest",
+     "citaat": "With mild days and cool nights in August, harvesting began on August 8, peaked during the week of September 8–15, and concluded on October 1"
+    },
+    {
+     "uitgever": "World of Fine Wine",
+     "laag": "A",
+     "url": "https://worldoffinewine.com/tasting-notes/the-douro-boys-luxury-of-time-20th-anniversary-tasting",
+     "citaat": "From a hot year with cold nights during the lead into harvest, this is a full-bodied estate blend of Rabigato, Gouveio, Viosinho, and Arinto"
+    }
+   ]
+  },
+  {
+   "streek": "douro",
+   "jaar": 2020,
+   "niveau": 3,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/douro-red-wines-panel-tasting-results-494591/",
+     "citaat": "while those who prefer a more vibrant and fruit-forward wine should look for bottles from 2020"
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/douro-red-wines-panel-tasting-results-494591/",
+     "citaat": "In general, the panellists agreed that high quality was a common theme, regardless of the harvest date, so readers can buy wines from recent vintages with confidence."
+    },
+    {
+     "uitgever": "World of Fine Wine",
+     "laag": "A",
+     "url": "https://worldoffinewine.com/tasting-notes/niepoort-douro-wines-best-finest",
+     "citaat": "Three July heatwaves reduced yields somewhat."
     }
    ]
   },
@@ -4975,6 +5217,222 @@
   },
   {
    "streek": "loire",
+   "jaar": 2002,
+   "niveau": 4,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/wine-news/loire-vintage-report-100888/",
+     "citaat": "The 2002 vintage in the Loire is surprisingly good."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/wine-news/loire-vintage-report-100888/",
+     "citaat": "Overall, it is probably the best vintage since 1997."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/2002-loire-valley-sauvignon-blancs-mar-2004",
+     "citaat": "the Loire Valley's 2002 vintage yielded classic yet user-friendly examples that merit strong buying interest"
+    }
+   ]
+  },
+  {
+   "streek": "loire",
+   "jaar": 2003,
+   "niveau": 3,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/wine-news/loire-vintage-report-100888/",
+     "citaat": "The 2003s have opulent fruit, often high alcohol and significantly lower acidity than normal. While good for some wines, it is less good for others."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/wine/wine-regions/loire/regional-profile-anjou-saumur-248168/",
+     "citaat": "Low quantity due to mid-April frost and the heat of the summer. Potentially magnificent wines."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/sancerre-taking-the-temperature-aug-2021",
+     "citaat": "to be fair to some of the better 2003s and 2009s, they’ve held up well, when they were initially handed a short drinking window"
+    }
+   ]
+  },
+  {
+   "streek": "loire",
+   "jaar": 2005,
+   "niveau": 5,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/features/red-loire-2005-vintage-report-247669/",
+     "citaat": "Red Loire 2005 is a fantastic vintage"
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/features/red-loire-2005-vintage-report-247669/",
+     "citaat": "What impresses in 2005 is the quality of the tannins and opulence of the fruit, far riper than the more classical 2004s or 2002s."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/loire-valley-cabernet-franc-dec-2014",
+     "citaat": "2005, the last stellar year for Cabernet Franc on the Loire"
+    }
+   ]
+  },
+  {
+   "streek": "loire",
+   "jaar": 2007,
+   "niveau": 3,
+   "teken": "*",
+   "bronnen": [
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/focus-on-loire-valley-sauvignon-blanc-mar-2010",
+     "citaat": "a good but generally not outstanding vintage like 2007 at prices close to those of the great 2005s"
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/focus-on-loire-valley-sauvignon-blanc-mar-2010",
+     "citaat": "buy carefully from 2007 but if you stick to the top growers there are plenty of fresh, immediately appealing wines out there"
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/best-new-wines-from-the-central-loire-may-2010",
+     "citaat": "The 2007 growing season was marked by a damp summer and resultant mildew"
+    }
+   ]
+  },
+  {
+   "streek": "loire",
+   "jaar": 2008,
+   "niveau": 4,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/top-dry-loire-chenin-blanc-353130/",
+     "citaat": "2008 Saved by Indian summer. Precise, balanced and long lived."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/focus-on-loire-valley-sauvignon-blanc-mar-2010",
+     "citaat": "the 2008s typically possess an extra degree of concentration due to yields that were off by a quarter to a third of normal"
+    }
+   ]
+  },
+  {
+   "streek": "loire",
+   "jaar": 2009,
+   "niveau": 3,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/top-dry-loire-chenin-blanc-353130/",
+     "citaat": "2009 Hot year, rich wines. Not as ageworthy as ’08 or ’10."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/cellar-favorite-2009-francois-cotat-sancerre-les-culs-de-beaujeu-aug-2021",
+     "citaat": "is a powerful white that comes from a warm season leading to ripe fruit and high alcohol (15%)"
+    }
+   ]
+  },
+  {
+   "streek": "loire",
+   "jaar": 2010,
+   "niveau": 4,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/top-dry-loire-chenin-blanc-353130/",
+     "citaat": "2010 Long, hot autumn. Classic, with higher acidity than ’09."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/focus-on-loire-valley-chenin-blanc-dec-2014",
+     "citaat": "2012 has, like 2010 before it, the crisp fruit, inner depth and razor-sharp acidity of a great vintage"
+    }
+   ]
+  },
+  {
+   "streek": "loire",
+   "jaar": 2011,
+   "niveau": 3,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/top-dry-loire-chenin-blanc-353130/",
+     "citaat": "2011 Early vintage, rot a problem. Drink these before your 2008s and 2010s."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/loire-valley-cabernet-franc-dec-2014",
+     "citaat": "Two thousand eleven, like 2009, was a warm, sunny vintage that some but not all producers love."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/loire-valley-sauvignon-blanc-sep-2014",
+     "citaat": "On the whole, though, 2013 appears to be a slightly better year than 2011."
+    }
+   ]
+  },
+  {
+   "streek": "loire",
+   "jaar": 2013,
+   "niveau": 2,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/loire-cabernet-franc-panel-tasting-results-398131/",
+     "citaat": "2013 Cold spring, very late flowering, least good for many years. Lack of ripeness – avoid."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/loire-valley-sauvignon-blanc-sep-2014",
+     "citaat": "each of the past few vintages has presented growers here with challenges, but 2013 was particularly difficult"
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/loire-2021-vintage-report-top-whites-from-2020-and-2021-481010/",
+     "citaat": "although it is considerably better and more promising than that poor vintage"
+    }
+   ]
+  },
+  {
+   "streek": "loire",
    "jaar": 2014,
    "niveau": 3,
    "teken": "*",
@@ -4984,6 +5442,26 @@
      "laag": "A",
      "url": "https://v1.vinous.com/articles/big-love-for-loire-jul-2020",
      "citaat": "the vintages from 2015 to 2018 are strong, and 2018 is considered exceptional"
+    }
+   ]
+  },
+  {
+   "streek": "loire",
+   "jaar": 2014,
+   "niveau": 4,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/top-dry-loire-chenin-blanc-353130/",
+     "citaat": "2014 Very good vintage saved by hot September. Classic wines with high acidity."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/2014-2015-muscadet-contrasting-vintages-ripe-for-discovery-may-2017",
+     "citaat": "Vintage 2014 is one of the finest for Muscadet in living memory."
     }
    ]
   },
@@ -5009,10 +5487,82 @@
   },
   {
    "streek": "loire",
+   "jaar": 2015,
+   "niveau": 4,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/loire-cabernet-franc-panel-tasting-results-398131/",
+     "citaat": "2015 Warm year producing powerful,ripe wines, if a smallish crop."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/top-dry-loire-chenin-blanc-353130/",
+     "citaat": "2015 Good vintage despite September rain. Rounder wines than ’14."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/2014-2015-muscadet-contrasting-vintages-ripe-for-discovery-may-2017",
+     "citaat": "Vintage 2015 left most Nantais growers smiling, if less broadly than those in many other Northern European growing regions."
+    }
+   ]
+  },
+  {
+   "streek": "loire",
+   "jaar": 2016,
+   "niveau": 4,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/loire-cabernet-franc-panel-tasting-results-398131/",
+     "citaat": "2016 Many parts hit by frosts, up to 100% loss. Also mildew. Small crop but good quality wines."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/top-dry-loire-chenin-blanc-353130/",
+     "citaat": "2016 April frost, complicated year, good autumn means fine wines in tiny quantities."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/big-love-for-loire-jul-2020",
+     "citaat": "I found a lot to like in the 2016s."
+    }
+   ]
+  },
+  {
+   "streek": "loire",
    "jaar": 2018,
    "niveau": 5,
    "teken": "*",
    "bronnen": [
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/big-love-for-loire-jul-2020",
+     "citaat": "the vintages from 2015 to 2018 are strong, and 2018 is considered exceptional"
+    }
+   ]
+  },
+  {
+   "streek": "loire",
+   "jaar": 2018,
+   "niveau": 5,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/loire-whites-2022-plus-top-new-releases-504810/",
+     "citaat": "Hailed as a great vintage, which generally combined quality and quantity, although the alcohols on some whites are very high."
+    },
     {
      "uitgever": "Vinous",
      "laag": "A",
@@ -5038,6 +5588,84 @@
      "laag": "A",
      "url": "https://www.decanter.com/premium/loire-2019-vintage-overview-436849/",
      "citaat": "heavy rain in October meant that little sweet wine was made"
+    }
+   ]
+  },
+  {
+   "streek": "loire",
+   "jaar": 2019,
+   "niveau": 4,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/loire-2019-vintage-overview-436849/",
+     "citaat": "Incredibly 2019 is the sixth successive good to very good quality vintage in the Loire, in a continuous run from 2014."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/loire-valley-2023-vintage-report-white-wines-and-the-best-new-releases-542456/",
+     "citaat": "The wines show freshness, concentration and balance, and will age well."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/sancerre-taking-the-temperature-aug-2021",
+     "citaat": "It will come as no surprise that the wines of both 2019 and 2020 from Sancerre and Pouilly-Fumé are riper than average"
+    }
+   ]
+  },
+  {
+   "streek": "loire",
+   "jaar": 2020,
+   "niveau": 4,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/loire-whites-2022-plus-top-new-releases-504810/",
+     "citaat": "Another hot vintage with many good, concentrated wines but also some that lack freshness and zip."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/sancerre-taking-the-temperature-aug-2021",
+     "citaat": "While many of the finest 2020 cuvées are still in barrel, they may just have the edge over the 2019s due to greater freshness"
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/chenin-blanc-wait-a-sec-sep-2022",
+     "citaat": "Sadly, many dry wines in 2020 aren’t balanced because the producer has made a dry wine with a high level of sugar ripeness"
+    }
+   ]
+  },
+  {
+   "streek": "loire",
+   "jaar": 2021,
+   "niveau": 3,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/loire-whites-2022-plus-top-new-releases-504810/",
+     "citaat": "Despite some early doubts there are some lovely whites, though quality is variable and volume severely down. This is a vintage that reveals the quality of the producer."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/loire-valley-2023-vintage-report-white-wines-and-the-best-new-releases-542456/",
+     "citaat": "A small volume of delicate, high-quality wine was made."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/loire-chenin-dividing-lines-oct-2023",
+     "citaat": "the best 2021s bristle with energy and concentration"
     }
    ]
   },
@@ -5078,6 +5706,32 @@
      "laag": "A",
      "url": "https://v1.vinous.com/articles/loire-chenin-blanc-chaume-the-way-jul-2024",
      "citaat": "2023 was a soggy season that left growers in despair: powdery"
+    }
+   ]
+  },
+  {
+   "streek": "loire",
+   "jaar": 2023,
+   "niveau": 3,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/loire-valley-2023-vintage-report-white-wines-and-the-best-new-releases-542456/",
+     "citaat": "One of the most complicated vintages in recent memory, testing the abilities and resilience of vignerons throughout the Loire."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/the-mighty-ducks-2023-loire-valley-reds-aug-2025",
+     "citaat": "most don’t have the concentration for longevity and will be early- to medium-term drinkers"
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/the-mighty-ducks-2023-loire-valley-reds-aug-2025",
+     "citaat": "The key to success in 2023 was rigor."
     }
    ]
   },
@@ -6223,6 +6877,26 @@
   },
   {
    "streek": "sauternes",
+   "jaar": 1986,
+   "niveau": 4,
+   "teken": "*",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
+     "citaat": "Many rich and complex wines"
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
+     "citaat": "The wines are rich and complex, but many lack acidity and finesse."
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
    "jaar": 1988,
    "niveau": 5,
    "teken": "+",
@@ -6310,6 +6984,26 @@
      "laag": "A",
      "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
      "citaat": "A classic vintage with many very fine wines"
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
+   "jaar": 1995,
+   "niveau": 4,
+   "teken": "*",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
+     "citaat": "A classic vintage with many very fine wines"
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
+     "citaat": "Many very good wines, but some lack botrytis character."
     }
    ]
   },
@@ -6475,6 +7169,26 @@
   },
   {
    "streek": "sauternes",
+   "jaar": 2004,
+   "niveau": 3,
+   "teken": "*",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
+     "citaat": "Balanced wine rich in botrytis from better producers who selected for noble rot affected fruit"
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
+     "citaat": "A small quantity of quality botrytised wine will be produced but this will not be considered a great year."
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
    "jaar": 2005,
    "niveau": 5,
    "teken": "+",
@@ -6504,6 +7218,26 @@
      "laag": "A",
      "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
      "citaat": "A challenging harvest but with potential."
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
+   "jaar": 2006,
+   "niveau": 3,
+   "teken": "*",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
+     "citaat": "A challenging harvest but with potential. The successes are impressively pure, fresh and complex"
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
+     "citaat": "while most critics hesitate to call the vintage outstanding, they are impressed with the cool purity of the fruit"
     }
    ]
   },
@@ -6549,6 +7283,26 @@
   },
   {
    "streek": "sauternes",
+   "jaar": 2008,
+   "niveau": 2,
+   "teken": "*",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
+     "citaat": "The best wines – from the top terroirs – are fresh and elegant but ultimately lack concentration and depth."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
+     "citaat": "On the whole, the wines are fresh and elegant with lovely acidity and fruitiness, yet there’s no great depth or concentration. They lack distinction."
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
    "jaar": 2009,
    "niveau": 5,
    "teken": "*",
@@ -6558,6 +7312,26 @@
      "laag": "A",
      "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
      "citaat": "Rich, decadent and opulent. Some blowsy and over the top, others among the best Sauternes ever made."
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
+   "jaar": 2009,
+   "niveau": 5,
+   "teken": "*",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
+     "citaat": "Rich, decadent and opulent. Some blowsy and over the top, others among the best Sauternes ever made."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/sauternes-sip-young-savour-old-560404/",
+     "citaat": "This was a great year for reds, but also, unusually, for Sauternes."
     }
    ]
   },
@@ -6629,8 +7403,36 @@
   },
   {
    "streek": "sauternes",
+   "jaar": 2012,
+   "niveau": 2,
+   "teken": "*",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
+     "citaat": "Difficult year in which many estates did not make their grand vin. Barsac wines fared best."
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
    "jaar": 2013,
    "niveau": 4,
+   "teken": "*",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
+     "citaat": "Very good year but uneven quality; for the most part, top names did well."
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
+   "jaar": 2013,
+   "niveau": 3,
    "teken": "*",
    "bronnen": [
     {
@@ -6657,6 +7459,26 @@
   },
   {
    "streek": "sauternes",
+   "jaar": 2014,
+   "niveau": 5,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815/",
+     "citaat": "Outstanding year of pure wines marked by lemony botrytis and high acidity."
+    },
+    {
+     "uitgever": "World of Fine Wine",
+     "laag": "A",
+     "url": "https://worldoffinewine.com/news-features/bordeaux-2023-sauternes",
+     "citaat": "in the style of more “elegant” years such as 2014 or 2011"
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
    "jaar": 2015,
    "niveau": 4,
    "teken": "*",
@@ -6666,6 +7488,168 @@
      "laag": "A",
      "url": "https://www.decanter.com/learn/bordeaux-vintage-guide/bordeaux-2025-ideal-conditions-lead-to-luscious-sauternes/",
      "citaat": "producing a classic yet energetic style that sits comfortably between the concentration of 2023 and the harmony of 2015"
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
+   "jaar": 2015,
+   "niveau": 5,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/sauternes-2015-in-bottle-385677/",
+     "citaat": "It’s an outstanding vintage, with many fleshy, rich wines but with good acidity levels so as to avoid coming off as heavy or cloying"
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/2015-bordeaux-every-bottle-tells-a-story-feb-2018",
+     "citaat": "As good as the dry whites are, the sweet whites are even better."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/2015-bordeaux-every-bottle-tells-a-story-feb-2018",
+     "citaat": "the signatures of the best wines from Sauternes and Barsac"
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
+   "jaar": 2016,
+   "niveau": 3,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/en-primeur/bordeaux-en-primeur/365697-365697/",
+     "citaat": "This is a very good year for many estates, with good purity of fruit thanks to a lack of grey rot, and long ageing potential."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/en-primeur/bordeaux-en-primeur/365697-365697/",
+     "citaat": "buyers will need to pick carefully in a mixed year and some wines struggle to stand out from the crowd"
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/southwold-2016-bordeaux-ten-years-on-apr-2026",
+     "citaat": "It was a decent though not spectacular vintage for the Sauternes, perhaps sidelined by the reds."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/2016-bordeaux-it-s-all-in-the-bottle-jan-2019",
+     "citaat": "2016 so far is quite fine for Sauternes and Barsac"
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
+   "jaar": 2017,
+   "niveau": 4,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/en-primeur/sauternes-2017-wines-393657/",
+     "citaat": "Some wonderfully rich and ripe Sauternes and Barsac wines can be found in the Bordeaux 2017 vintage"
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/learn/vintage-guides/en-primeur/sauternes-2017-wines-393657/",
+     "citaat": "But low acidity means many of the wines lack a little contrast between light and shade, sweetness and bitterness"
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/come-on-aline-chateau-coutet-1943-2017-feb-2024",
+     "citaat": "most recently a fabulous 2017 that has a long future ahead"
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
+   "jaar": 2018,
+   "niveau": 3,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/sauternes-sip-young-savour-old-560404/",
+     "citaat": "The wines showed varying degrees of concentration with moderate sugar levels, but some acidities were low, which is why this is a medium-term vintage."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/sauternes-sip-young-savour-old-560404/",
+     "citaat": "It shows more depth and unctuosity than 2020, and can be approached now with much pleasure."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/2018-chateau-d-yquem-sep-2020",
+     "citaat": "Overall, I do not believe that the 2018 Yquem belongs in the pantheon of great vintages of Yquem since it lacks requisite nuance, depth and complexity."
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
+   "jaar": 2019,
+   "niveau": 4,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/best-sauternes-2019-wines-tasted-en-primeur-440143/",
+     "citaat": "among the best estates, I found 2019 to be not only rich and concentrated but also precise, with high aromatics and balanced overall"
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/bordeaux-2019-the-southwold-tasting-feb-2023",
+     "citaat": "Sauternes – The 2019 vintage is strong for the sweet botrytis-affected wines. This should be considered an achievement"
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/bordeaux-2019-the-southwold-tasting-feb-2023",
+     "citaat": "There are quite sensational performances from Château de Fargues and Suduiraut, eclipsing the Yquem"
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
+   "jaar": 2020,
+   "niveau": 3,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/sauternes-sip-young-savour-old-560404/",
+     "citaat": "A year that demonstrates a great vintage for red Bordeaux isn’t necessarily a stellar one for Sauternes."
+    },
+    {
+     "uitgever": "Decanter",
+     "laag": "A",
+     "url": "https://www.decanter.com/premium/sauternes-sip-young-savour-old-560404/",
+     "citaat": "Most of them are of good quality but lack persistence and staying power."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/bordeaux-2020-the-southwold-tasting-nov-2024",
+     "citaat": "In 2020, the sweet Sauternes reflect a very good rather than excellent vintage."
     }
    ]
   },
@@ -6691,6 +7675,32 @@
   },
   {
    "streek": "sauternes",
+   "jaar": 2021,
+   "niveau": 4,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "World of Fine Wine",
+     "laag": "A",
+     "url": "https://worldoffinewine.com/tasting-notes/2021-bordeaux-sauternes-barsac",
+     "citaat": "in the minute crop of 2021 we have been given some wonderful wines: botrytically ( sic ) pure (a delicious oxymoron), fresh, flavorsome, long, and almost uniformly harmonious"
+    },
+    {
+     "uitgever": "World of Fine Wine",
+     "laag": "A",
+     "url": "https://worldoffinewine.com/tasting-notes/2021-bordeaux-sauternes-barsac",
+     "citaat": "two-thirds of the châteaux from 1855’s Classification felt disinclined to make any sweet wine"
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/2-2-5-bordeaux-2021-in-bottle-feb-2024",
+     "citaat": "The Sauternes snatched victory from the hands of defeat."
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
    "jaar": 2022,
    "niveau": 4,
    "teken": "*",
@@ -6706,6 +7716,32 @@
      "laag": "A",
      "url": "https://worldoffinewine.com/homepage-featured-articles/bordeaux-2022-field-notes-sauternes-ripeness-is-all",
      "citaat": "Terroir has struggled to make it through the sugar rush."
+    }
+   ]
+  },
+  {
+   "streek": "sauternes",
+   "jaar": 2022,
+   "niveau": 3,
+   "teken": "+",
+   "bronnen": [
+    {
+     "uitgever": "World of Fine Wine",
+     "laag": "A",
+     "url": "https://worldoffinewine.com/homepage-featured-articles/bordeaux-2022-field-notes-sauternes-ripeness-is-all",
+     "citaat": "The quality of the wines is varied, but the best are very good indeed."
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/keeping-everyone-happy-southwold-bordeaux-2022-mar-2026",
+     "citaat": "I am not convinced that it is a stellar vintage for Sauternes, since it was less consistent than I would have liked"
+    },
+    {
+     "uitgever": "Vinous",
+     "laag": "A",
+     "url": "https://v1.vinous.com/articles/2022-bordeaux-in-bottle-living-in-the-present-jan-2025",
+     "citaat": "The 2022s might not reach the heights of the very best years, but they are incredibly delicious."
     }
    ]
   },

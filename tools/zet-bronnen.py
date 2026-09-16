@@ -67,10 +67,19 @@ def bouw():
         naam = {'bbr': 'Berry Bros & Rudd', 'decanter': 'Decanter'}[pad.stem.split('-', 1)[1]]
         for streek, jaren in json.loads(pad.read_text(encoding='utf-8')).items():
             for jaar, stand in jaren.items():
-                rijp.setdefault(streek, {})[int(jaar)] = int(stand)
+                # Zijn twee bronnen het oneens over de rijpheid, dan wint de bron die de wijn nog
+                # het meeste leven geeft. Dat is geen optimisme maar de risicokeuze van deze app:
+                # te vroeg "over de piek" roepen laat iemand een goede fles weggooien, terwijl een
+                # fles die volgens de app nog kan wachten bij de eerste slok gecontroleerd wordt.
+                # Berry Bros noemt Bordeaux 1982 op zijn best, Decanter zegt "Drink soon"; de tabel
+                # houdt dan de eerste aan.
+                oud = rijp.setdefault(streek, {}).get(int(jaar))
+                rijp[streek][int(jaar)] = int(stand) if oud is None else min(oud, int(stand))
             rijpbron[streek] = naam if streek not in rijpbron or rijpbron[streek] == naam \
                 else rijpbron[streek] + ' en ' + naam
-    return citaat, uitgevers, rijp, rijpbron
+    prodpad = WORTEL / 'bronnen' / 'producenten.json'
+    prod = json.loads(prodpad.read_text(encoding='utf-8')) if prodpad.exists() else {'per_streek': {}, 'urls': {}}
+    return citaat, uitgevers, rijp, rijpbron, prod
 
 
 def js(v):
@@ -78,7 +87,7 @@ def js(v):
 
 
 def main():
-    citaat, uitgevers, rijp, rijpbron = bouw()
+    citaat, uitgevers, rijp, rijpbron, prod = bouw()
     tekst = BRON.read_text(encoding='utf-8')
 
     rij_regels = ',\n'.join(
@@ -96,6 +105,10 @@ def main():
         ('RIJP_BRON', ',\n'.join(f'  {k}: {js(v)}' for k, v in sorted(rijpbron.items()))),
         ('CITAAT_BASIS', bas_regels),
         ('CITAAT', cit_regels),
+        ('PROD_URL', ',\n'.join(f'  {k}: {js(v)}' for k, v in sorted(prod['urls'].items()) if k in prod['per_streek'])),
+        ('PRODUCENT', ',\n'.join(
+            f'  {k}: {{' + ', '.join(f'{j}:{js(namen)}' for j, namen in sorted(v.items(), key=lambda t: int(t[0]))) + '}'
+            for k, v in sorted(prod['per_streek'].items()))),
     ]
     for naam, regels in vervang:
         # de tabel staat er leeg als `const X = {};` of gevuld als een blok waarvan elke regel
@@ -109,6 +122,9 @@ def main():
     stil = sum(1 for k in citaat for j in citaat[k] if citaat[k][j]['u'] == 'Vinous')
     print(f'citaten: {jaren} over {len(citaat)} streken, van {len(uitgevers)} uitgevers')
     print(f'  waarvan alleen als vindplaats getoond (Vinous): {stil}')
+    vermeld = sum(len(x) for v in prod['per_streek'].values() for x in v.values())
+    print(f'producenten: {vermeld} vermeldingen over {len(prod["per_streek"])} streken en '
+          f'{sum(len(v) for v in prod["per_streek"].values())} jaargangen')
     print(f'rijpheid: {sum(len(v) for v in rijp.values())} jaren over {len(rijp)} streken')
     for k in sorted(rijp):
         print(f'  {k}: {len(rijp[k])} jaren, {rijpbron[k]}')

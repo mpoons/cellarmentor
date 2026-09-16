@@ -10,7 +10,7 @@ Bij dit bestand hoort de tabel `STREKEN` in `cellarmentor.html`. Elk jaar daar h
 
 Die middelste stand is op 16 september toegevoegd, en de reden is een fout in de eerste opzet. Die kende alleen gecontroleerd of niet, en dat dwong tot weggooien wat één goede bron zei. Dat is verkeerd om: een oordeel uit één terugkijkende proeverij van Vinous is beduidend meer waard dan een gok van een taalmodel, ook al haalt het de lat van twee niet. Weggooien maakt de tabel niet eerlijker, alleen leger. **De regel is: als een goede, betrouwbare bron iets zegt over een streek of een jaar, neem het mee, en zet erbij hoe hard het is.** Een ster eist wel dezelfde discipline als een plus: de vindplaats komt in dit bestand, anders is het geen ster maar een schatting. De app zegt dat verschil per fles tegen de gebruiker, met een vraagteken achter het jaargangwoord en voluit in "Waar komt dit venster vandaan?". Dat onderscheid is de kern van dit bestand: een oordeel dat zich voordoet als gecontroleerd terwijl het dat niet is, is precies de zelfverzekerdheid die een kelderapp onbetrouwbaar maakt.
 
-**Stand: 16 september 2026, na ronde drie. 638 van de 1255 jaren onderbouwd: 411 op twee onafhankelijke bronnen, 227 op één.** Voor ronde drie waren dat er 247 van de 1219, waarvan één op één bron. De sprong komt niet doordat er harder gezocht is maar doordat er meer te lezen viel; zie "Wat ronde drie veranderde" hieronder.
+**Stand: 16 september 2026, na ronde drie. 636 van de 1255 jaren onderbouwd: 421 op twee onafhankelijke bronnen, 215 op één.** Voor ronde drie waren dat er 247 van de 1219, waarvan één op één bron. De sprong komt niet doordat er harder gezocht is maar doordat er meer te lezen viel; zie "Wat ronde drie veranderde" hieronder.
 
 Let op wat dat getal níet meet. Een streek die `streekVan` niet herkent telt hier helemaal niet mee, en erger, een streek die `streekVan` **verkeerd** herkent telt hier als gedekt terwijl de gebruiker een advies uit de verkeerde streek krijgt. Ronde drie vond zes van die gevallen; zie de sectie over streken die de app niet herkent.
 
@@ -43,7 +43,7 @@ Achtenzestig streken, 1255 jaarvakjes. De teller hieronder komt uit de tabel zel
 | `douro_port` de Douro (port) | 17 | 24 | 2 | 43 |
 | `duitsland` Duitsland | 26 | 13 | 0 | 39 |
 | `bordeaux` Bordeaux | 37 | 0 | 5 | 42 |
-| `sauternes` Sauternes en Barsac | 27 | 8 | 0 | 35 |
+| `sauternes` Sauternes en Barsac | 24 | 11 | 0 | 35 |
 | `piemonte` Piemonte | 30 | 1 | 3 | 34 |
 | `bourgogne_w` de Bourgogne (wit) | 28 | 2 | 2 | 32 |
 | `alsace` de Elzas | 11 | 17 | 0 | 28 |
@@ -51,15 +51,15 @@ Achtenzestig streken, 1255 jaarvakjes. De teller hieronder komt uit de tabel zel
 | `rhone_z` de zuidelijke Rhône | 27 | 0 | 2 | 29 |
 | `rhone_n` de noordelijke Rhône | 26 | 0 | 4 | 30 |
 | `rioja` Rioja | 26 | 0 | 8 | 34 |
-| `loire` de Loire | 16 | 9 | 1 | 26 |
+| `loire` de Loire | 24 | 1 | 1 | 26 |
 | `toscane` Toscane | 13 | 11 | 7 | 31 |
 | `champagne` Champagne | 18 | 0 | 18 | 36 |
 | `beaujolais` de Beaujolais | 6 | 11 | 0 | 17 |
 | `oostenrijk` Oostenrijk | 3 | 13 | 3 | 19 |
 | `veneto` de Veneto | 7 | 7 | 8 | 22 |
 | `jura` de Jura en Savoie | 6 | 7 | 1 | 14 |
-| `douro` de Douro (stille wijn) | 5 | 7 | 2 | 14 |
 | `australie_wa` West-Australië | 4 | 6 | 14 | 24 |
+| `douro` de Douro (stille wijn) | 10 | 0 | 4 | 14 |
 | `provence` de Provence | 6 | 3 | 6 | 15 |
 | `ribera` Ribera del Duero en Toro | 9 | 0 | 17 | 26 |
 | `argentinie` Argentinië | 0 | 8 | 7 | 15 |
@@ -142,6 +142,77 @@ Twee redactionele regels zijn deze ronde vastgelegd. **Twee stukken van dezelfde
 ### Een grens die de tabel niet kan trekken: premox
 
 De witte Bourgognes van 1995 tot 2003 staan laag omdat premature oxidatie de bewaarduur halveert. Ronde drie vond dat de bronnen de **kwaliteit bij release** van juist die jaren hoog inschatten: Decanter geeft 1995 en 1996 de hoogste waardering, 1997 en 1998 een ruime voldoende. Dat is geen tegenspraak maar een botsing tussen twee dingen die deze tabel met één getal beschrijft. Het niveau stuurt in de app zowel het wóórd dat de gebruiker leest als de **jaargangfactor op het drinkvenster**. Die jaren omhoog zetten zou het venster verlengen op precies de flessen met het grootste risico, en dat is voor een kelderapp de verkeerde kant op. **Het besluit van ronde een blijft daarom staan en de premoxjaren zijn ongemoeid gelaten**, met deze aantekening erbij, omdat de volgende ronde hier een echte keuze heeft: een apart risicoveld naast het niveau, of accepteren dat het niveau bij deze jaren over de fles gaat en niet over de oogst.
+
+## Bereikbaar is niet hetzelfde als toegestaan
+
+Ronde drie mat welke hosts opengingen en ging toen aan het lezen. Dat is een stap overgeslagen, en
+die is er achteraf bij gekomen: wat zegt de uitgever er zélf van. Per bron nagekeken in hun
+`robots.txt` en in de notities onder hun artikelen. Drie soorten antwoord, en drie manieren om
+ermee om te gaan; de volledige uitwerking staat in `BRONNEN.md`.
+
+**Wine Spectator weigert AI-verkeer en is daarom uit het onderzoek gehaald.** Hun `robots.txt` zet
+`User-agent: ClaudeBot` op `Disallow: /`, en hetzelfde voor `Anthropic-Client`. Daar is geen omweg
+voor die deugt. Dat kostte wat: 24 jaren verloren hun hele onderbouwing en 22 zakten van twee
+bronnen naar één, geconcentreerd in de stille Douro, de Loire rond 2002-2013 en Sauternes
+2016-2020. Een herstelronde langs de bronnen die het wél toestaan heeft er 23 van de 24 alsnog
+onderbouwd; alleen `douro` 2022 is terug naar "geen mening", en `douro` 2021 is er om een andere
+reden uit gehaald — het enige bewijs was dat het jaar binnen het bereik viel van een proeverij over
+acht jaargangen tegelijk, en dat is een plaatsing en geen jaargangoordeel.
+
+**Vinous wordt genoemd maar niet geciteerd.** Onder elk artikel staat "No portion of this article
+may be copied, shared or redistributed without prior consent from Vinous". De app toont bij die
+jaargangen de uitgever en een link naar het stuk, en niet hun zin. Van de 448 vindplaatsen in de
+app zijn er 238 op die manier stil. Bij de overige uitgevers staat een kort citaat met
+bronvermelding en link, hooguit één per streek-jaargang.
+
+**De regels staan in de code, niet alleen hier.** `tools/zet-bronnen.py` weigert Wine Spectator,
+`CITAAT_STIL` in `cellarmentor.html` houdt bij wie wel genoemd maar niet geciteerd wordt, en
+`tests/cellarmentor.test.js` controleert allebei. Een regel die alleen in een document staat,
+sneuvelt bij de eerste ronde die het document niet leest.
+
+## Wat de bronnen naast een niveau nog meer zeggen
+
+Het jaargangniveau is niet het enige dat uit deze bronnen te halen valt, en twee andere dingen zijn
+deze ronde in de app gezet. Allebei komen ze uit `bronnen/bevindingen.json` en
+`bronnen/producenten.json` via `tools/zet-bronnen.py`, zodat de app en het dossier niet uit elkaar
+kunnen lopen.
+
+**Rijpheid per streek en jaargang.** Berry Bros zet bij elk jaar een rijpheidscode (Not ready,
+Ready – youthful, Ready – at best, Ready – mature) en Decanter een woord (Keep, Drink now, Drink
+soon). Samen 702 jaren over zeventien streken, waarvan er 598 in de controle hieronder zitten (voor de overige streken is geen ijkfles gedefinieerd). De tabel wordt **maar één kant op gebruikt**: hij mag
+verhinderen dat de app "Over de piek?" zegt, en nooit een venster inkorten. Dat is geen willekeur
+maar de risicokeuze die dit bestand al maakte: te vroeg "over de piek" roepen laat iemand een goede
+fles weggooien, terwijl een fles die volgens de app nog kan wachten bij de eerste slok
+gecontroleerd wordt. Het effect is 25 streek-jaargangen die anders een waarschuwing hadden
+gekregen: Bordeaux 1982, 1986, 1988, 1993 en 1994, witte Bourgogne 1993 tot 2000, rode Bourgogne
+1991, de Loire 1985, 1988 en 1989, Argentinië 2001 en negen Zuid-Afrikaanse jaargangen. Precies de
+klacht waaruit dit hele onderdeel is ontstaan. Zijn twee bronnen het oneens, dan wint degene die de
+wijn het meeste leven geeft; Berry Bros noemt Bordeaux 1982 op z'n best en Decanter zegt "Drink
+soon", en de tabel houdt de eerste aan.
+
+**Eén vertaalfout hoort hier vastgelegd, want hij was niet zichtbaar in de code maar wel in de
+uitkomst.** In de eerste opzet werd Decanters "Drink now" gelezen als "op z'n best". De controle
+liet toen 98 onderdrukte waarschuwingen zien in plaats van 25, met Bordeaux 1963, 1965 en 1972
+erbij — beruchte rampjaren. Bij Decanter staat bij Bordeaux 1965 ("A disastrous year") exact
+hetzelfde woord als bij een rijp topjaar: "Drink now" betekent daar "drink hem op", niet "dit is
+zijn hoogtepunt". Alleen "Keep" en de keep-drink-mengvormen zijn ondubbelzinnig; de rest telt nu
+als rijp en onderdrukt niets. De les is algemener dan deze tabel: een woord uit een bron overnemen
+zonder te toetsen wat het in de uiterste gevallen betekent, geeft precies het soort stille fout dat
+dit bestand moet voorkomen. De toets die het ving was simpel — tel wat de regel verandert en kijk
+of die lijst er geloofwaardig uitziet.
+
+**Producenten die een criticus bij de besten noemt.** Decanters jaargangsgidsen zetten per jaar een
+lijst "Best Producers" of "Best wines": 1444 vermeldingen over 153 jaargangen in Bordeaux,
+Sauternes, beide Bourgognes, Duitsland en port. Dat is iets anders dan een puntenscore — het is een
+lijst namen uit een gepubliceerde gids, geen cijfer aan één fles — en het is wat de app in staat
+stelt te zeggen dat Decanter Château Climens bij de beste wijnen van 1988 noemt. De koppeling is
+streng: streek én jaargang moeten al kloppen, en de naam moet in de producent of de wijnnaam staan
+en niet in de appellation. Dat laatste is nodig omdat anders elke fles uit Margaux zou matchen op
+château Margaux. De lijsten dekken vooral 1960 tot 2008, want Decanters recente jaargangstukken
+hebben dat blok niet; voor oude flessen is het juist daar het meest waard.
+
+Wat hier nadrukkelijk **niet** in staat is een puntenkaart. Berry Bros' cijfers en Decanters `x/5`
+zijn gelezen om er een eigen oordeel uit af te leiden, en staan niet in de app.
 
 ## Hoe onafhankelijk is een bron eigenlijk
 
@@ -452,8 +523,8 @@ Hieronder staat per streek, per jaar, waar het oordeel vandaan komt: de uitgever
 
 | jaar | niveau | vindplaatsen | strekking |
 |---|---|---|---|
-| 2017 | 3* | www.larvf.com `vin-corse-millesime-degustation-avis-patrimonio-ajaccio-commentaires-notes,4589185.asp`; www.larvf.com `vin-corse-millesime-degustation-avis-patrimonio-ajaccio-commentaires-notes,4589185.asp` | "Le millésime 2017 fut assez compliqué en Corse" |
-| 2018 | 3* | www.larvf.com `que-valent-les-vins-corses-du-millesime,4644700.asp`; www.larvf.com `que-valent-les-vins-corses-du-millesime,4644700.asp` | "Le millésime 2018 est homogène." |
+| 2017 | 3* | La Revue du Vin de France `vin-corse-millesime-degustation-avis-patrimonio-ajaccio-commentaires-notes,4589185.asp`; La Revue du Vin de France `vin-corse-millesime-degustation-avis-patrimonio-ajaccio-commentaires-notes,4589185.asp` | "Le millésime 2017 fut assez compliqué en Corse" |
+| 2018 | 3* | La Revue du Vin de France `que-valent-les-vins-corses-du-millesime,4644700.asp`; La Revue du Vin de France `que-valent-les-vins-corses-du-millesime,4644700.asp` | "Le millésime 2018 est homogène." |
 
 **dao_bairrada**
 
@@ -471,18 +542,21 @@ Hieronder staat per streek, per jaar, waar het oordeel vandaan komt: de uitgever
 
 | jaar | niveau | vindplaatsen | strekking |
 |---|---|---|---|
-| 2009 | 3+ | Wine Spectator `vintage-charts/region/douro-valley-reds`; Decanter `learn/vintage-guides/port-vintage-guide-2000-2022-493922` | "Balanced wines emerged from a challenging vintage, with many in a lighter style" |
-| 2011 | 5+ | Wine Spectator `vintage-charts/region/douro-valley-reds`; World of Fine Wine `tasting-notes/niepoort-douro-wines-best-finest` | "A cooler-than-normal summer, followed by warm, dry harvest weather, produced powerful, structured reds" |
-| 2013 | 3* | Wine Spectator `vintage-charts/region/douro-valley-reds` | "A late harvest and smaller-than-average crop yielded balanced and fresh-tasting wines" |
-| 2014 | 2+ | Wine Spectator `vintage-charts/region/douro-valley-reds`; World of Fine Wine `tasting-notes/niepoort-douro-wines-best-finest` | "challenged many vintners; the Douro Superior fared best" |
-| 2015 | 4* | Wine Spectator `vintage-charts/region/douro-valley-reds` | "resulting in lower yields but many successful bottlings" |
-| 2016 | 4* | Wine Spectator `vintage-charts/region/douro-valley-reds` | "Producers that chose the correct time to harvest produced concentrated and elegant wines" |
-| 2017 | 5* | Wine Spectator `vintage-charts/region/douro-valley-reds` | "the vintage yielded powerful and generous wines" |
-| 2018 | 4+ | Wine Spectator `vintage-charts/region/douro-valley-reds`; Decanter `premium/douro-red-wines-panel-tasting-results-494591` | "concentrated, powerful wines, though yields were very low" |
-| 2019 | 4+ | Wine Spectator `vintage-charts/region/douro-valley-reds`; Decanter `premium/douro-red-wines-panel-tasting-results-494591` | "Mild, dry conditions promoted even, healthy ripening, with well-timed rains in August and September" |
-| 2020 | 4* | Wine Spectator `vintage-charts/region/douro-valley-reds` | "the best producers harvested at the optimal moment to produce rich, balanced reds" |
-| 2021 | 5* | Wine Spectator `vintage-charts/region/douro-valley-reds` | "A standout vintage, with a long, slow growing season; wines are fresh, showing fine length and tannic struc..." |
-| 2022 | 4* | Wine Spectator `vintage-charts/region/douro-valley-reds` | "wines are deeply hued and concentrated, offering focus and harmony" |
+| 2009 | 3* | Decanter `learn/vintage-guides/port-vintage-guide-2000-2022-493922` | "There was a limited declaration" |
+| 2009 | 3+ | World of Fine Wine `tasting-notes/niepoort-douro-wines-best-finest`; Decanter `premium/sogrape-legado-vertical-tasting-474786` | "An August temperature spike accelerated the ripening process and produced rich, ripe wines." |
+| 2011 | 5* | World of Fine Wine `tasting-notes/niepoort-douro-wines-best-finest` | "No shortage of oomph in this celebrated vintage." |
+| 2011 | 5+ | World of Fine Wine `tasting-notes/niepoort-douro-wines-best-finest`; Decanter `premium/good-value-douro-reds-417806`; Wine Anorak `2025/07/25/the-douro-wines-of-sograpes-casa-de-ferreininha-including-barca-velha-portugals-m...` | "A much-acclaimed vintage produced statuesque Vintage Ports (a general declaration) and impressively concent..." |
+| 2013 | 2+ | Decanter `premium/good-value-douro-reds-417806`; World of Fine Wine `tasting-notes/niepoort-douro-wines-best-finest` | "2013 Productive year. Promising until heavy late- September rains; flavour and tannin ripeness issues." |
+| 2014 | 2* | World of Fine Wine `tasting-notes/niepoort-douro-wines-best-finest` | "lacks the intensity and structure" |
+| 2014 | 3+ | Decanter `premium/good-value-douro-reds-417806`; World of Fine Wine `tasting-notes/niepoort-douro-wines-best-finest` | "2014 Unsettled weather throughout the year and the wettest September for 80 years resulted in less concentr..." |
+| 2015 | 4+ | Decanter `premium/good-value-douro-reds-417806`; Decanter `premium/chryseia-a-profile-of-portugals-icon-wine-and-new-releases-439311`; World of Fine Wine `tasting-notes/niepoort-douro-wines-best-finest` | "2015 An even year produced consistent, very balanced wines, with lovely fruit and smooth, ripe tannins." |
+| 2016 | 4+ | Decanter `premium/good-value-douro-reds-417806`; Decanter `premium/douro-red-wines-panel-tasting-results-494591`; World of Fine Wine `tasting-notes/niepoort-douro-wines-best-finest` | "2016 A wet winter and spring, hot, dry summer and welcome mid-September showers produced favourable ripenin..." |
+| 2017 | 4+ | Decanter `premium/good-value-douro-reds-417806`; Decanter `premium/the-douro-wines-an-evolution-423643`; World of Fine Wine `tasting-notes/niepoort-douro-wines-best-finest` | "2017 Exceptionally dry, warm and early (picking began in August). Flavour and tannin ripeness were advanced..." |
+| 2018 | 4* | Decanter `premium/douro-red-wines-panel-tasting-results-494591` | "powerful wines from extremely dry and hot years like 2018, as well as more elegant wines from cooler vintag..." |
+| 2018 | 3+ | Decanter `premium/good-value-douro-reds-417806`; Decanter `premium/douro-red-wines-panel-tasting-results-494591`; World of Fine Wine `tasting-notes/niepoort-douro-wines-best-finest` | "2018 Extreme weather (drought, rainfall, hail, heat) scythed production. Low yields mean the best wines wil..." |
+| 2019 | 4* | Decanter `premium/douro-red-wines-panel-tasting-results-494591` | "powerful wines from extremely dry and hot years like 2018, as well as more elegant wines from cooler vintag..." |
+| 2019 | 4+ | Decanter `premium/douro-red-wines-panel-tasting-results-494591`; World of Fine Wine `tasting-notes/niepoort-douro-wines-best-finest`; World of Fine Wine `tasting-notes/the-douro-boys-luxury-of-time-20th-anniversary-tasting` | "included powerful wines from extremely dry and hot years like 2018, as well as more elegant wines from cool..." |
+| 2020 | 3+ | Decanter `premium/douro-red-wines-panel-tasting-results-494591`; Decanter `premium/douro-red-wines-panel-tasting-results-494591`; World of Fine Wine `tasting-notes/niepoort-douro-wines-best-finest` | "while those who prefer a more vibrant and fruit-forward wine should look for bottles from 2020" |
 
 **douro_port**
 
@@ -579,8 +653,8 @@ Hieronder staat per streek, per jaar, waar het oordeel vandaan komt: de uitgever
 | 2014 | 2* | Decanter `premium/regional-profile-jura-wines-396704` | "quantity and quality were both compromised in 2012, 2013 and 2014 by rain, mildew and the Drosophila suzuki..." |
 | 2015 | 4* | Decanter `premium/regional-profile-jura-wines-396704` | "On the plus-side, 2011, 2015 and 2016 were very good to excellent." |
 | 2016 | 4* | Decanter `premium/regional-profile-jura-wines-396704` | "On the plus-side, 2011, 2015 and 2016 were very good to excellent." |
-| 2017 | 4+ | Vinous `articles/jura-nature-hits-hard-but-the-wines-fight-back-sep-2025`; www.larvf.com `vin-savoie-degustation-millesime-avis-notes-commentaires-achats-conseils,4593738.asp` | "The 2017s are marked by elegance and restraint, with a refined profile that generally avoids excess." |
-| 2018 | 4+ | www.larvf.com `2018-dans-le-jura-le-millesime-du-grand-sourire,4635818.asp`; www.larvf.com `2018-dans-le-jura-le-millesime-du-grand-sourire,4635818.asp`; Vinous `articles/jura-nature-hits-hard-but-the-wines-fight-back-sep-2025` | "Le niveau moyen de notre dégustation s’avère quoi qu’il en soit fort élevé" |
+| 2017 | 4+ | Vinous `articles/jura-nature-hits-hard-but-the-wines-fight-back-sep-2025`; La Revue du Vin de France `vin-savoie-degustation-millesime-avis-notes-commentaires-achats-conseils,4593738.asp` | "The 2017s are marked by elegance and restraint, with a refined profile that generally avoids excess." |
+| 2018 | 4+ | La Revue du Vin de France `2018-dans-le-jura-le-millesime-du-grand-sourire,4635818.asp`; La Revue du Vin de France `2018-dans-le-jura-le-millesime-du-grand-sourire,4635818.asp`; Vinous `articles/jura-nature-hits-hard-but-the-wines-fight-back-sep-2025` | "Le niveau moyen de notre dégustation s’avère quoi qu’il en soit fort élevé" |
 | 2019 | 4* | iDealwine `les-notes-du-millesime-2019` | "La qualité des vins, blancs comme rouges, est au moins au niveau des 2018" |
 | 2020 | 4+ | iDealwine `les-notes-du-millesime-2020`; Vinous `articles/bonjour-jura-aug-2024` | "Millésime solaire, sans toutefois l’être autant que 2015 ou 2018" |
 | 2021 | 3+ | Vinous `articles/bonjour-jura-aug-2024`; iDealwine `les-notes-du-millesime-2021` | "Jura reds from 2021 are good at best, with only a handful" |
@@ -592,12 +666,12 @@ Hieronder staat per streek, per jaar, waar het oordeel vandaan komt: de uitgever
 | jaar | niveau | vindplaatsen | strekking |
 |---|---|---|---|
 | 2016 | 4* | James Suckling `wine-tasting-reports/languedoc-roussillon-annual-report-rising-ambitions-and-an-ocean-of-cho...` | "with 2016 impressing the most and 2018 proving to be more polished than generally acknowledged" |
-| 2017 | 4* | www.larvf.com `vin-languedoc-millesime-analyse-degustation-notes-verdict-conseils-achat,4590925.asp`; www.larvf.com `vin-languedoc-millesime-analyse-degustation-notes-verdict-conseils-achat,4590925.asp` | "Peu de vins, mais des flacons de grandes qualités" |
-| 2018 | 3* | www.larvf.com `millesime-en-languedoc-la-syrah-domine-limoux-se-place,4627609.asp`; www.larvf.com `millesime-en-languedoc-la-syrah-domine-limoux-se-place,4627609.asp` | "s’il est à ranger dans la catégorie des bons millésimes, 2018 frappe par son hétérogénéité" |
+| 2017 | 4* | La Revue du Vin de France `vin-languedoc-millesime-analyse-degustation-notes-verdict-conseils-achat,4590925.asp`; La Revue du Vin de France `vin-languedoc-millesime-analyse-degustation-notes-verdict-conseils-achat,4590925.asp` | "Peu de vins, mais des flacons de grandes qualités" |
+| 2018 | 3* | La Revue du Vin de France `millesime-en-languedoc-la-syrah-domine-limoux-se-place,4627609.asp`; La Revue du Vin de France `millesime-en-languedoc-la-syrah-domine-limoux-se-place,4627609.asp` | "s’il est à ranger dans la catégorie des bons millésimes, 2018 frappe par son hétérogénéité" |
 | 2019 | 4+ | James Suckling `wine-tasting-reports/languedoc-roussillon-annual-report-rising-ambitions-and-an-ocean-of-cho...`; iDealwine `les-notes-du-millesime-2019` | "2020 was a top-caliber, warm vintage and 2019 was similar in quality but with more power that needs to settle" |
 | 2020 | 5+ | Decanter `premium/languedoc-report-2023-latest-releases-tasted-515229`; James Suckling `wine-tasting-reports/languedoc-roussillon-annual-report-rising-ambitions-and-an-ocean-of-cho...` | "2020 was another hot and dry year, and is widely regarded as one of the best in recent times across many ap..." |
-| 2021 | 3+ | Decanter `premium/languedoc-report-2023-latest-releases-tasted-515229`; www.larvf.com `languedoc-roussillon-quels-vins-des-millesimes-2021-et-2022-privilegier,4819412.asp` | "Languedoc 2021 vintage rating: 3.5 / 5" |
-| 2022 | 4+ | Decanter `premium/languedoc-report-2023-latest-releases-tasted-515229`; www.larvf.com `languedoc-roussillon-quels-vins-des-millesimes-2021-et-2022-privilegier,4819412.asp` | "Languedoc 2022 vintage rating: 4.5 / 5" |
+| 2021 | 3+ | Decanter `premium/languedoc-report-2023-latest-releases-tasted-515229`; La Revue du Vin de France `languedoc-roussillon-quels-vins-des-millesimes-2021-et-2022-privilegier,4819412.asp` | "Languedoc 2021 vintage rating: 3.5 / 5" |
+| 2022 | 4+ | Decanter `premium/languedoc-report-2023-latest-releases-tasted-515229`; La Revue du Vin de France `languedoc-roussillon-quels-vins-des-millesimes-2021-et-2022-privilegier,4819412.asp` | "Languedoc 2022 vintage rating: 4.5 / 5" |
 | 2023 | 3+ | Decanter `premium/languedoc-under-the-lens-2022-and-2023-vintages-560506`; iDealwine `les-notes-du-millesime-2023` | "The whites are mixed, I found many to be too chewy and tannic, while the successes were mineral and herbal." |
 
 **loire**
@@ -608,24 +682,29 @@ Hieronder staat per streek, per jaar, waar het oordeel vandaan komt: de uitgever
 | 1990 | 4+ | Decanter `wine/wine-regions/loire/regional-profile-anjou-saumur-248168`; Decanter `magazine/loire-grapes-red-and-white-varietals-249463`; Vinous `articles/cellar-favorite-1990-domaine-philippe-foreau-clos-naudin-vouvray-moelleux-goutte-d-...` | "Attractive wines but without the ageing potential of 1989." |
 | 1996 | 5+ | Decanter `wine/wine-regions/loire/regional-profile-anjou-saumur-248168`; Vinous `articles/best-new-wines-from-the-loire-valley-nov-1998`; Decanter `magazine/loire-grapes-red-and-white-varietals-249463` | "A classic Loire vintage. Overall probably the best vintage of the 1990s." |
 | 1997 | 4+ | Decanter `wine/wine-regions/loire/regional-profile-anjou-saumur-248168`; Vinous `articles/best-new-wines-from-the-loire-valley-nov-1998`; Vinous `articles/best-new-wines-from-the-loire-valley-nov-1998` | "Very appealing red wines and some especially fine sweet wines." |
-| 2002 | 4* | Wine Spectator `vintage-charts/region/loire` | "ideal September weather produced a superb vintage, with pure, balanced whites and reds" |
-| 2003 | 3* | Wine Spectator `vintage-charts/region/loire` | "little botrytis in the sweet wines" |
-| 2005 | 4* | Wine Spectator `vintage-charts/region/loire` | "low yields led to concentrated, balanced wines. Reds should age nicely; dessert wines superb" |
-| 2007 | 3* | Wine Spectator `vintage-charts/region/loire` | "A warm, dry September helped save the vintage for Chenin Blanc; late-harvest dessert wines outstanding" |
-| 2008 | 3* | Wine Spectator `vintage-charts/region/loire` | "good botrytis development for Chenin Blanc" |
-| 2009 | 4* | Wine Spectator `vintage-charts/region/loire` | "Warm, consistent growing season that benefited all grapes and appellations" |
-| 2010 | 4* | Wine Spectator `vintage-charts/region/loire` | "late-harvest Chenins best since 1997" |
-| 2011 | 3* | Wine Spectator `vintage-charts/region/loire` | "little botrytis development for sweet wines" |
-| 2013 | 3* | Wine Spectator `vintage-charts/region/loire` | "Overall, another difficult year, putting a premium on viticulture and selection in the winery" |
-| 2014 | 3+ | Wine Spectator `vintage-charts/region/loire`; Vinous `articles/big-love-for-loire-jul-2020` | "dry Chenin succeeded somewhat, sweet wines much less so" |
-| 2015 | 4+ | Wine Spectator `vintage-charts/region/loire`; Wine Spectator `vintage-charts/region/loire`; Vinous `articles/big-love-for-loire-jul-2020` | "Finally, a solid vintage, easily the best since 2010" |
-| 2016 | 4* | Wine Spectator `vintage-charts/region/loire` | "Very solid vintage, with some exceptional sweet wines" |
-| 2018 | 5+ | Vinous `articles/big-love-for-loire-jul-2020`; Wine Spectator `vintage-charts/region/loire` | "the vintages from 2015 to 2018 are strong, and 2018 is considered exceptional" |
-| 2019 | 4+ | Decanter `premium/loire-2019-vintage-overview-436849`; Decanter `premium/loire-2019-vintage-overview-436849`; Wine Spectator `vintage-charts/region/loire` | "Incredibly 2019 is the sixth successive good to very good quality vintage in the Loire" |
-| 2020 | 4* | Wine Spectator `vintage-charts/region/loire` | "Chenin Blancs, both dry and sweet, look especially promising" |
-| 2021 | 3* | Wine Spectator `vintage-charts/region/loire` | "Difficult weather conditions–frosts, heavy rain and hail–resulted in a very challenging year" |
-| 2022 | 4+ | Decanter `premium/loire-whites-2022-plus-top-new-releases-504810`; Decanter `premium/loire-whites-2022-plus-top-new-releases-504810`; Wine Spectator `vintage-charts/region/loire` | "2022 is a very good quality vintage across the board. Some are hailing it as one of the great years" |
-| 2023 | 3+ | Wine Spectator `vintage-charts/region/loire`; Vinous `articles/loire-chenin-blanc-chaume-the-way-jul-2024` | "A wet October meant very little if any sweet wine was made" |
+| 2002 | 4+ | Decanter `wine-news/loire-vintage-report-100888`; Decanter `wine-news/loire-vintage-report-100888`; Vinous `articles/2002-loire-valley-sauvignon-blancs-mar-2004` | "The 2002 vintage in the Loire is surprisingly good." |
+| 2003 | 3+ | Decanter `wine-news/loire-vintage-report-100888`; Decanter `wine/wine-regions/loire/regional-profile-anjou-saumur-248168`; Vinous `articles/sancerre-taking-the-temperature-aug-2021` | "The 2003s have opulent fruit, often high alcohol and significantly lower acidity than normal. While good fo..." |
+| 2005 | 5+ | Decanter `features/red-loire-2005-vintage-report-247669`; Decanter `features/red-loire-2005-vintage-report-247669`; Vinous `articles/loire-valley-cabernet-franc-dec-2014` | "Red Loire 2005 is a fantastic vintage" |
+| 2007 | 3* | Vinous `articles/focus-on-loire-valley-sauvignon-blanc-mar-2010`; Vinous `articles/focus-on-loire-valley-sauvignon-blanc-mar-2010`; Vinous `articles/best-new-wines-from-the-central-loire-may-2010` | "a good but generally not outstanding vintage like 2007 at prices close to those of the great 2005s" |
+| 2008 | 4+ | Decanter `premium/top-dry-loire-chenin-blanc-353130`; Vinous `articles/focus-on-loire-valley-sauvignon-blanc-mar-2010` | "2008 Saved by Indian summer. Precise, balanced and long lived." |
+| 2009 | 3+ | Decanter `premium/top-dry-loire-chenin-blanc-353130`; Vinous `articles/cellar-favorite-2009-francois-cotat-sancerre-les-culs-de-beaujeu-aug-2021` | "2009 Hot year, rich wines. Not as ageworthy as ’08 or ’10." |
+| 2010 | 4+ | Decanter `premium/top-dry-loire-chenin-blanc-353130`; Vinous `articles/focus-on-loire-valley-chenin-blanc-dec-2014` | "2010 Long, hot autumn. Classic, with higher acidity than ’09." |
+| 2011 | 3+ | Decanter `premium/top-dry-loire-chenin-blanc-353130`; Vinous `articles/loire-valley-cabernet-franc-dec-2014`; Vinous `articles/loire-valley-sauvignon-blanc-sep-2014` | "2011 Early vintage, rot a problem. Drink these before your 2008s and 2010s." |
+| 2013 | 2+ | Decanter `premium/loire-cabernet-franc-panel-tasting-results-398131`; Vinous `articles/loire-valley-sauvignon-blanc-sep-2014`; Decanter `premium/loire-2021-vintage-report-top-whites-from-2020-and-2021-481010` | "2013 Cold spring, very late flowering, least good for many years. Lack of ripeness – avoid." |
+| 2014 | 3* | Vinous `articles/big-love-for-loire-jul-2020` | "the vintages from 2015 to 2018 are strong, and 2018 is considered exceptional" |
+| 2014 | 4+ | Decanter `premium/top-dry-loire-chenin-blanc-353130`; Vinous `articles/2014-2015-muscadet-contrasting-vintages-ripe-for-discovery-may-2017` | "2014 Very good vintage saved by hot September. Classic wines with high acidity." |
+| 2015 | 4* | Vinous `articles/big-love-for-loire-jul-2020`; Vinous `articles/cellar-favorite-1990-domaine-philippe-foreau-clos-naudin-vouvray-moelleux-goutte-d-...` | "the vintages from 2015 to 2018 are strong, and 2018 is considered exceptional" |
+| 2015 | 4+ | Decanter `premium/loire-cabernet-franc-panel-tasting-results-398131`; Decanter `premium/top-dry-loire-chenin-blanc-353130`; Vinous `articles/2014-2015-muscadet-contrasting-vintages-ripe-for-discovery-may-2017` | "2015 Warm year producing powerful,ripe wines, if a smallish crop." |
+| 2016 | 4+ | Decanter `premium/loire-cabernet-franc-panel-tasting-results-398131`; Decanter `premium/top-dry-loire-chenin-blanc-353130`; Vinous `articles/big-love-for-loire-jul-2020` | "2016 Many parts hit by frosts, up to 100% loss. Also mildew. Small crop but good quality wines." |
+| 2018 | 5* | Vinous `articles/big-love-for-loire-jul-2020` | "the vintages from 2015 to 2018 are strong, and 2018 is considered exceptional" |
+| 2018 | 5+ | Decanter `premium/loire-whites-2022-plus-top-new-releases-504810`; Vinous `articles/big-love-for-loire-jul-2020` | "Hailed as a great vintage, which generally combined quality and quantity, although the alcohols on some whi..." |
+| 2019 | 4* | Decanter `premium/loire-2019-vintage-overview-436849`; Decanter `premium/loire-2019-vintage-overview-436849` | "Incredibly 2019 is the sixth successive good to very good quality vintage in the Loire" |
+| 2019 | 4+ | Decanter `premium/loire-2019-vintage-overview-436849`; Decanter `premium/loire-valley-2023-vintage-report-white-wines-and-the-best-new-releases-542456`; Vinous `articles/sancerre-taking-the-temperature-aug-2021` | "Incredibly 2019 is the sixth successive good to very good quality vintage in the Loire, in a continuous run..." |
+| 2020 | 4+ | Decanter `premium/loire-whites-2022-plus-top-new-releases-504810`; Vinous `articles/sancerre-taking-the-temperature-aug-2021`; Vinous `articles/chenin-blanc-wait-a-sec-sep-2022` | "Another hot vintage with many good, concentrated wines but also some that lack freshness and zip." |
+| 2021 | 3+ | Decanter `premium/loire-whites-2022-plus-top-new-releases-504810`; Decanter `premium/loire-valley-2023-vintage-report-white-wines-and-the-best-new-releases-542456`; Vinous `articles/loire-chenin-dividing-lines-oct-2023` | "Despite some early doubts there are some lovely whites, though quality is variable and volume severely down..." |
+| 2022 | 4+ | Decanter `premium/loire-whites-2022-plus-top-new-releases-504810`; Decanter `premium/loire-whites-2022-plus-top-new-releases-504810`; Vinous `articles/loire-chenin-blanc-chaume-the-way-jul-2024` | "2022 is a very good quality vintage across the board. Some are hailing it as one of the great years" |
+| 2023 | 3* | Vinous `articles/loire-chenin-blanc-chaume-the-way-jul-2024` | "2023 was a soggy season that left growers in despair: powdery" |
+| 2023 | 3+ | Decanter `premium/loire-valley-2023-vintage-report-white-wines-and-the-best-new-releases-542456`; Vinous `articles/the-mighty-ducks-2023-loire-valley-reds-aug-2025`; Vinous `articles/the-mighty-ducks-2023-loire-valley-reds-aug-2025` | "One of the most complicated vintages in recent memory, testing the abilities and resilience of vignerons th..." |
 
 **nieuwzeeland**
 
@@ -704,10 +783,10 @@ Hieronder staat per streek, per jaar, waar het oordeel vandaan komt: de uitgever
 |---|---|---|---|
 | 2016 | 3* | Decanter `premium/bandol-regional-profile-20-top-wines-482329` | "Good quality, although a slightly smaller vintage and not regarded as a great one." |
 | 2017 | 4* | Decanter `premium/bandol-regional-profile-20-top-wines-482329` | "the fruit was expressive, although volumes were reduced" |
-| 2018 | 2+ | www.larvf.com `provence-quel-millesime-privilegier-entre-2018-2019-et-2020,4804251.asp`; www.larvf.com `provence-quel-millesime-privilegier-entre-2018-2019-et-2020,4804251.asp`; Decanter `premium/bandol-regional-profile-20-top-wines-482329` | "2018 est un millésime bien en-dessous de ses cadets" |
-| 2019 | 5+ | www.larvf.com `provence-quel-millesime-privilegier-entre-2018-2019-et-2020,4804251.asp`; Decanter `premium/bandol-regional-profile-20-top-wines-482329` | "2019 est un grand millésime pour les vins rouges et blancs de Provence." |
-| 2020 | 5+ | Vinous `articles/the-delights-of-southern-france-may-2026`; www.larvf.com `provence-quel-millesime-privilegier-entre-2018-2019-et-2020,4804251.asp`; Decanter `premium/bandol-regional-profile-20-top-wines-482329` | "Vintage 2020 is a benchmark year for Bandol reds." |
-| 2021 | 3+ | Vinous `articles/the-delights-of-southern-france-may-2026`; Decanter `premium/bandol-regional-profile-20-top-wines-482329`; www.larvf.com `en-provence-quels-millesimes-privilegier-entre-2020-2021-et-2022,4834938.asp` | "The reds show a restrained, austere style." |
+| 2018 | 2+ | La Revue du Vin de France `provence-quel-millesime-privilegier-entre-2018-2019-et-2020,4804251.asp`; La Revue du Vin de France `provence-quel-millesime-privilegier-entre-2018-2019-et-2020,4804251.asp`; Decanter `premium/bandol-regional-profile-20-top-wines-482329` | "2018 est un millésime bien en-dessous de ses cadets" |
+| 2019 | 5+ | La Revue du Vin de France `provence-quel-millesime-privilegier-entre-2018-2019-et-2020,4804251.asp`; Decanter `premium/bandol-regional-profile-20-top-wines-482329` | "2019 est un grand millésime pour les vins rouges et blancs de Provence." |
+| 2020 | 5+ | Vinous `articles/the-delights-of-southern-france-may-2026`; La Revue du Vin de France `provence-quel-millesime-privilegier-entre-2018-2019-et-2020,4804251.asp`; Decanter `premium/bandol-regional-profile-20-top-wines-482329` | "Vintage 2020 is a benchmark year for Bandol reds." |
+| 2021 | 3+ | Vinous `articles/the-delights-of-southern-france-may-2026`; Decanter `premium/bandol-regional-profile-20-top-wines-482329`; La Revue du Vin de France `en-provence-quels-millesimes-privilegier-entre-2020-2021-et-2022,4834938.asp` | "The reds show a restrained, austere style." |
 | 2022 | 4+ | Vinous `articles/the-delights-of-southern-france-may-2026`; iDealwine `les-notes-du-millesime-2022` | "the wines repeatedly show more freshness than expected" |
 | 2023 | 3+ | Vinous `articles/the-delights-of-southern-france-may-2026`; iDealwine `les-notes-du-millesime-2023` | "the reds often show slightly firmer than usual tannins that will need time to resolve in bottle" |
 | 2024 | 3* | Vinous `articles/the-delights-of-southern-france-may-2026` | "The wines show a more classical register, with elegance and restraint taking precedence." |
@@ -716,39 +795,51 @@ Hieronder staat per streek, per jaar, waar het oordeel vandaan komt: de uitgever
 
 | jaar | niveau | vindplaatsen | strekking |
 |---|---|---|---|
-| 1983 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Wine Cellar Insider `wine-topics/bordeaux-wine-buying-guide-tasting-notes-ratings/bordeaux-wine-detailed-vintage-...` | "A very late vintage produced some truly classic wines" |
-| 1986 | 4+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Wine Spectator `vintage-charts/region/bordeaux-sauternes`; Decanter `magazine/dicing-with-the-devil-249950` | "The wines are rich and complex, but many lack acidity and finesse." |
+| 1983 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; The Wine Cellar Insider `wine-topics/bordeaux-wine-buying-guide-tasting-notes-ratings/bordeaux-wine-detailed-vintage-...` | "A very late vintage produced some truly classic wines" |
+| 1986 | 4* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Decanter `magazine/dicing-with-the-devil-249950` | "The wines are rich and complex, but many lack acidity and finesse." |
+| 1986 | 4* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "Many rich and complex wines" |
 | 1988 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Vinous `articles/focus-on-sauternes-jul-1998`; Vinous `articles/focus-on-sauternes-jul-1998` | "An outstanding vintage with a large number of richly classic wines" |
-| 1989 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Wine Spectator `vintage-charts/region/bordeaux-sauternes`; Vinous `articles/focus-on-sauternes-jul-1998` | "An excellent vintage of power and concentration" |
-| 1990 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Vinous `articles/focus-on-sauternes-jul-1998`; Wine Cellar Insider `wine-topics/bordeaux-wine-buying-guide-tasting-notes-ratings/bordeaux-wine-detailed-vintage-...` | "A very fine vintage; the best are sensational" |
-| 1995 | 4+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Wine Spectator `vintage-charts/region/bordeaux-sauternes` | "A classic vintage with many very fine wines" |
+| 1989 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Vinous `articles/focus-on-sauternes-jul-1998` | "An excellent vintage of power and concentration" |
+| 1990 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Vinous `articles/focus-on-sauternes-jul-1998`; The Wine Cellar Insider `wine-topics/bordeaux-wine-buying-guide-tasting-notes-ratings/bordeaux-wine-detailed-vintage-...` | "A very fine vintage; the best are sensational" |
+| 1995 | 4* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "A classic vintage with many very fine wines" |
+| 1995 | 4* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "A classic vintage with many very fine wines" |
 | 1996 | 4+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Vinous `articles/focus-on-sauternes-jul-1998`; Vinous `articles/1997-and-1996-sauternes-jul-1999` | "A high quality vintage with rich and concentrated wines" |
-| 1997 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Wine Cellar Insider `wine-topics/bordeaux-wine-buying-guide-tasting-notes-ratings/bordeaux-wine-detailed-vintage-...`; Vinous `articles/1997-and-1996-sauternes-jul-1999` | "The finest vintage since 1990. Many excellent wines" |
+| 1997 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; The Wine Cellar Insider `wine-topics/bordeaux-wine-buying-guide-tasting-notes-ratings/bordeaux-wine-detailed-vintage-...`; Vinous `articles/1997-and-1996-sauternes-jul-1999` | "The finest vintage since 1990. Many excellent wines" |
 | 1998 | 3* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "Rain caused problems throughout the vintage but a number of excellent wines were produced nevertheless" |
 | 1999 | 4* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "A very fine vintage of classic quality" |
-| 2001 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Wine Spectator `vintage-charts/region/bordeaux-sauternes`; Wine Cellar Insider `wine-topics/bordeaux-wine-buying-guide-tasting-notes-ratings/bordeaux-wine-detailed-vintage-...` | "A very great vintage, with wonderful succulence and aromatic complextity." |
-| 2002 | 3+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Wine Spectator `vintage-charts/region/bordeaux-sauternes`; Vinous `articles/2003-and-2002-sauternes-and-barsacs-jul-2005` | "Light with little botrytis so drink early" |
-| 2003 | 4+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Vinous `articles/2003-and-2002-sauternes-and-barsacs-jul-2005`; Wine Spectator `vintage-charts/region/bordeaux-sauternes` | "ripe, powerful, concentrated sweet wines with excellent botrytis expression and aging potential" |
-| 2004 | 3+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Wine Spectator `vintage-charts/region/bordeaux-sauternes` | "A small quantity of quality botrytised wine will be produced but this will not be considered a great year." |
-| 2005 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Vinous `articles/2007-and-2005-sauternes-and-barsacs-jul-2008`; Wine Spectator `vintage-charts/region/bordeaux-sauternes` | "Everything came together beautifully in 2005, and in terms of power and elegance" |
-| 2006 | 3+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Wine Spectator `vintage-charts/region/bordeaux-sauternes` | "A challenging harvest but with potential." |
+| 2001 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; The Wine Cellar Insider `wine-topics/bordeaux-wine-buying-guide-tasting-notes-ratings/bordeaux-wine-detailed-vintage-...`; Vinous `articles/stand-and-deliver-2001-sauternes-sep-2021` | "A very great vintage, with wonderful succulence and aromatic complextity." |
+| 2002 | 3+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Vinous `articles/2003-and-2002-sauternes-and-barsacs-jul-2005` | "Light with little botrytis so drink early" |
+| 2003 | 4+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Vinous `articles/2003-and-2002-sauternes-and-barsacs-jul-2005` | "ripe, powerful, concentrated sweet wines with excellent botrytis expression and aging potential" |
+| 2004 | 3* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "A small quantity of quality botrytised wine will be produced but this will not be considered a great year." |
+| 2004 | 3* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "Balanced wine rich in botrytis from better producers who selected for noble rot affected fruit" |
+| 2005 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Vinous `articles/2007-and-2005-sauternes-and-barsacs-jul-2008` | "Everything came together beautifully in 2005, and in terms of power and elegance" |
+| 2006 | 3* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "A challenging harvest but with potential." |
+| 2006 | 3* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "A challenging harvest but with potential. The successes are impressively pure, fresh and complex" |
 | 2007 | 4+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Vinous `articles/2007-and-2005-sauternes-and-barsacs-jul-2008`; Vinous `articles/looking-back-2007-sauternes-oct-2022` | "Outstanding vintage that combines richness and purity with balance and breed." |
-| 2008 | 3+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Wine Spectator `vintage-charts/region/bordeaux-sauternes` | "are fresh and elegant but ultimately lack concentration and depth" |
-| 2009 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Wine Spectator `vintage-charts/region/bordeaux-sauternes` | "Rich, decadent and opulent. Some blowsy and over the top, others among the best Sauternes ever made." |
-| 2010 | 4+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Wine Spectator `vintage-charts/region/bordeaux-sauternes`; Vinous `articles/bordeaux-2010-the-sweet-wines-aug-2011` | "Discreet and ageworthy wines with high acidity, but very well balanced." |
+| 2008 | 3* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "are fresh and elegant but ultimately lack concentration and depth" |
+| 2008 | 2* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "The best wines – from the top terroirs – are fresh and elegant but ultimately lack concentration and depth." |
+| 2009 | 5* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "Rich, decadent and opulent. Some blowsy and over the top, others among the best Sauternes ever made." |
+| 2009 | 5* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Decanter `premium/sauternes-sip-young-savour-old-560404` | "Rich, decadent and opulent. Some blowsy and over the top, others among the best Sauternes ever made." |
+| 2010 | 4+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Vinous `articles/bordeaux-2010-the-sweet-wines-aug-2011` | "Discreet and ageworthy wines with high acidity, but very well balanced." |
 | 2011 | 5+ | Vinous `articles/2011-bordeaux-sauternes-aug-2012`; Vinous `articles/2011-bordeaux-sauternes-aug-2012`; Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "The wines of Sauternes and Barsac are spectacular in 2011." |
-| 2012 | 2+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Wine Spectator `vintage-charts/region/bordeaux-sauternes` | "Difficult year in which many estates did not make their grand vin." |
-| 2013 | 4+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Wine Spectator `vintage-charts/region/bordeaux-sauternes` | "Very good year but uneven quality; for the most part, top names did well." |
-| 2014 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; Wine Spectator `vintage-charts/region/bordeaux-sauternes`; Wine Spectator `vintage-charts/region/bordeaux-sauternes` | "Outstanding year of pure wines marked by lemony botrytis and high acidity." |
-| 2015 | 4+ | Wine Spectator `vintage-charts/region/bordeaux-sauternes`; Decanter `learn/bordeaux-vintage-guide/bordeaux-2025-ideal-conditions-lead-to-luscious-sauternes` | "Wines are fresh and pure in style" |
-| 2016 | 3* | Wine Spectator `vintage-charts/region/bordeaux-sauternes` | "Wines are fresh and friendly, but without the complexity of great years" |
-| 2017 | 3* | Wine Spectator `vintage-charts/region/bordeaux-sauternes` | "wines are juicy and forward, with tropical fruit profiles" |
-| 2018 | 3* | Wine Spectator `vintage-charts/region/bordeaux-sauternes` | "Wines are ripe, round and forward, but lack the complexity of top years" |
-| 2019 | 3* | Wine Spectator `vintage-charts/region/bordeaux-sauternes` | "Wines are ripe, juicy and fresh in profile, despite the hot year, but they lack the complexity of top vinta..." |
-| 2020 | 3* | Wine Spectator `vintage-charts/region/bordeaux-sauternes` | "Wines are juicy and tropical in profile, but without the range of an outstanding year" |
-| 2021 | 3+ | Wine Spectator `vintage-charts/region/bordeaux-sauternes`; World of Fine Wine `tasting-notes/2021-bordeaux-sauternes-barsac`; World of Fine Wine `tasting-notes/2021-bordeaux-sauternes-barsac` | "A severe spring frost decimated the crop for sweet wine producers, with very few wines made" |
-| 2022 | 4+ | Wine Spectator `vintage-charts/region/bordeaux-sauternes`; World of Fine Wine `homepage-featured-articles/bordeaux-2022-field-notes-sauternes-ripeness-is-all`; World of Fine Wine `homepage-featured-articles/bordeaux-2022-field-notes-sauternes-ripeness-is-all` | "Wines are tropical and unctuous in feel, with good energy and definition, but lack the complexity of classi..." |
-| 2023 | 5+ | Wine Spectator `vintage-charts/region/bordeaux-sauternes`; Decanter `premium/best-sauternes-barsac-2023-wines-tasted-en-primeur-528839`; World of Fine Wine `news-features/bordeaux-2023-sauternes` | "The wines are vibrant and fresh in feel; the best vintage since 2014" |
+| 2012 | 2* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "Difficult year in which many estates did not make their grand vin." |
+| 2012 | 2* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "Difficult year in which many estates did not make their grand vin. Barsac wines fared best." |
+| 2013 | 4* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "Very good year but uneven quality; for the most part, top names did well." |
+| 2013 | 3* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "Very good year but uneven quality; for the most part, top names did well." |
+| 2014 | 5* | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815` | "Outstanding year of pure wines marked by lemony botrytis and high acidity." |
+| 2014 | 5+ | Decanter `learn/vintage-guides/bordeaux-vintage-guide/sauternes-and-barsac/vintage-guide-2-117815`; World of Fine Wine `news-features/bordeaux-2023-sauternes` | "Outstanding year of pure wines marked by lemony botrytis and high acidity." |
+| 2015 | 4* | Decanter `learn/bordeaux-vintage-guide/bordeaux-2025-ideal-conditions-lead-to-luscious-sauternes` | "producing a classic yet energetic style that sits comfortably between the concentration of 2023 and the har..." |
+| 2015 | 5+ | Decanter `premium/sauternes-2015-in-bottle-385677`; Vinous `articles/2015-bordeaux-every-bottle-tells-a-story-feb-2018`; Vinous `articles/2015-bordeaux-every-bottle-tells-a-story-feb-2018` | "It’s an outstanding vintage, with many fleshy, rich wines but with good acidity levels so as to avoid comin..." |
+| 2016 | 3+ | Decanter `learn/vintage-guides/en-primeur/bordeaux-en-primeur/365697-365697`; Decanter `learn/vintage-guides/en-primeur/bordeaux-en-primeur/365697-365697`; Vinous `articles/southwold-2016-bordeaux-ten-years-on-apr-2026` | "This is a very good year for many estates, with good purity of fruit thanks to a lack of grey rot, and long..." |
+| 2017 | 4+ | Decanter `learn/vintage-guides/en-primeur/sauternes-2017-wines-393657`; Decanter `learn/vintage-guides/en-primeur/sauternes-2017-wines-393657`; Vinous `articles/come-on-aline-chateau-coutet-1943-2017-feb-2024` | "Some wonderfully rich and ripe Sauternes and Barsac wines can be found in the Bordeaux 2017 vintage" |
+| 2018 | 3+ | Decanter `premium/sauternes-sip-young-savour-old-560404`; Decanter `premium/sauternes-sip-young-savour-old-560404`; Vinous `articles/2018-chateau-d-yquem-sep-2020` | "The wines showed varying degrees of concentration with moderate sugar levels, but some acidities were low, ..." |
+| 2019 | 4+ | Decanter `premium/best-sauternes-2019-wines-tasted-en-primeur-440143`; Vinous `articles/bordeaux-2019-the-southwold-tasting-feb-2023`; Vinous `articles/bordeaux-2019-the-southwold-tasting-feb-2023` | "among the best estates, I found 2019 to be not only rich and concentrated but also precise, with high aroma..." |
+| 2020 | 3+ | Decanter `premium/sauternes-sip-young-savour-old-560404`; Decanter `premium/sauternes-sip-young-savour-old-560404`; Vinous `articles/bordeaux-2020-the-southwold-tasting-nov-2024` | "A year that demonstrates a great vintage for red Bordeaux isn’t necessarily a stellar one for Sauternes." |
+| 2021 | 3* | World of Fine Wine `tasting-notes/2021-bordeaux-sauternes-barsac`; World of Fine Wine `tasting-notes/2021-bordeaux-sauternes-barsac` | "felt disinclined to make any sweet wine, which, for a lot of them, meant absolutely no wine at all" |
+| 2021 | 4+ | World of Fine Wine `tasting-notes/2021-bordeaux-sauternes-barsac`; World of Fine Wine `tasting-notes/2021-bordeaux-sauternes-barsac`; Vinous `articles/2-2-5-bordeaux-2021-in-bottle-feb-2024` | "in the minute crop of 2021 we have been given some wonderful wines: botrytically ( sic ) pure (a delicious ..." |
+| 2022 | 4* | World of Fine Wine `homepage-featured-articles/bordeaux-2022-field-notes-sauternes-ripeness-is-all`; World of Fine Wine `homepage-featured-articles/bordeaux-2022-field-notes-sauternes-ripeness-is-all` | "The quality of the wines is varied, but the best are very good indeed." |
+| 2022 | 3+ | World of Fine Wine `homepage-featured-articles/bordeaux-2022-field-notes-sauternes-ripeness-is-all`; Vinous `articles/keeping-everyone-happy-southwold-bordeaux-2022-mar-2026`; Vinous `articles/2022-bordeaux-in-bottle-living-in-the-present-jan-2025` | "The quality of the wines is varied, but the best are very good indeed." |
+| 2023 | 5+ | Decanter `premium/best-sauternes-barsac-2023-wines-tasted-en-primeur-528839`; World of Fine Wine `news-features/bordeaux-2023-sauternes` | "the botrytised sweet wines of Bordeaux had a fine vintage" |
 | 2024 | 3+ | Decanter `premium/best-sauternes-barsac-2024-wines-tasted-en-primeur-557741`; Decanter `premium/best-sauternes-barsac-2024-wines-tasted-en-primeur-557741`; The Drinks Business `2025/05/bordeaux-2024-en-primeur-sauternes-barsac` | "The 2024 vintage in Sauternes and Barsac delivered a fresher, more elegant expression than usual, with lowe..." |
 | 2025 | 5* | Decanter `learn/bordeaux-vintage-guide/bordeaux-2025-ideal-conditions-lead-to-luscious-sauternes`; Decanter `learn/bordeaux-vintage-guide/bordeaux-2025-ideal-conditions-lead-to-luscious-sauternes` | "Sauternes and Barsac produced a host of pure and luscious sweet wines in 2025." |
 
@@ -787,8 +878,8 @@ Hieronder staat per streek, per jaar, waar het oordeel vandaan komt: de uitgever
 
 | jaar | niveau | vindplaatsen | strekking |
 |---|---|---|---|
-| 2017 | 4* | www.larvf.com `vins-sud-ouest-millesime-verdict-avis-resultat-commentaire-degustation,4592854.asp` | "le Sud-Ouest livre un superbe millésime 2017 malgré les aléas du climat" |
-| 2018 | 4* | www.larvf.com `le-millesime-2018-dans-le-sud-ouest-de-fronton-a-l-aveyron-place-aux-outsiders,4634159.asp`; www.larvf.com `dans-le-sud-ouest-des-vins-de-bel-equilibre-au-paradis-des-fortes-tetes,4712681.asp` | "Le Sud-Ouest livre un superbe millésime 2018" |
+| 2017 | 4* | La Revue du Vin de France `vins-sud-ouest-millesime-verdict-avis-resultat-commentaire-degustation,4592854.asp` | "le Sud-Ouest livre un superbe millésime 2017 malgré les aléas du climat" |
+| 2018 | 4* | La Revue du Vin de France `le-millesime-2018-dans-le-sud-ouest-de-fronton-a-l-aveyron-place-aux-outsiders,4634159.asp`; La Revue du Vin de France `dans-le-sud-ouest-des-vins-de-bel-equilibre-au-paradis-des-fortes-tetes,4712681.asp` | "Le Sud-Ouest livre un superbe millésime 2018" |
 | 2019 | 4* | iDealwine `les-notes-du-millesime-2019` | "Les raisins ont donc atteint de belles maturités, surtout en rouge, en gardant un bel équilibre dans les jus" |
 | 2020 | 4* | iDealwine `les-notes-du-millesime-2020` | "notamment s’agissant des vins rouges qui montrent de belles concentrations" |
 | 2021 | 3* | iDealwine `les-notes-du-millesime-2021` | "pas les mêmes niveaux de concentration que ceux des années précédentes plus solaires" |
