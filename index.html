@@ -2481,20 +2481,46 @@ function verdict(w){
 const MEDAL = vol => `<svg class="medal" width="11" height="13" viewBox="0 0 22 26" aria-hidden="true"><path d="M6 1h4l1 8h-4zM16 1h-4l-1 8h4z" fill="currentColor" opacity=".8"/><circle cx="11" cy="17" r="7.2" fill="${vol?'currentColor':'none'}" stroke="currentColor" stroke-width="2"/></svg>`;
 const topKort = w => { const p = plekInKelder(w); return p && p.k === 'top' ? `<span class="badge b-top">${MEDAL(p.zeker)} ${p.zeker?'Topfles':'Mogelijk topfles'}</span>` : ''; };
 const topBadge = w => { const p = plekInKelder(w); return p && p.k === 'top' ? `<span class="badge b-top">${MEDAL(p.zeker)} ${plekLabel(p)}</span>` : ''; };
+/* De prijsagent vindt geregeld alleen een ándere jaargang van dezelfde wijn, en tot nu toe zei de
+   app daarover niets meer dan het jaartal. Dat is te weinig. Gemeten in de gedeelde prijstabel op
+   16 sep 2026: van de 42 rijen stonden er vier op een andere jaargang dan gevraagd, en de scheefste
+   was een zoete Jurançon uit 2006 met de prijs van de 2020, veertien jaar jonger. Zo'n fles is in
+   het echt duurder dan de huidige oogst, en de app liet dat stil passeren.
+   Wat hier gebeurt, en vooral wat hier niet gebeurt: we rekenen het prijsverschil NIET uit. Daar is
+   geen grond voor, want de tabel bevat geen enkele wijn waarvan twee jaargangen een prijs hebben,
+   dus elke vermenigvuldiger zou verzonnen zijn. Wat we wel kunnen, is zeggen hoe groot het gat is
+   en welke kant het op wijst, met de jaargangtabel erbij als die er iets over te melden heeft. De
+   gebruiker kan dat zelf wegen; een verzonnen getal kan hij niet wegen. */
+function jaargangKloof(w){
+  const gevonden = w.valueBron && Number(w.valueBron.vintage) || 0;
+  const eigen = Number(w.vintage) || 0;
+  if(!gevonden || !eigen || gevonden === eigen) return '';
+  const jaren = Math.abs(eigen - gevonden);
+  const ouder = eigen < gevonden;
+  let uit = `dit is de prijs van de ${gevonden}, en jouw fles is ${jaren} ${plur(jaren,'jaar','jaar')} ${ouder ? 'ouder' : 'jonger'}`;
+  if(typeof jaargangOordeel === 'function'){
+    const mijn = jaargangOordeel(w), die = jaargangOordeel({...w, vintage: gevonden});
+    if(mijn && die && mijn.woord && die.woord && mijn.niveau !== die.niveau)
+      uit += `, uit een ${mijn.niveau > die.niveau ? 'sterker' : 'zwakker'} jaar (${eigen} ${mijn.woord}, ${gevonden} ${die.woord})`;
+  }
+  return uit;
+}
 function waardeSub(w){
   const b = bronWaarde(w), ind = indicatie(w);
   if(!b) return ind ? `<div class="small tnum">indicatie ${money(ind.low)} – ${money(ind.high)}</div>` : '';
   const oud = w.vintage && (YR() - w.vintage) >= 8;
   const marge = oud ? 0.3 : 0.2;
-  const lo = Number(w.valueLow) || Math.round(b * (1 - marge)), hi = Number(w.valueHigh) || Math.round(b * (1 + marge));
+  const plat = !(Number(w.valueLow) > 0) || !(Number(w.valueHigh) > 0) || Number(w.valueLow) === Number(w.valueHigh);
+  const lo = plat ? Math.round(b * (1 - marge)) : Number(w.valueLow);
+  const hi = plat ? Math.round(b * (1 + marge)) : Number(w.valueHigh);
   const dat = w.valueAt ? new Date(w.valueAt).toLocaleDateString(LOCALE(), {month:'short', year:'numeric'}) : '';
   let bron = '';
   if(w.valueSrc === 'zoek' && w.valueBron){
-    const jr = w.valueBron.vintage && w.vintage && w.valueBron.vintage !== w.vintage ? `, jaargang ${w.valueBron.vintage}` : '';
+    const kloof = jaargangKloof(w);
     const naam = esc(w.valueBron.name || 'opgezocht');
     const oud = w.valueAt && (Date.now() - new Date(w.valueAt).getTime()) > 365 * 864e5;
     const link = safeUrl(w.valueBron.url);
-    bron = (link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${naam}</a>` : naam) + jr + (dat ? ', gegevens van ' + dat : '') + (oud ? ' (ouder dan een jaar)' : '');
+    bron = (link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${naam}</a>` : naam) + (dat ? ', gegevens van ' + dat : '') + (oud ? ' (ouder dan een jaar)' : '') + (kloof ? '<br>' + esc(kloof) : '');
   } else if(w.valueSrc === 'samen' && w.valueBron) bron = `wat ${w.valueBron.n || 2} CellarMentor-gebruikers betaalden`;
   else if(w.value != null) bron = (w.valueVia === 'aankoop' ? 'aankoopprijs' : 'zelf ingevuld') + (dat ? ', ' + dat : '');
   else bron = 'je aankoopprijs';
@@ -2522,13 +2548,18 @@ function waardeBlok(w){
   if(!b && prijsBezig.has(w.id)) return `<div class="waarde"><span class="pulse">${ik('zoek')} De sommelier zoekt de prijs bij wijnhandels…</span>${samen}</div>`;
   if(!b) return `<div class="waarde"><span>Nog geen prijs met bron.${ind ? ` Indicatie van de sommelier: ${money(ind.low)} tot ${money(ind.high)}, geen echte prijs.` : ''}</span>${samen}</div>`;
   const oud = w.vintage && (YR() - w.vintage) >= 8;
-  const lo = Number(w.valueLow) || Math.round(b * (oud ? 0.7 : 0.8)), hi = Number(w.valueHigh) || Math.round(b * (oud ? 1.3 : 1.2));
+  /* Een bandbreedte waarvan onder- en bovenkant gelijk zijn, of nul, is geen marktbereik: dat is
+     één winkelprijs die als marktwaarde wordt opgediend. In de gedeelde tabel gold dat op 16 sep
+     2026 voor 14 van de 42 rijen. Dan liever de eerlijke marge rond het gevonden bedrag. */
+  const plat = !(Number(w.valueLow) > 0) || !(Number(w.valueHigh) > 0) || Number(w.valueLow) === Number(w.valueHigh);
+  const lo = plat ? Math.round(b * (oud ? 0.7 : 0.8)) : Number(w.valueLow);
+  const hi = plat ? Math.round(b * (oud ? 1.3 : 1.2)) : Number(w.valueHigh);
   let regel;
   if(w.valueSrc === 'zoek' && w.valueBron){
     const link = safeUrl(w.valueBron.url), naam = esc(w.valueBron.name || 'opgezocht');
-    const jr = w.valueBron.vintage && w.vintage && w.valueBron.vintage !== w.vintage ? `, jaargang ${w.valueBron.vintage}` : '';
+    const kloof = jaargangKloof(w);
     const teOud = w.valueAt && (Date.now() - new Date(w.valueAt).getTime()) > 365 * 864e5;
-    regel = `marktwaarde, ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${naam}</a>` : naam}${jr}${dat ? ', gegevens van ' + dat : ''}${teOud ? ' (ouder dan een jaar)' : ''}`;
+    regel = `marktwaarde, ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${naam}</a>` : naam}${dat ? ', gegevens van ' + dat : ''}${teOud ? ' (ouder dan een jaar)' : ''}${kloof ? '<br>' + esc(kloof) : ''}`;
   } else if(w.valueSrc === 'samen' && w.valueBron) regel = `wat ${w.valueBron.n || 2} CellarMentor-gebruikers betaalden, ${money(lo)} tot ${money(hi)}${dat ? ', ' + dat : ''}`;
   else if(w.value != null) regel = `${w.valueVia === 'aankoop' ? 'aankoopprijs' : 'zelf ingevuld'}${dat ? ', ' + dat : ''}`;
   else regel = 'je aankoopprijs';

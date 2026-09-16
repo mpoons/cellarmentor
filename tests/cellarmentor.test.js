@@ -43,7 +43,7 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, waardeSub, jaargangKloof, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
@@ -383,6 +383,41 @@ test('vensterMigratie: zet alleen vensters recht die de oude regels zelf hebben 
   assert.equal(C.S.wines[2].drinkTo, 2030, 'en een vastgelegde eigen bron ook');
   assert.equal(C.vensterMigratie(), 0, 'twee keer draaien verandert niets meer');
   C.S.wines = [];
+});
+
+/* ================= prijzen en jaargangen ================= */
+test('jaargangKloof: zegt hoe groot het gat is en welke kant het op wijst, zonder te rekenen', () => {
+  /* het echte geval uit de gedeelde prijstabel: een zoete Jurancon uit 2006 met de prijs van 2020 */
+  const w = { name: "Ballet d'Octobre", producer: 'Domaine Cauhape', vintage: 2006, type: 'zoet',
+    region: 'Jurancon', country: 'Frankrijk', value: 19.32, valueSrc: 'zoek',
+    valueBron: { name: 'wine-searcher.com', vintage: 2020 } };
+  const t = C.jaargangKloof(w);
+  assert.match(t, /prijs van de 2020/);
+  assert.match(t, /14 jaar ouder/);
+  /* geen enkel bedrag in de zin: we rekenen het verschil bewust niet uit */
+  assert.ok(!/\d+[,.]\d\d/.test(t), 'geen verzonnen bedrag in de uitleg: ' + t);
+  /* dezelfde jaargang geeft niets */
+  assert.equal(C.jaargangKloof({ ...w, valueBron: { name: 'x', vintage: 2006 } }), '');
+  assert.equal(C.jaargangKloof({ ...w, valueBron: null }), '');
+});
+test('jaargangKloof: noemt het jaargangverschil als de tabel er iets over zegt', () => {
+  const w = { name: 'Chateau x', producer: 'x', vintage: 2016, type: 'rood', region: 'Bordeaux',
+    appellation: 'Pauillac', value: 90, valueSrc: 'zoek', valueBron: { name: 'x', vintage: 2013 } };
+  const t = C.jaargangKloof(w);
+  assert.match(t, /sterker jaar/, '2016 Bordeaux is uitzonderlijk, 2013 moeilijk: ' + t);
+});
+test('waardeBlok: een platte bandbreedte wordt een eerlijke marge, geen nepbereik', () => {
+  /* een winkelprijs waarvan low en high gelijk zijn is geen marktbereik */
+  const plat = { id: 'p1', name: 'x', producer: 'x', vintage: 2022, type: 'rood', qty: 1,
+    value: 41, valueLow: 41, valueHigh: 41, valueSrc: 'zoek', valueBron: { name: 'winepilot.com' } };
+  const h = C.waardeBlok(plat);
+  assert.ok(!/41.*\u2013.*41|41 tot 41/.test(h), 'geen bereik van 41 tot 41: ' + h);
+  /* en nul aan een van de kanten evenmin */
+  const nul = { ...plat, id: 'p2', value: 35, valueLow: 0, valueHigh: 0 };
+  assert.ok(C.waardeBlok(nul).includes('35'), 'de gevonden prijs blijft staan');
+  /* een echte band blijft wel staan */
+  const echt = { ...plat, id: 'p3', value: 24, valueLow: 22, valueHigh: 27 };
+  assert.ok(C.waardeSub(echt).includes('22'), 'een echte ondergrens blijft: ' + C.waardeSub(echt));
 });
 
 /* ================= opslag ================= */
