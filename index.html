@@ -1215,7 +1215,7 @@ const STREKEN = [
    j:'1990:5+ 1995:4+ 1998:5+ 1999:3+ 2000:4+ 2001:5+ 2002:1+ 2003:3+ 2004:4 2005:4 2006:4+ 2007:5+ 2008:3+ 2009:4+ 2010:5+ 2011:3+ 2012:4+ 2013:3+ 2014:3+ 2015:5+ 2016:5+ 2017:4+ 2018:3+ 2019:5+ 2020:4+ 2021:3+ 2022:4+ 2023:4+ 2024:3+'},
   {k:'provence', l:'de Provence', kw:['bandol','provence','cassis','palette','bellet','coteaux d aix','baux'],
    j:'2010:5 2011:3 2012:4 2013:3 2014:4 2015:5 2016:5 2017:4 2018:4 2019:5 2020:4 2021:3 2022:4 2023:4'},
-  {k:'languedoc', l:'de Languedoc en Roussillon', kw:['languedoc','minervois','corbieres','faugeres','saint chinian','pic saint loup','fitou','roussillon','maury','banyuls','collioure','cotes catalanes','terrasses du larzac','la clape','picpoul','limoux'],
+  {k:'languedoc', l:'de Languedoc en Roussillon', kw:['languedoc','minervois','corbieres','faugeres','saint chinian','pic saint loup','fitou','roussillon','maury','banyuls','collioure','cotes catalanes','terrasses du larzac','la clape','picpoul','limoux','cabardes','malepere','saint georges d orques','montpeyroux','cabrieres','summieres'],
    j:'2010:4 2012:4 2014:3 2015:5 2016:5 2017:4 2018:4 2019:5 2020:4 2021:3+ 2022:4+ 2023:3+'},
   {k:'sudwest', l:'het zuidwesten van Frankrijk', kw:['madiran','cahors','jurancon','irouleguy','gaillac','bergerac','fronton','marcillac','pacherenc','duras'],
    j:'2009:4 2010:5 2011:3 2012:3 2014:4 2015:5 2016:4 2017:3 2018:4 2019:5 2020:4 2021:3 2022:4 2023:4'},
@@ -1231,9 +1231,23 @@ const STREKEN = [
    j:'1985:5 1988:4+ 1990:5 1995:4+ 1997:4+ 1999:5+ 2001:4 2002:1 2003:2 2004:5 2005:3 2006:5 2007:4 2008:4+ 2009:3 2010:5 2011:3 2012:4 2013:4+ 2014:2 2015:5 2016:5 2017:3 2018:3 2019:5 2020:4 2021:5 2022:3 2023:3 2024:3 2025:4'},
   {k:'veneto', l:'de Veneto', kw:['amarone','valpolicella','ripasso','soave','recioto','bardolino','veneto','custoza','lugana','breganze','colli euganei','prosecco','conegliano','valdobbiadene','asolo','glera','piave','montello','gambellara'],
    j:'1990:5 1997:5 2000:4 2004:4 2006:5 2007:4 2008:4 2009:4 2010:4 2011:4 2012:4 2013:4 2014:2 2015:5 2016:5 2017:3 2018:4 2019:4 2020:4 2021:4 2022:4 2023:3'},
-  {k:'zuiditalie', l:'Zuid-Italië en Sicilië', kw:['etna','sicilie','sicilia','sicily','nerello','aglianico','taurasi','vulture','campania','puglia','salento','primitivo','manduria','negroamaro','basilicata','calabria','greco di tufo','fiano di avellino','falanghina','ciro','salice salentino','vermentino di gallura','sardegna','cannonau','carignano','cerasuolo di vittoria','vittoria','frappato','nero d avola','noto','faro','gaglioppo','irpinia','sannio','molise'],
+  {k:'sicilie', l:'Sicilië', kw:['etna','sicilie','sicilia','sicily','nerello','cerasuolo di vittoria','vittoria','frappato','nero d avola','noto','faro','marsala','pantelleria'],
    j:'2004:5 2006:4 2010:4 2011:4 2012:4 2013:5 2014:3 2015:4 2016:5 2017:3 2018:4 2019:5 2020:4 2021:4 2022:4 2023:3'},
-  {k:'italie_noord', l:'Noord-Italië', kw:['alto adige','sudtirol','trentino','friuli','collio','colli orientali','isonzo','lombardia','franciacorta','valtellina','oltrepo','marche','verdicchio','jesi','matelica','abruzzo','montepulciano d abruzzo','umbria','sagrantino','montefalco','orvieto','emilia','lambrusco','liguria','cinque terre'],
+  {k:'puglia', l:'Puglia', kw:['puglia','salento','primitivo','manduria','negroamaro','salice salentino','castel del monte','gioia del colle','copertino','brindisi'],
+   j:'2004:5 2006:4 2010:4 2011:4 2012:4 2013:5 2014:3 2015:4 2016:5 2017:3 2018:4 2019:5 2020:4 2021:4 2022:4 2023:3'},
+  {k:'campanie', l:'Campanië', kw:['campania','taurasi','greco di tufo','fiano di avellino','falanghina','irpinia','sannio','aglianico del taburno','vesuvio','ischia'],
+   j:'2004:5 2006:4 2010:4 2011:4 2012:4 2013:5 2014:3 2015:4 2016:5 2017:3 2018:4 2019:5 2020:4 2021:4 2022:4 2023:3'},
+  {k:'sardinie', l:'Sardinië', kw:['sardegna','sardinie','vermentino di gallura','cannonau','carignano','vermentino di sardegna','monica','nuragus'],
+   j:'2004:5 2006:4 2010:4 2011:4 2012:4 2013:5 2014:3 2015:4 2016:5 2017:3 2018:4 2019:5 2020:4 2021:4 2022:4 2023:3'},
+  {k:'zuiditalie', l:'Zuid-Italië', kw:['aglianico','vulture','basilicata','calabria','ciro','gaglioppo','molise','biferno','tintilia'],
+   j:'2004:5 2006:4 2010:4 2011:4 2012:4 2013:5 2014:3 2015:4 2016:5 2017:3 2018:4 2019:5 2020:4 2021:4 2022:4 2023:3'},
+  {k:'italie_no', l:'Noordoost-Italië', kw:['alto adige','sudtirol','trentino','friuli','collio','colli orientali','isonzo','carso','colli berici'],
+   j:'2010:4 2011:4 2012:4 2013:4 2015:5 2016:5 2017:3 2018:4 2019:5 2020:4 2021:4 2022:4 2023:3'},
+  {k:'lombardije', l:'Lombardije', kw:['lombardia','lombardije','franciacorta','valtellina','oltrepo','garda classico','valcalepio'],
+   j:'2010:4 2011:4 2012:4 2013:4 2015:5 2016:5 2017:3 2018:4 2019:5 2020:4 2021:4 2022:4 2023:3'},
+  {k:'italie_midden', l:'Midden-Italië', kw:['marche','verdicchio','jesi','matelica','abruzzo','montepulciano d abruzzo','umbria','sagrantino','montefalco','orvieto','lazio','frascati','conero','offida','pecorino','trebbiano d abruzzo','cesanese'],
+   j:'2010:4 2011:4 2012:4 2013:4 2015:5 2016:5 2017:3 2018:4 2019:5 2020:4 2021:4 2022:4 2023:3'},
+  {k:'emilia_liguria', l:'Emilia-Romagna en Ligurië', kw:['emilia','romagna','lambrusco','liguria','cinque terre','sangiovese di romagna','albana','colli piacentini','rossese'],
    j:'2010:4 2011:4 2012:4 2013:4 2015:5 2016:5 2017:3 2018:4 2019:5 2020:4 2021:4 2022:4 2023:3'},
   {k:'rioja', l:'Rioja', kw:['rioja','navarra','carinena','campo de borja','somontano'],
    j:'1964:5 1970:4 1981:4 1982:5 1994:5+ 1995:5+ 1996:4+ 1997:2+ 1998:3+ 1999:3+ 2000:2+ 2001:5+ 2002:2+ 2003:3+ 2004:5+ 2005:5+ 2006:3 2007:3+ 2008:3 2009:4+ 2010:5+ 2011:4+ 2012:4+ 2013:2+ 2014:3+ 2015:4 2016:4+ 2017:3+ 2018:3+ 2019:5+ 2020:3+ 2021:4+ 2022:4+ 2023:4'},
@@ -1243,11 +1257,25 @@ const STREKEN = [
    j:'2001:5 2004:5 2005:4 2006:4 2007:3 2009:4 2010:4 2012:4 2013:3 2014:3 2015:5 2016:5 2017:3 2018:4 2019:5 2020:4 2021:4 2022:4 2023:3'},
   {k:'spanje_wit', l:'noordwest Spanje', kw:['rias baixas','albarino','ribeiro','valdeorras','godello','bierzo','ribeira sacra','txakoli','rueda','verdejo','galicia','monterrei'],
    j:'2010:4 2012:4 2014:4 2015:4 2016:4 2017:3 2018:4 2019:4 2020:4 2021:5 2022:3 2023:4'},
+  {k:'spanje_midden', l:'midden- en zuidoost-Spanje', kw:['jumilla','yecla','alicante','utiel requena','valencia','la mancha','valdepenas','almansa','manchuela','calatayud','madrid','vinos de madrid','gredos','mentrida','ucles','ribera del jucar','bullas','murcia','malaga','sierras de malaga'],
+   j:''},
+  {k:'corsica', l:'Corsica',  kw:['corse','corsica','patrimonio','ajaccio','sartene','figari','porto vecchio','calvi','nielluccio','sciaccarellu','vermentinu'],
+   j:''},
   {k:'jerez', l:'Jerez', kw:['jerez','sherry','manzanilla','montilla','moriles','sanlucar'],
    j:''},
-  {k:'douro', l:'de Douro', kw:['port','porto','douro','duriense'],
+  {k:'douro_port', l:'de Douro (port)', t:['versterkt'], kw:['port','porto','douro','duriense','vintage port','tawny','colheita','lbv'],
    j:'1963:5+ 1966:5+ 1970:5+ 1977:5+ 1985:5 1991:4+ 1992:5+ 1993:2 1994:5+ 1997:3+ 2000:5+ 2001:3 2002:2 2003:5+ 2004:4 2005:4 2007:5+ 2008:4 2009:4 2011:5+ 2012:4 2013:3 2014:2 2015:4 2016:5+ 2017:5+ 2018:4+ 2019:4 2020:4 2021:4 2022:3+ 2023:4 2024:5+'},
-  {k:'portugal', l:'Portugal', kw:['dao','bairrada','alentejo','vinho verde','lisboa','setubal','portugal','tejo','peninsula','colares','madeira','beira','algarve','azores'],
+  {k:'douro', l:'de Douro (stille wijn)', kw:['douro','duriense','port','porto','douro superior','cima corgo','baixo corgo'],
+   j:'2011:5 2012:4 2013:3 2014:2 2015:4 2016:5 2017:5 2018:4 2019:4 2020:4 2021:4 2022:3 2023:4'},
+  {k:'dao_bairrada', l:'de Dão en Bairrada', kw:['dao','bairrada','beira','baga','encruzado','tavora varosa'],
+   j:'2011:5 2012:4 2014:3 2015:5 2016:4 2017:5 2018:4 2019:4 2020:4 2021:4 2022:4 2023:3'},
+  {k:'alentejo', l:'de Alentejo en het zuiden', kw:['alentejo','tejo','lisboa','setubal','peninsula','palmela','algarve','colares','bucelas','carcavelos'],
+   j:'2011:5 2012:4 2014:3 2015:5 2016:4 2017:5 2018:4 2019:4 2020:4 2021:4 2022:4 2023:3'},
+  {k:'vinho_verde', l:'Vinho Verde', kw:['vinho verde','minho','alvarinho','loureiro','monsao','melgaco'],
+   j:'2011:5 2012:4 2014:3 2015:5 2016:4 2017:5 2018:4 2019:4 2020:4 2021:4 2022:4 2023:3'},
+  {k:'madeira', l:'Madeira', kw:['madeira','bual','boal','sercial','verdelho','malmsey','terrantez'],
+   j:''},
+  {k:'portugal', l:'Portugal', kw:['portugal','azores','acores','tras os montes','beiras'],
    j:'2011:5 2012:4 2014:3 2015:5 2016:4 2017:5 2018:4 2019:4 2020:4 2021:4 2022:4 2023:3'},
   {k:'duitsland', l:'Duitsland', kw:['mosel','moezel','saar','ruwer','rheingau','rheinhessen','pfalz','nahe','franken','baden','wurttemberg','ahr','mittelrhein','saale','sachsen','duitsland','germany','deutschland','riesling trocken'],
    j:'1971:5 1975:5 1976:5 1988:4 1989:4 1990:5 1993:4 1994:4 1995:4 1996:4 1997:4 1998:4 1999:4 2001:5 2002:4 2003:3 2004:4 2005:5 2006:3 2007:5 2008:4 2009:5 2010:4 2011:4 2012:4 2013:3 2014:3 2015:5 2016:4 2017:4 2018:5 2019:5 2020:4 2021:5 2022:4 2023:4+ 2024:3+ 2025:4+'},
@@ -1255,15 +1283,41 @@ const STREKEN = [
    j:'1999:5 2000:4 2002:4 2006:5 2007:4 2009:4 2011:5 2012:4 2013:4 2015:5 2016:4 2017:5 2018:4 2019:5 2020:3 2021:5 2022:4 2023:3 2024:2'},
   {k:'tokaj', l:'Tokaj', kw:['tokaj','tokaji','aszu','hongarije','hungary','magyar','eger','villany','somlo'],
    j:'1993:5 1999:5 2000:4 2003:5 2005:4 2006:5 2007:4 2008:5 2009:4 2011:4 2013:5 2016:4 2017:5 2019:4 2020:3 2021:4 2022:4 2023:3'},
-  {k:'griekenland', l:'Griekenland', kw:['santorini','naoussa','nemea','griekenland','greece','assyrtiko','xinomavro','peloponnesos','mantinia','amyndeon','rapsani','patras','samos','kreta','crete'],
+  {k:'santorini', l:'Santorini', kw:['santorini','assyrtiko','thira','nykteri','vinsanto santorini'],
    j:'2013:4 2015:4 2016:4 2017:4 2018:3 2019:4 2020:4 2021:4 2022:4 2023:3'},
-  {k:'californie', l:'Californië', kw:['napa','oakville','rutherford','stags leap','howell mountain','spring mountain','saint helena','calistoga','sonoma','alexander valley','knights valley','russian river','dry creek','carneros','paso robles','santa barbara','santa rita','sta rita','santa lucia','edna valley','anderson valley','california','californie','mendocino','lodi','santa cruz'],
+  {k:'griekenland_noord', l:'Noord-Griekenland', kw:['naoussa','xinomavro','amyndeon','rapsani','goumenissa','drama','macedonie','epanomi'],
+   j:'2013:4 2015:4 2016:4 2017:4 2018:3 2019:4 2020:4 2021:4 2022:4 2023:3'},
+  {k:'griekenland_zuid', l:'de Peloponnesos', kw:['nemea','mantinia','patras','peloponnesos','agiorgitiko','moschofilero','nemea agiorgitiko'],
+   j:'2013:4 2015:4 2016:4 2017:4 2018:3 2019:4 2020:4 2021:4 2022:4 2023:3'},
+  {k:'griekenland', l:'Griekenland', kw:['griekenland','greece','samos','kreta','crete','attica','retsina','limnos','rhodos'],
+   j:'2013:4 2015:4 2016:4 2017:4 2018:3 2019:4 2020:4 2021:4 2022:4 2023:3'},
+  {k:'napa', l:'Napa Valley', kw:['napa','oakville','rutherford','stags leap','howell mountain','spring mountain','saint helena','calistoga','yountville','oak knoll','atlas peak','diamond mountain','mount veeder','coombsville','chiles valley','los carneros napa'],
    j:'1990:4 1991:4 1994:5 1995:4 1997:5 1999:4 2001:5 2002:4 2003:3 2004:4 2005:4 2006:4 2007:5 2008:3 2009:4 2010:4 2011:2 2012:5 2013:5 2014:4 2015:4 2016:5 2017:4+ 2018:5+ 2019:4+ 2020:2+ 2021:5+ 2022:3+ 2023:4+ 2024:4+'},
+  {k:'sonoma', l:'Sonoma County', kw:['sonoma','alexander valley','knights valley','russian river','dry creek','chalk hill','bennett valley','moon mountain','petaluma gap','rockpile','fountaingrove','carneros'],
+   j:'1990:4 1991:4 1994:5 1995:4 1997:5 1999:4 2001:5 2002:4 2003:3 2004:4 2005:4 2006:4 2007:5 2008:3 2009:4 2010:4 2011:2 2012:5 2013:5 2014:4 2015:4 2016:5 2017:4 2018:5 2019:4 2020:3* 2021:5 2022:3 2023:4 2024:4'},
+  {k:'ca_kust', l:'de Californische centrale kust', kw:['paso robles','santa barbara','santa rita','sta rita','santa lucia','edna valley','monterey','santa maria','ballard canyon','happy canyon','arroyo seco','chalone','san luis obispo','santa ynez'],
+   j:'1990:4 1991:4 1994:5 1995:4 1997:5 1999:4 2001:5 2002:4 2003:3 2004:4 2005:4 2006:4 2007:5 2008:3 2009:4 2010:4 2011:2 2012:5 2013:5 2014:4 2015:4 2016:5 2017:4 2018:5 2019:4 2020:2 2021:5 2022:3 2023:4 2024:4'},
+  {k:'ca_noord', l:'de Californische noordkust', kw:['anderson valley','mendocino','lake county','potter valley','redwood valley','clear lake'],
+   j:'1990:4 1991:4 1994:5 1995:4 1997:5 1999:4 2001:5 2002:4 2003:3 2004:4 2005:4 2006:4 2007:5 2008:3 2009:4 2010:4 2011:2 2012:5 2013:5 2014:4 2015:4 2016:5 2017:4 2018:5 2019:4 2020:2 2021:5 2022:3 2023:4 2024:4'},
+  {k:'californie', l:'Californië', kw:['california','californie','lodi','santa cruz','sierra foothills','amador','el dorado','livermore','suisun'],
+   j:'1990:4 1991:4 1994:5 1995:4 1997:5 1999:4 2001:5 2002:4 2003:3 2004:4 2005:4 2006:4 2007:5 2008:3 2009:4 2010:4 2011:2 2012:5 2013:5 2014:4 2015:4 2016:5 2017:4 2018:5 2019:4 2020:2 2021:5 2022:3 2023:4 2024:4'},
   {k:'oregon', l:'Oregon', kw:['willamette','oregon','dundee','eola','ribbon ridge','yamhill','mcminnville'],
    j:'2008:5 2010:4 2012:5 2014:5 2015:4 2016:4 2017:3 2018:4 2019:4 2020:1 2021:5 2022:4 2023:4'},
   {k:'washington', l:'Washington State', kw:['columbia valley','walla walla','washington','yakima','red mountain','horse heaven','wahluke'],
    j:'2005:4 2007:4 2008:4 2010:4 2012:5 2013:4 2014:4 2015:4 2016:4 2017:4 2018:5 2019:4 2020:2 2021:4 2022:4 2023:4'},
-  {k:'australie', l:'Australië', kw:['barossa','mclaren','coonawarra','clare valley','eden valley','margaret river','yarra','hunter','heathcote','adelaide hills','australie','australia','mornington','tasmania','tasmanie','grampians','langhorne','riverina','canberra','beechworth','great southern'],
+  {k:'usa_oost', l:'het oosten van de Verenigde Staten', kw:['finger lakes','long island','hudson','virginia','north fork','seneca','cayuga','monticello virginia'],
+   j:''},
+  {k:'canada', l:'Canada', kw:['okanagan','niagara','prince edward county','nova scotia','similkameen','ontario','british columbia'],
+   j:''},
+  {k:'australie_za', l:'Zuid-Australië', kw:['barossa','mclaren','clare valley','eden valley','adelaide hills','coonawarra','langhorne','padthaway','wrattonbully','riverland','mount lofty','fleurieu'],
+   j:'1990:5 1996:5 1998:5 2002:5 2004:5 2005:4 2006:4 2008:2 2009:3 2010:5 2012:5 2013:4 2014:4 2015:4 2016:4 2017:4 2018:5 2019:3 2020:3 2021:5 2022:4 2023:3'},
+  {k:'australie_wa', l:'West-Australië', kw:['margaret river','great southern','frankland','mount barker','pemberton','swan valley','geographe','manjimup','porongurup'],
+   j:'1990:5 1996:5 1998:5 2002:5 2004:5 2005:4 2006:4 2008:2 2009:3 2010:5 2012:5 2013:4 2014:4 2015:4 2016:4 2017:4 2018:5 2019:3 2020:3 2021:5 2022:4 2023:3'},
+  {k:'australie_vic', l:'Victoria en Tasmanië', kw:['yarra','heathcote','mornington','grampians','beechworth','king valley','goulburn','rutherglen','tasmania','tasmanie','macedon','gippsland','pyrenees','geelong','henty'],
+   j:'1990:5 1996:5 1998:5 2002:5 2004:5 2005:4 2006:4 2008:2 2009:3 2010:5 2012:5 2013:4 2014:4 2015:4 2016:4 2017:4 2018:5 2019:3 2020:3 2021:5 2022:4 2023:3'},
+  {k:'australie_nsw', l:'Nieuw-Zuid-Wales', kw:['hunter','canberra','orange','mudgee','riverina','hilltops','tumbarumba','shoalhaven'],
+   j:''},
+  {k:'australie', l:'Australië', kw:['australie','australia','south eastern australia'],
    j:'1990:5 1996:5 1998:5 2002:5 2004:5 2005:4 2006:4 2008:2 2009:3 2010:5 2012:5 2013:4 2014:4 2015:4 2016:4 2017:4 2018:5 2019:3 2020:3 2021:5 2022:4 2023:3'},
   {k:'nieuwzeeland', l:'Nieuw-Zeeland', kw:['marlborough','central otago','hawke','martinborough','wairau','nieuw zeeland','new zealand','gisborne','nelson','waipara','wairarapa','canterbury'],
    j:'2007:4 2009:4 2010:4 2013:5 2014:4 2015:4 2016:4 2017:2 2018:3 2019:4 2020:4 2021:4 2022:3 2023:2'},
@@ -1271,7 +1325,13 @@ const STREKEN = [
    j:'2009:5 2012:4 2013:4 2014:3 2015:5 2016:4 2017:5 2018:4 2019:4 2020:4 2021:5 2022:4 2023:3'},
   {k:'argentinie', l:'Argentinië', kw:['mendoza','uco','argentinie','argentina','lujan de cuyo','salta','cafayate','patagonia','rio negro','neuquen','san juan','tupungato','gualtallary'],
    j:'2005:4 2006:4 2009:4 2011:4 2013:4 2015:3 2016:2 2017:4 2018:5 2019:5 2020:4 2021:5 2022:4 2023:3'},
-  {k:'chili', l:'Chili', kw:['maipo','colchagua','aconcagua','rapel','cachapoal','casablanca','limari','chili','chile','maule','curico','itata','bio bio','elqui','leyda','san antonio'],
+  {k:'chili_kust', l:'de Chileense kuststreken', kw:['casablanca','san antonio','leyda','limari','elqui','aconcagua costa','choapa'],
+   j:'2007:4 2009:4 2010:4 2011:4 2013:3 2014:4 2015:4 2016:3 2017:4 2018:5 2019:4 2020:4 2021:5 2022:4 2023:3'},
+  {k:'chili_centraal', l:'de Chileense centrale vallei', kw:['maipo','cachapoal','colchagua','curico','maule','rapel','aconcagua','apalta','peumo'],
+   j:'2007:4 2009:4 2010:4 2011:4 2013:3 2014:4 2015:4 2016:3 2017:4 2018:5 2019:4 2020:4 2021:5 2022:4 2023:3'},
+  {k:'chili_zuid', l:'Zuid-Chili', kw:['itata','bio bio','malleco','osorno'],
+   j:''},
+  {k:'chili', l:'Chili', kw:['chili','chile'],
    j:'2007:4 2009:4 2010:4 2011:4 2013:3 2014:4 2015:4 2016:3 2017:4 2018:5 2019:4 2020:4 2021:5 2022:4 2023:3'},
 ];
 /* De tabellen één keer uitpakken: een string per streek leest prettiger dan honderd regels object.
@@ -1281,6 +1341,10 @@ const STREKEN = [
    tabel zelf staan en niet in een voetnoot, want de app zegt het per fles tegen de gebruiker, en
    een oordeel dat zich voordoet als gecontroleerd terwijl het dat niet is, is precies het soort
    zelfverzekerdheid dat een kelderapp onbetrouwbaar maakt. */
+/* JAARBRON[streek][jaar] telt hoe hard het oordeel is: 2 = tegen twee onafhankelijke bronnen
+   gelegd (een plus in de tabel), 1 = op één betrouwbare bron gebaseerd (een ster), afwezig = eigen
+   schatting. Die middelste stand bestaat omdat weggooien wat één goede bron zegt slechter is dan
+   het bewaren met de juiste vlag erbij: het is beduidend meer waard dan een gok en minder dan twee. */
 let JAARBRON = {};
 const JAARTABEL = (() => {
   const m = {}, g = {};
@@ -1290,7 +1354,8 @@ const JAARTABEL = (() => {
       if(!p) continue;
       const [j, n] = p.split(':');
       t[+j] = parseInt(n, 10);
-      if(n.endsWith('+')) c[+j] = true;
+      if(n.endsWith('+')) c[+j] = 2;
+      else if(n.endsWith('*')) c[+j] = 1;
     }
     m[s.k] = t; g[s.k] = c;
   }
@@ -1324,7 +1389,7 @@ function jaargangOordeel(w){
   if(!st) return null;
   const n = JAARTABEL[st.k][jr];
   return { streek: st.l, key: st.k, jaar: jr, niveau: n || 3, woord: n ? JAAR_WOORD[n] : null,
-    bron: !!(JAARBRON[st.k] && JAARBRON[st.k][jr]) };
+    bron: (JAARBRON[st.k] && JAARBRON[st.k][jr]) || 0 };
 }
 
 /* ================= drinkvenster-schatting =================
@@ -2910,8 +2975,9 @@ ACT.vensterUit = el => {
   if(bron) stukken.push(`<div class="drow"><span class="k">Ingevuld door</span><span class="v">${esc(bron)}</span></div>`);
   stukken.push(`<div class="drow"><span class="k">Soort fles</span><span class="v">${esc(r.soort)}</span></div>`);
   if(o) stukken.push(`<div class="drow"><span class="k">Jaargang</span><span class="v">${esc(o.jaar + ' in ' + o.streek)}${o.woord ? ', een ' + esc(o.woord) + ' jaar' : ', geen uitgesproken jaar'}</span></div>`);
-  if(o && o.woord) stukken.push(`<div class="drow"><span class="k">Dat oordeel is</span><span class="v">${o.bron
-    ? 'tegen gepubliceerde bronnen gelegd'
+  if(o && o.woord) stukken.push(`<div class="drow"><span class="k">Dat oordeel is</span><span class="v">${
+    o.bron >= 2 ? 'tegen twee onafhankelijke bronnen gelegd'
+    : o.bron === 1 ? 'op één betrouwbare bron gebaseerd'
     : 'nog een eigen schatting, niet nagetrokken'}</span></div>`);
   stukken.push(`<div class="drow"><span class="k">Regels zeggen</span><span class="v tnum">${r.from}–${r.to}</span></div>`);
   const verschil = (w.drinkTo && r.to > w.drinkTo)

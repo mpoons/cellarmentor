@@ -341,9 +341,13 @@ test('de jaargangtabel scheidt gecontroleerde jaren van eigen schattingen', () =
   /* Een plus achter het niveau betekent: tegen minstens twee onafhankelijke bronnen gelegd.
      De app zegt dat per fles tegen de gebruiker, dus het mag niet door elkaar lopen. */
   const champ = { vintage: 2008, type: 'mousserend', region: 'Champagne', name: 'x' };
-  assert.equal(C.jaargangOordeel(champ).bron, true, 'Champagne 2008 is nagetrokken');
+  assert.equal(C.jaargangOordeel(champ).bron, 2, 'Champagne 2008 is tegen twee bronnen gelegd');
   const geschat = { vintage: 1979, type: 'mousserend', region: 'Champagne', name: 'x' };
-  assert.equal(C.jaargangOordeel(geschat).bron, false, '1979 staat er nog als eigen schatting');
+  assert.equal(C.jaargangOordeel(geschat).bron, 0, '1979 staat er nog als eigen schatting');
+  /* de middelste stand: één betrouwbare bron, een ster in de tabel */
+  for (const jaren of Object.values(C.JAARBRON)) {
+    for (const v of Object.values(jaren)) assert.ok(v === 1 || v === 2, 'bronstand is 1 of 2, niet ' + v);
+  }
   /* elke gemarkeerde jaargang hoort ook een niveau te hebben */
   for (const [streek, jaren] of Object.entries(C.JAARBRON)) {
     for (const jaar of Object.keys(jaren)) {
@@ -352,7 +356,7 @@ test('de jaargangtabel scheidt gecontroleerde jaren van eigen schattingen', () =
   }
   const totaal = Object.values(C.JAARTABEL).reduce((n, j) => n + Object.keys(j).length, 0);
   const bron = Object.values(C.JAARBRON).reduce((n, j) => n + Object.keys(j).length, 0);
-  assert.ok(bron > 180 && bron < totaal, `${bron} van ${totaal} jaren gecontroleerd; klopt dat nog?`);
+  assert.ok(bron > 180 && bron < totaal, `${bron} van ${totaal} jaren met bron; klopt dat nog?`);
 });
 test('de jaargangtabel is goed gevormd: bekende streken, geldige jaren en niveaus', () => {
   const keys = new Set();

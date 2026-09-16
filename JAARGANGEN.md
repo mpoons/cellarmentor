@@ -1,6 +1,14 @@
 # De jaargangtabel: methode, bronnen en wat er nog niet klopt
 
-Bij dit bestand hoort de tabel `STREKEN` in `cellarmentor.html`. Elk jaar daar heeft een niveau van 1 tot 5, en een **plus** achter het niveau (`2016:5+`) betekent dat dat jaar in die streek tegen minstens twee onafhankelijke gepubliceerde bronnen is gelegd. Zonder plus is het een eigen schatting die nog niet is nagetrokken. De app zegt dat verschil per fles tegen de gebruiker, met een vraagteken achter het jaargangwoord en voluit in "Waar komt dit venster vandaan?". Dat onderscheid is de kern van dit bestand: een oordeel dat zich voordoet als gecontroleerd terwijl het dat niet is, is precies de zelfverzekerdheid die een kelderapp onbetrouwbaar maakt.
+Bij dit bestand hoort de tabel `STREKEN` in `cellarmentor.html`. Elk jaar daar heeft een niveau van 1 tot 5, en daarachter kan een teken staan dat zegt **hoe hard dat oordeel is**:
+
+| in de tabel | betekent | wat de app zegt |
+|---|---|---|
+| `2016:5+` | tegen minstens twee onafhankelijke gepubliceerde bronnen gelegd | "tegen twee onafhankelijke bronnen gelegd" |
+| `2016:5*` | op één betrouwbare bron gebaseerd, laag A of B, vindplaats hieronder | "op één betrouwbare bron gebaseerd" |
+| `2016:5` | eigen schatting, niet nagetrokken | "nog een eigen schatting, niet nagetrokken" |
+
+Die middelste stand is op 16 september toegevoegd, en de reden is een fout in de eerste opzet. Die kende alleen gecontroleerd of niet, en dat dwong tot weggooien wat één goede bron zei. Dat is verkeerd om: een oordeel uit één terugkijkende proeverij van Vinous is beduidend meer waard dan een gok van een taalmodel, ook al haalt het de lat van twee niet. Weggooien maakt de tabel niet eerlijker, alleen leger. **De regel is nu: als een goede, betrouwbare bron iets zegt over een streek of een jaar, neem het mee, en zet erbij hoe hard het is.** Een ster eist wel dezelfde discipline als een plus: de vindplaats komt in dit bestand, anders is het geen ster maar een schatting. De app zegt dat verschil per fles tegen de gebruiker, met een vraagteken achter het jaargangwoord en voluit in "Waar komt dit venster vandaan?". Dat onderscheid is de kern van dit bestand: een oordeel dat zich voordoet als gecontroleerd terwijl het dat niet is, is precies de zelfverzekerdheid die een kelderapp onbetrouwbaar maakt.
 
 **Stand: 16 september 2026, na ronde twee. 246 van de 821 jaren gecontroleerd.** Let op: dat getal meet maar één ding. Een streek die `streekVan` niet herkent telt hier helemaal niet mee, en dat bleek een groter gat dan verwacht; zie de sectie over streken die de app niet herkent.
 
@@ -20,32 +28,31 @@ Twee methodische lessen uit de ronde van 16 september, die bij een volgende rond
 | 2 | wisselend | selectie nodig, veel producenten haalden het niet |
 | 1 | moeilijk | misoogst door vorst, hagel, rot of regen |
 
-Een jaar dat niet in de tabel staat geeft niveau 3 zonder woord: "geen mening". Dat is met opzet. Ontbreken is eerlijker dan een gok, en het niveau heeft dan geen effect op het drinkvenster.
+Een jaar dat niet in de tabel staat geeft niveau 3 zonder woord: "geen mening". Dat is met opzet. Ontbreken is eerlijker dan een gok, en het niveau heeft dan geen effect op het drinkvenster. Dat geldt ook voor een hele streek: `jerez`, `madeira`, `australie_nsw`, `chili_zuid`, `spanje_midden`, `corsica`, `usa_oost` en `canada` staan er wel maar zijn leeg, omdat de app die flessen dan tenminste thuisbrengt en er niets over verzint.
 
 ## Dekking per streek
 
-| streek | jaren in de tabel | gecontroleerd |
-|---|---|---|
-| `bordeaux` (Bordeaux) | 42 | 37 |
-| `rhone_z` (zuidelijke Rhône) | 29 | 27 |
-| `rhone_n` (noordelijke Rhône) | 30 | 26 |
-| `rioja` (Rioja) | 34 | 26 |
-| `piemonte` (Piemonte) | 34 | 23 |
-| `champagne` (Champagne) | 36 | 18 |
-| `douro` (de Douro) | 33 | 17 |
-| `bourgogne_w` (Bourgogne wit) | 32 | 15 |
-| `alsace` (Elzas) | 23 | 11 |
-| `loire` (Loire) | 26 | 9 |
-| `ribera` (Ribera del Duero en Toro) | 26 | 9 |
-| `californie` (Californië) | 30 | 8 |
-| `bourgogne_r` (Bourgogne rood) | 29 | 6 |
-| `toscane` (Toscane) | 31 | 6 |
-| `languedoc` (Languedoc en Roussillon) | 12 | 3 |
-| `duitsland` (Duitsland) | 38 | 3 |
-| `sauternes` (Sauternes en Barsac) | 34 | 2 |
-| alle overige 21 streken | 308 | 0 |
+**Stand na de splitsing van 16 september: 68 streken, 1219 jaarvakjes, 246 op twee bronnen, 1 op één bron, de rest eigen schatting.**
 
-De 21 streken zonder enige controle zijn: Beaujolais, Provence, zuidwest Frankrijk, Jura, Veneto, Noord-Italië, Zuid-Italië, Priorat, noordwest Spanje, Jerez, Portugal, Oostenrijk, Tokaj, Griekenland, Oregon, Washington, Australië, Nieuw-Zeeland, Zuid-Afrika, Argentinië en Chili. Daar staat nog uitsluitend eigen schatting, en de app zegt dat ook. De Douro stond in ronde een ook in dit rijtje en is er in ronde twee uit; waarom juist die en geen van de andere eenentwintig, staat hieronder bij de beperking van ronde twee.
+Die noemer sprong van 821 naar 1219 en dat is geen verslechtering maar het zichtbaar worden van werk dat er altijd al lag. Zolang `australie` één rij was, telde 2018 als één vakje; nu Zuid-Australië, West-Australië en Victoria aparte rijen zijn, zijn het er drie, en dat zijn ze in werkelijkheid ook altijd geweest. De oude noemer verborg de vraag in plaats van hem te beantwoorden.
+
+De best gedekte streken zijn `bordeaux` (37 van 42), `rhone_z` (27 van 29), `rhone_n` (26 van 30), `rioja` (26 van 34), `piemonte` (23 van 34), `champagne` (18 van 36), `douro_port` (17 van 33) en `bourgogne_w` (15 van 32). Daaronder `alsace` (11), `loire` (9), `ribera` (9), `napa` (8), `bourgogne_r` (6), `toscane` (6), `languedoc` (3), `duitsland` (3) en `sauternes` (2).
+
+Alle overige streken staan op nul. De actuele telling per streek staat in de tabel zelf; ze hier met de hand bijhouden is precies het soort dubbele boekhouding dat gaat afwijken. `python3 tools/zet-jaargangen.py <bestand>` drukt de stand per streek af bij elke ronde.
+
+## De splitsing van 16 september
+
+De vorige versie van dit bestand had een lijst streken die "nu wéér niet kunnen kloppen, want daar is één getal per definitie fout". Die lijst is uitgevoerd. Achtendertig streken zijn er achtenzestig geworden.
+
+Wat er gesplitst is, en waarop. **Californië** in Napa, Sonoma, de centrale kust en de noordkust, met een restrij voor wie alleen "California" op het etiket zet. **Australië** in Zuid-Australië, West-Australië, Victoria met Tasmanië, en Nieuw-Zuid-Wales. **Chili** in de kuststreken, de centrale vallei en het zuiden. **Noord-Italië** in noordoost, Lombardije, midden-Italië en Emilia met Ligurië. **Zuid-Italië** in Sicilië, Puglia, Campanië, Sardinië en een restrij voor Basilicata en Calabrië. **Portugal** in Dão met Bairrada, de Alentejo, Vinho Verde en Madeira. **Griekenland** in Santorini, het noorden en de Peloponnesos. En de **Douro** in port tegenover stille wijn, met `t:['versterkt']` op de portrij.
+
+Nieuw omdat ze helemaal ontbraken: **midden- en zuidoost-Spanje** (Jumilla tot La Mancha), **Corsica**, het **oosten van de Verenigde Staten** (Finger Lakes, Long Island, Virginia) en **Canada** (Okanagan, Niagara).
+
+**Hoe de bestaande jaren zijn verdeeld, en waarom niet gewoon overal dezelfde.** Een gesplitste rij erft alleen wat er voor die deelstreek ook echt over gezegd was. De gecontroleerde Californische jaren 2017 tot 2024 zijn naar **Napa** gegaan en nergens anders heen, want dat onderzoek ging over Napa; de andere Californische rijen houden dezelfde getallen als eigen schatting, zonder plus. Bij de Douro houdt **alleen de portrij** de zeventien gecontroleerde jaren, want een declaratie zegt niets over stille Douro; die rij begint met een korte reeks schattingen. **Nieuw-Zuid-Wales** en **Zuid-Chili** hebben helemaal niets geërfd, want de Hunter Valley heeft een eigen cyclus (subtropisch, oogst in januari, regen beslist) en Itata en Bío Bío hebben niets met de centrale vallei te maken; daar overtypen zou verzinnen zijn. **Madeira** is leeg omdat jaargang daar nauwelijks betekenis heeft.
+
+Het effect is meteen zichtbaar en het is precies waarvoor de splitsing bestond. Napa 2020 geeft nu "wisselend" op twee bronnen, vanwege de rookschade; Russian River 2020 geeft "klassiek" op één bron, omdat de valleivloer van Sonoma relatief gespaard bleef. Tot vandaag kregen die twee flessen hetzelfde getal, en voor één van beide was dat aantoonbaar verkeerd.
+
+**Wat dit kost.** De meeste nieuwe rijen dragen nu geërfde schattingen, en die zijn per definitie te grof: dat West-Australië en Zuid-Australië in 2018 hetzelfde getal hebben is een plaatshouder, geen bevinding. De splitsing maakt dat zichtbaar in plaats van het te verbergen, en dat is de winst. Het echte werk, per deelstreek, staat op de werklijst.
 
 ## Hoe onafhankelijk is een bron eigenlijk
 
@@ -147,7 +154,7 @@ Deze punten kwamen uit de ronde als sterke aanwijzingen die de lat van twee bron
 
 Een streek verdient een eigen rij zodra bronnen melden dat de jaargangen er echt uiteenlopen, en niet eerder. Pauillac en Saint-Julien scheiden is zinloos, want die volgen elkaar bijna perfect; splitsen verdubbelt dan alleen het controlewerk en levert twee halfleeg rijen op. Het mechanisme is er wel: `STREKEN` gaat op volgorde van specifiek naar algemeen, dus een rij met de appellations van de rechteroever vóór de rij `bordeaux` werkt, en het veld `t:[...]` beperkt een rij tot bepaalde types, zoals bij de Bourgogne rood en wit.
 
-**Eerst de streken die nu wéér niet kunnen kloppen, want daar is één getal per definitie fout.** Dit zijn rijen die gebieden samenvatten die geen gedeeld weer hebben, en die hebben voorrang boven fijnmazigheid elders:
+**Deze lijst is op 16 september uitgevoerd; zie de sectie over de splitsing.** Hij blijft staan omdat hij vastlegt wáárom elke rij gesplitst is, en omdat de rijen nu wel bestaan maar nog grotendeels geërfde schattingen dragen:
 
 - `australie` is nu één rij voor een heel continent. Margaret River en de Barossa liggen 2700 km van elkaar.
 - `californie` loopt van Napa tot Santa Barbara, en de rookschade van 2020 sloeg per gebied verschillend toe: het onderzoek van 16 sep vond dat de valleivloer van Sonoma relatief gespaard bleef terwijl Napa voor late rode druiven vrijwel volledig werd geraakt.

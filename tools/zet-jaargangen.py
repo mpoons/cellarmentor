@@ -10,10 +10,13 @@ veranderde. Zo staat elke wijziging in de uitvoer en is de ronde na te rekenen.
 
 Invoerformaat, één streek per regel, jaren gescheiden door een spatie:
     champagne: 1990:5 1996:5+ 2002:5+ 2008:5+
-Een plus achter het niveau betekent: dit jaar is tegen minstens twee onafhankelijke
-gepubliceerde bronnen gelegd en staat met vindplaats in JAARGANGEN.md. Zonder plus is het een
-eigen schatting die nog niet is nagetrokken. Het script rekent die twee apart af in zijn verslag,
-want het verschil tussen gecontroleerd en geschat is het hele punt van deze ronde.
+Achter het niveau kan een teken staan dat zegt hoe hard het oordeel is:
+    2016:5+   tegen minstens twee onafhankelijke gepubliceerde bronnen gelegd
+    2016:5*   op één betrouwbare bron gebaseerd (laag A of B, vindplaats genoteerd)
+    2016:5    eigen schatting, niet nagetrokken
+Bij een plus én bij een ster hoort de vindplaats in JAARGANGEN.md te staan. Het script rekent de
+drie standen apart af in zijn verslag, want het verschil tussen gecontroleerd, onderbouwd en
+geschat is het hele punt van deze tabel.
 Regels die met # beginnen of leeg zijn, worden overgeslagen. Een streek die niet in de
 invoer staat, blijft ongemoeid.
 
@@ -41,9 +44,9 @@ def lees_invoer(pad):
         sleutel = sleutel.strip()
         paren = {}
         for stuk in rest.split():
-            m = re.fullmatch(r'(\d{4}):([1-5])(\+?)', stuk)
+            m = re.fullmatch(r'(\d{4}):([1-5])([+*]?)', stuk)
             if not m:
-                sys.exit(f'regel {n}: {stuk!r} is geen jaar:niveau met niveau 1 tot 5, eventueel met +')
+                sys.exit(f'regel {n}: {stuk!r} is geen jaar:niveau met niveau 1 tot 5, eventueel met + of *')
             jaar = int(m.group(1))
             if not 1900 <= jaar <= 2100:
                 sys.exit(f'regel {n}: jaar {jaar} ligt buiten 1900 tot 2100')
@@ -101,7 +104,8 @@ def main():
             print('    eraf:  ' + ' '.join(f'{j}:{was[j]}' for j in eraf))
         regel = ' '.join(f'{j}:{wordt[j]}' for j in sorted(wordt))
         bron = sum(1 for v in wordt.values() if str(v).endswith('+'))
-        print(f'    gecontroleerd tegen bronnen: {bron} van {len(wordt)}')
+        een = sum(1 for v in wordt.values() if str(v).endswith('*'))
+        print(f'    twee bronnen: {bron}, één bron: {een}, eigen schatting: {len(wordt) - bron - een} (van {len(wordt)})')
         patroon = re.compile(r"(\{k:'" + re.escape(sleutel) + r"',[\s\S]*?\n   j:')[^']*('\})")
         tekst, n = patroon.subn(lambda m: m.group(1) + regel + m.group(2), tekst, count=1)
         if n != 1:
