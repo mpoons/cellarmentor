@@ -43,7 +43,7 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, estimateWindow, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, eanGeldig, eanUitRuns, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, estimateWindow, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
@@ -218,6 +218,16 @@ test('eanUitRuns: leest een EAN-13 en een EAN-8 uit strepen, ook op zijn kop en 
   assert.equal(C.eanUitRuns([{ b: false, w: 30 }, { b: true, w: 3 }, { b: false, w: 3 }, { b: true, w: 3 }, { b: false, w: 9 }]), null, 'te kort');
   const kapot = eanRuns('5901234123457', 3, false); kapot[20].w = 9;
   assert.equal(C.eanUitRuns(kapot), null, 'een kapotte streep geeft geen code, geen gok');
+  assert.equal(C.eanUitRuns(null), null);
+});
+test('eanRunsUitRij: een beeldregel met schaduw en glans wordt toch de goede rij strepen', () => {
+  /* de strepen als grijswaarden, met een lichtverloop van 90 links naar 250 rechts en wat ruis erop */
+  const runs = eanRuns('8712100000003', 4, false);
+  const px = []; for (const r of runs) for (let i = 0; i < r.w; i++) px.push(r.b ? 0 : 1);
+  const g = new Float32Array(px.length);
+  for (let x = 0; x < px.length; x++) { const licht = 90 + 160 * x / px.length; g[x] = px[x] ? licht : licht * 0.35 + ((x * 7) % 5); }
+  assert.equal(C.eanUitRuns(C.eanRunsUitRij(g, g.length)), '8712100000003');
+  assert.equal(C.eanRunsUitRij(new Float32Array(200).fill(200), 200), null, 'een egale regel heeft geen strepen');
 });
 
 test('rangschik (server): bekende winkels eerst, folders en retourwinkels achteraan, verder de volgorde van Brave', () => {

@@ -11,6 +11,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 const TARIEF: Record<string, { in: number; out: number; extra: number }> = {
   prijs: { in: 2, out: 10, extra: 0.01 },     // Sonnet 5 leest (sinds 16 sep) + één of twee Brave-zoekopdrachten ($5 per duizend)
   prijsdiep: { in: 2, out: 10, extra: 0.05 }, // Sonnet 5 + tot vijf zoekrondes van de API-webtool à $0,01
+  ean: { in: 1, out: 5, extra: 0 },           // Haiku 4.5 leest de cijfers onder een streepjescode
   default: { in: 2, out: 10, extra: 0 },      // Sonnet 5
 }
 const CREDIT_PRIJS_EUR = 2.99 / 300           // wat een Plus-credit opbrengt

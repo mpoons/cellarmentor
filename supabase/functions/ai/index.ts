@@ -12,7 +12,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 // Welke soorten verzoeken de app kent. Alles daarbuiten is geen CellarMentor-verkeer en krijgt 400.
 // De soort komt in ai_usage.kind en in de kostenmail, dus hij mag geen vrije tekst zijn.
 const KINDS = new Set(['ai', 'scan', 'herbereken', 'pairing', 'wijnkaart', 'gerechten', 'vraag', 'waardes', 'recept', 'import', 'smaak',
-  'prijs', 'prijsdiep', 'prijscache', 'betaald'])
+  'prijs', 'prijsdiep', 'prijscache', 'betaald', 'ean'])
 
 // Tegoed in CREDITS, niet in acties: een kaartscan kost nu eenmaal veel meer dan een etiketscan.
 const FREE_CREDITS = 20    // gratis credits per maand
@@ -57,7 +57,7 @@ function meet(messages: unknown) {
 // De terugval van 'prijs' zónder Brave-sleutel blijft Haiku: dat is de dure agent voor maar één credit.
 const MODEL_DEFAULT = 'claude-sonnet-5'
 const MODEL_LEES = 'claude-sonnet-5'
-const MODEL_BY_KIND: Record<string, string> = { prijs: 'claude-haiku-4-5', prijsdiep: 'claude-sonnet-5' }
+const MODEL_BY_KIND: Record<string, string> = { prijs: 'claude-haiku-4-5', prijsdiep: 'claude-sonnet-5', ean: 'claude-haiku-4-5' }   // ean: cijfers onder een streepjescode aflezen
 // Zoeklaag: hoogstens zoveel Brave-zoekopdrachten per dag, over alle gebruikers. Brave rekent
 // zonder plafond af, dus het plafond staat hier.
 const BRAVE_DAG_MAX = 400

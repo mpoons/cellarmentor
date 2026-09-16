@@ -663,6 +663,7 @@ const eanSchoon = code => eanGeldig(code) ? String(code).replace(/\D/g, '') : ''
 /* runs: [{b:streep?, w:breedte}] afwisselend, beginnend met de stille zone (spatie). Geeft de code of null.
    Lukt het niet, dan nog één keer van achteren naar voren: de code mag op zijn kop in beeld staan. */
 function eanUitRuns(runs, gekeerd){
+  if(!runs) return null;
   const uit = eanLees(runs);
   if(uit || gekeerd) return uit;
   return eanUitRuns(runs.slice().reverse(), true);
@@ -695,26 +696,34 @@ function eanLees(runs){
   }
   return null;
 }
-/* één beeldregel (grijswaarden) naar strepen; drempel midden tussen licht en donker van die regel */
+/* één beeldregel (grijswaarden) naar strepen. De drempel is plaatselijk (het gemiddelde over een venster
+   van een twaalfde van de regel): een fles glanst en heeft schaduw, dus één drempel voor de hele regel
+   knipt aan de ene kant strepen weg en plakt ze aan de andere kant aan elkaar. */
 function eanRunsUitRij(g, w){
   let lo = 255, hi = 0; for(let x = 0; x < w; x++){ if(g[x] < lo) lo = g[x]; if(g[x] > hi) hi = g[x]; }
   if(hi - lo < 40) return null;
-  const t = (lo + hi) / 2, runs = [];
-  let cur = g[0] < t, len = 0;
-  for(let x = 0; x < w; x++){ const b = g[x] < t; if(b === cur) len++; else { runs.push({b:cur, w:len}); cur = b; len = 1; } }
+  const venster = Math.max(8, Math.round(w / 12));
+  const pre = new Float64Array(w + 1); for(let x = 0; x < w; x++) pre[x + 1] = pre[x] + g[x];
+  const runs = []; let cur = null, len = 0;
+  for(let x = 0; x < w; x++){
+    const a = Math.max(0, x - venster), z = Math.min(w, x + venster + 1);
+    const b = g[x] < (pre[z] - pre[a]) / (z - a) - 4;
+    if(cur === null){ cur = b; len = 1; } else if(b === cur) len++; else { runs.push({b:cur, w:len}); cur = b; len = 1; }
+  }
   runs.push({b:cur, w:len});
   if(runs[0].b) runs.unshift({b:false, w:0});
   return runs;
 }
-/* negen regels rond het midden van het beeld, in beide richtingen (de code mag op zijn kop) */
+/* Dertien regels én dertien kolommen over het beeld: op een wijnfles staat de code bijna altijd gedraaid
+   (strepen horizontaal), en een horizontale regel snijdt dan nergens dwars door de strepen. Beide richtingen
+   ook op zijn kop (eanUitRuns). Het hele beeld één keer uitlezen en dan per lijn erdoorheen. */
+const EAN_LIJNEN = [0.5, 0.45, 0.55, 0.4, 0.6, 0.35, 0.65, 0.3, 0.7, 0.25, 0.75, 0.2, 0.8];
 function eanUitBeeld(ctx, w, h){
-  for(const f of [0.5, 0.44, 0.56, 0.38, 0.62, 0.32, 0.68, 0.47, 0.53]){
-    const d = ctx.getImageData(0, Math.round(h * f), w, 1).data;
-    const g = new Float32Array(w); for(let x = 0; x < w; x++) g[x] = d[x*4] * 0.299 + d[x*4+1] * 0.587 + d[x*4+2] * 0.114;
-    const runs = eanRunsUitRij(g, w); if(!runs) continue;
-    const code = eanUitRuns(runs);
-    if(code) return code;
-  }
+  const img = ctx.getImageData(0, 0, w, h).data;
+  const grijs = (x, y) => { const i = (y * w + x) * 4; return img[i] * 0.299 + img[i + 1] * 0.587 + img[i + 2] * 0.114; };
+  const g = new Float32Array(Math.max(w, h));
+  for(const f of EAN_LIJNEN){ const y = Math.round(h * f); for(let x = 0; x < w; x++) g[x] = grijs(x, y); const code = eanUitRuns(eanRunsUitRij(g, w)); if(code) return code; }
+  for(const f of EAN_LIJNEN){ const x = Math.round(w * f); for(let y = 0; y < h; y++) g[y] = grijs(x, y); const code = eanUitRuns(eanRunsUitRij(g, h)); if(code) return code; }
   return null;
 }
 const tekstOk = (v, n) => v == null ? '' : String(v).slice(0, n || 300);
@@ -2219,22 +2228,43 @@ function eanKnop(w){
 }
 let barcodeDoel = null, barcodeDet = null, barcodeBezig = false;
 ACT.eanScan = el => { barcodeDoel = el.dataset.id; openLiveScan('barcode'); };
-async function barcodeTick(v, volledig){
+async function barcodeTick(v, knop){
   if(barcodeBezig || !v || !v.videoWidth) return; barcodeBezig = true;
   try{
     let code = null;
     if('BarcodeDetector' in window){
       try{ barcodeDet = barcodeDet || new BarcodeDetector({formats:['ean_13','ean_8']}); const r = await barcodeDet.detect(v); const hit = (r || []).find(x => eanGeldig(x.rawValue)); if(hit) code = eanSchoon(hit.rawValue); }catch(e){ /* niet ondersteund of geen code: eigen lezer */ }
     }
+    let c = null;
     if(!code){
-      const sc = volledig ? 1 : Math.min(1, 1000 / v.videoWidth);
-      const c = document.createElement('canvas'); c.width = Math.round(v.videoWidth * sc); c.height = Math.round(v.videoHeight * sc);
+      /* altijd op volle resolutie: op een verkleind beeld is een streepje anderhalve pixel en dan is er niets te lezen */
+      c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight;
       const ctx = c.getContext('2d', {willReadFrequently:true}); ctx.drawImage(v, 0, 0, c.width, c.height);
       code = eanUitBeeld(ctx, c.width, c.height);
     }
     if(code) eanGevonden(code);
-    else { const h = document.getElementById('liveHint'); if(h && (volledig || Date.now() - liveStartAt > 6000)) h.textContent = 'Nog niets herkend: meer licht, dichterbij, en de code recht in beeld'; }
+    else if(knop && c) eanViaModel(c);   /* de sluiterknop: de foto naar de sommelier, die leest de cijfers eronder */
+    else { const h = document.getElementById('liveHint'); if(h && Date.now() - liveStartAt > 5000) h.textContent = 'Nog niets herkend: dichterbij, of tik op de knop en laat de sommelier de cijfers lezen (1 credit)'; }
   } finally { barcodeBezig = false; }
+}
+/* Vangnet: de lezer in de app redt het niet (schuin, glans, bewogen), maar de cijfers onder de code staan
+   op de foto. Eén credit, Haiku op de server, alleen JSON terug. */
+async function eanViaModel(c){
+  if(!aiReady()){ toast(hoofd(aiRedenUit()), null, null, 5000); return; }
+  const w = findWine(barcodeDoel); closeLiveScan();
+  if(!w){ toast('Deze fles ligt niet meer in je kelder'); return; }
+  const sc = Math.min(1, 1400 / Math.max(c.width, c.height));
+  const k = document.createElement('canvas'); k.width = Math.round(c.width * sc); k.height = Math.round(c.height * sc);
+  k.getContext('2d').drawImage(c, 0, 0, k.width, k.height);
+  const b64 = k.toDataURL('image/jpeg', 0.85).split(',')[1];
+  toast('De sommelier leest de streepjescode…', null, null, 15000);
+  try{
+    const out = await callClaude([{type:'image', source:{type:'base64', media_type:'image/jpeg', data:b64}},
+      {type:'text', text:'Op deze foto staat een streepjescode (EAN-13 of EAN-8) met de cijfers eronder, mogelijk gedraaid. Lees die cijfers letterlijk af. Antwoord alleen met JSON: {"ean":"cijfers"} of {"ean":null} als er geen streepjescode te lezen is.'}], 200, 'ean');
+    const d = parseJsonLoose(out), code = eanSchoon(d && d.ean);
+    if(code) eanGevonden(code);
+    else toast('Geen streepjescode te lezen op deze foto. Probeer het nog eens met de cijfers scherp in beeld', null, null, 6000);
+  }catch(e){ toast('Lezen mislukte: ' + String(e.message || e).slice(0, 90), null, null, 6000); }
 }
 function eanGevonden(code){
   const w = findWine(barcodeDoel); closeLiveScan();
@@ -3470,7 +3500,7 @@ async function openLiveScan(mode){
   const div = document.createElement('div'); div.className = 'livewrap'; div.id = 'liveScan';
   div.innerHTML = `<video autoplay playsinline muted></video>
     <div class="liveframe${kaart?' page':''}">${kaart?'':'<div class="livescanline"></div>'}</div>
-    <div class="livehint" id="liveHint">${kaart?'Hele pagina in beeld, tik op de knop':code?'Richt op de streepjescode op de achterkant van de fles':'Houd het etiket in het kader, hij vangt vanzelf'}</div>
+    <div class="livehint" id="liveHint">${kaart?'Hele pagina in beeld, tik op de knop':code?'Richt op de streepjescode, liggend of staand, zo groot mogelijk in beeld':'Houd het etiket in het kader, hij vangt vanzelf'}</div>
     <div class="liveflash" id="liveFlash"></div>
     <div class="livebar">
       <button class="livex" data-act="liveClose" aria-label="Sluiten">✕</button>
@@ -5999,7 +6029,7 @@ const EN = {
   'Nog geen prijs met bron.':'No sourced price yet.', 'je aankoopprijs':'your purchase price', 'Prijs opzoeken':'Look up price', 'Prijs opzoeken · 1 credit':'Look up price · 1 credit', 'Opnieuw opzoeken · 1 credit':'Look up again · 1 credit',
   'Prijs zoeken bij wijnhandels…':'Looking up the price at wine merchants…', 'Diep zoeken bij wijnhandels en veilingen…':'Searching deeper at merchants and auctions…', 'Zoeken bij wijnhandels…':'Searching wine merchants…',
   'Geen prijs gevonden bij wijnhandels. Dieper zoeken?':'No price found at wine merchants. Search deeper?', 'Zoek diep':'Search deeper', 'Zoek diep · 5 credits':'Search deeper · 5 credits', 'Zoek op · 1 credit':'Look up · 1 credit',
-  'Geen prijs met bron. Opzoeken bij wijnhandels?':'No sourced price. Look it up at wine merchants?', 'Niets gevonden. Dieper zoeken · 5 credits':'Nothing found. Search deeper · 5 credits', 'Niets gevonden. Dieper zoeken':'Nothing found. Search deeper', 'Opnieuw proberen':'Try again', 'Streepjescode scannen':'Scan barcode', 'Staat op de achterkant. Een winkel zet dat nummer bij het product, dus dan is de fles precies te vinden.':'It is on the back. Shops list that number with the product, so the bottle can be found exactly.', 'Richt op de streepjescode op de achterkant van de fles':'Point at the barcode on the back of the bottle', 'Nog niets herkend: meer licht, dichterbij, en de code recht in beeld':'Nothing recognised yet: more light, closer, and the code straight in view',
+  'Geen prijs met bron. Opzoeken bij wijnhandels?':'No sourced price. Look it up at wine merchants?', 'Niets gevonden. Dieper zoeken · 5 credits':'Nothing found. Search deeper · 5 credits', 'Niets gevonden. Dieper zoeken':'Nothing found. Search deeper', 'Opnieuw proberen':'Try again', 'Streepjescode scannen':'Scan barcode', 'Staat op de achterkant. Een winkel zet dat nummer bij het product, dus dan is de fles precies te vinden.':'It is on the back. Shops list that number with the product, so the bottle can be found exactly.', 'Richt op de streepjescode, liggend of staand, zo groot mogelijk in beeld':'Point at the barcode, sideways or upright, as large as possible', 'Nog niets herkend: dichterbij, of tik op de knop en laat de sommelier de cijfers lezen (1 credit)':'Nothing recognised yet: closer, or tap the button and let the sommelier read the digits (1 credit)', 'De sommelier leest de streepjescode…':'The sommelier is reading the barcode…', 'Geen streepjescode te lezen op deze foto. Probeer het nog eens met de cijfers scherp in beeld':'No barcode readable in this photo. Try again with the digits sharp in view',
   'Geen prijs bij de wijnhandels in de zoeklaag. Dieper zoeken kijkt ook op veilingen en buitenlandse sites':'No price at the merchants in the search layer. Searching deeper also covers auctions and foreign sites',
   'Elke fles op voorraad heeft al een prijs met bron':'Every bottle in stock already has a sourced price', 'Prijzen opzoeken?':'Look up prices?', 'Prijzen':'Prices',
   'Na een scan meteen de marktprijs opzoeken (1 credit)':'Look up the market price right after a scan (1 credit)',
