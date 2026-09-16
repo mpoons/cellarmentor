@@ -84,7 +84,17 @@ const STIJL = ' Schrijf in gewone zinnen met komma\'s en punten. Gebruik geen ge
 // Prijstabel: een opgezochte prijs blijft staan, met datum; de app toont "gegevens van <maand>".
 // Wie een ouder datapunt wil verversen stuurt refresh:true mee.
 type Wijn = { name?: unknown; producer?: unknown; vintage?: unknown; appellation?: unknown; region?: unknown; country?: unknown; est?: unknown;
-  zoekProducer?: unknown; zoekNaam?: unknown; type?: unknown }
+  zoekProducer?: unknown; zoekNaam?: unknown; type?: unknown; ean?: unknown }
+// Streepjescode (EAN-13 of EAN-8) met controlecijfer; gelijk aan eanGeldig in de client. Een winkel zet het
+// nummer op de productpagina, dus het is de scherpste zoekterm die er is.
+function eanGeldig(code: unknown): boolean {
+  const s = String(code || '').replace(/\D/g, '')
+  if (s.length !== 13 && s.length !== 8) return false
+  let som = 0
+  for (let i = 0; i < s.length - 1; i++) { const d = +s[i]; som += ((s.length - 1 - i) % 2 === 1) ? d * 3 : d }
+  return (10 - som % 10) % 10 === +s[s.length - 1]
+}
+const eanVan = (w: Wijn): string => eanGeldig(w.ean) ? String(w.ean).replace(/\D/g, '') : ''
 const tekstVeld = (x: unknown, n = 120) => String(x ?? '').replace(/[\r\n\t]+/g, ' ').trim().slice(0, n)
 // Wat van de client in een opdracht voor het model belandt: geen aanhalingstekens, accolades of
 // haken, zodat een veld als region niet als instructie of als JSON-antwoord kan meedoen.
@@ -112,20 +122,35 @@ function zoekId(w: Wijn): { producent: string; naam: string } {
   return { producent, naam }
 }
 const KLEUR: Record<string, string> = { rood: 'rode wijn', wit: 'witte wijn', rose: 'ros\u00e9', oranje: 'oranje wijn', mousserend: 'mousserende wijn', zoet: 'zoete wijn', versterkt: '' }
-// De trap: eerst precies (met jaargang), dan zonder jaargang, dan zonder cuvéenaam (producent, appellation of streek,
-// kleur). Winkels noemen vaak alleen de jaargang in het schap, en een kleine producent staat vaak alleen met zijn
-// appellation en kleur in de winkel. Dubbele treden vallen weg.
-function zoekTreden(w: Wijn): string[] {
+// De trap: eerst de streepjescode als die er is (exact), dan precies (met jaargang), dan zonder jaargang, dan
+// zonder cuvéenaam (producent, appellation of streek, kleur). Winkels noemen vaak alleen de jaargang in het
+// schap, en een kleine producent staat vaak alleen met zijn appellation en kleur in de winkel. Dubbelen vallen weg.
+type Trede = { q: string; soort: 'ean' | 'precies' | 'zonderJaar' | 'zonderCuvee' | 'off' }
+function zoekTreden(w: Wijn): Trede[] {
   const { producent, naam } = zoekId(w)
   const jaar = Number(w.vintage) || ''
   const plek = tekstVeld(w.appellation, 60) || tekstVeld(w.region, 60)
   const kleur = KLEUR[String(w.type || '')] || ''
-  const q = [
-    jaar ? [producent, naam, jaar, 'prijs'].filter(Boolean).join(' ') : '',
-    [producent, naam, 'wijn kopen'].filter(Boolean).join(' '),
-    plek ? [producent, plek, kleur || 'wijn', 'kopen'].filter(Boolean).join(' ') : '',
-  ].filter(Boolean)
-  return q.filter((x, i) => q.indexOf(x) === i)
+  const ean = eanVan(w)
+  const t: Trede[] = [
+    { q: ean, soort: 'ean' },
+    { q: jaar ? [producent, naam, jaar, 'prijs'].filter(Boolean).join(' ') : '', soort: 'precies' },
+    { q: [producent, naam, 'wijn kopen'].filter(Boolean).join(' '), soort: 'zonderJaar' },
+    { q: plek ? [producent, plek, kleur || 'wijn', 'kopen'].filter(Boolean).join(' ') : '', soort: 'zonderCuvee' },
+  ].filter((x) => x.q)
+  return t.filter((x, i) => t.findIndex((y) => y.q === x.q) === i)
+}
+// Open Food Facts kent veel wijnen op streepjescode (vrij, zonder sleutel): productnaam en merk zoals de
+// winkel ze voert. Alleen als laatste redmiddel, en met een korte tijdslimiet.
+async function offNaam(ean: string): Promise<string> {
+  if (!ean) return ''
+  try {
+    const r = await fetch(`https://world.openfoodfacts.org/api/v2/product/${ean}.json?fields=product_name,brands`, { headers: { 'User-Agent': 'CellarMentor/1.0 (cellarmentor.com)' }, signal: AbortSignal.timeout(4000) })
+    if (!r.ok) return ''
+    const d = await r.json()
+    const naam = tekstVeld(d?.product?.product_name, 80), merk = tekstVeld(d?.product?.brands, 60).split(',')[0].trim()
+    return [merk, naam].filter(Boolean).filter((x, i, a) => a.indexOf(x) === i).join(' ')
+  } catch (_) { return '' }
 }
 // Een gevonden prijs mag een bestaande rij van een ander alleen vervangen als hij geloofwaardig
 // in de buurt ligt (0,4× tot 2,5×), of als die rij verouderd is. Eigen rijen mag je altijd verversen.
@@ -209,13 +234,16 @@ async function braveHaal(q: string, key: string): Promise<Treffer[]> {
     })).filter((t) => /^https?:\/\//.test(t.url)), VOORKEUR, RUIS)
   } catch (e) { console.error('brave', String((e as Error)?.message || e).slice(0, 120)); return [] }
 }
-// trede 0 = precies gezocht, 1 = zonder jaargang, 2 = zonder cuvéenaam; de leesregel weet wat er dan nog telt
-function leesPrompt(w: Wijn, treffers: Treffer[], trede = 0): string {
+// de leesregel weet per trede wat er nog telt
+function leesPrompt(w: Wijn, treffers: Treffer[], soort: Trede['soort'] = 'precies'): string {
   const id = zoekId(w), naam = promptVeld(id.naam), prod = promptVeld(id.producent), jaar = Number(w.vintage) || null
   const plek = promptVeld(w.appellation, 60) || promptVeld(w.region, 60), kleur = KLEUR[String(w.type || '')] || ''
   const wie = `${naam || prod}${naam && prod ? ', ' + prod : ''}, jaargang ${jaar || 'NV'}${plek ? ', ' + plek : ''}${kleur ? ', ' + kleur : ''}`
-  const stap = trede === 1 ? ' Er is gezocht zonder jaargang: een andere jaargang van dezelfde wijn is hier het gewenste antwoord, confidence "middel".'
-    : trede >= 2 ? ' Er is gezocht zonder cuvéenaam: een wijn van dezelfde producent met dezelfde kleur en appellation telt als "middel"; zet de gevonden naam in note.' : ''
+  const ean = eanVan(w)
+  const stap = soort === 'ean' ? ` Er is gezocht op de streepjescode ${ean}: een resultaat dat dit nummer noemt is precies deze fles, confidence "hoog", ook als de naam anders is geschreven; een andere jaargang blijft "middel".`
+    : soort === 'zonderJaar' ? ' Er is gezocht zonder jaargang: een andere jaargang van dezelfde wijn is hier het gewenste antwoord, confidence "middel".'
+    : soort === 'zonderCuvee' ? ' Er is gezocht zonder cuvéenaam: een wijn van dezelfde producent met dezelfde kleur en appellation telt als "middel"; zet de gevonden naam in note.'
+    : soort === 'off' ? ` Er is gezocht op de naam die bij streepjescode ${ean} hoort: een resultaat met die naam of dat nummer is deze fles, confidence "middel".` : ''
   const lijst = treffers.map((t, i) => `${i + 1}. ${t.title} | ${t.url} | ${t.desc}`).join('\n')
   return `Hieronder staan zoekresultaten over deze wijn: ${wie}. Haal er de actuele winkelprijs per fles van 75 cl in euro's uit.
 Regels, in deze volgorde:
@@ -231,23 +259,28 @@ Antwoord met alleen dit JSON-object, zonder tekst ervoor of erna:
 ${lijst}`
 }
 type Antwoord = { content?: unknown[]; stop_reason?: string; usage?: { input_tokens?: number; output_tokens?: number } }
-type ZoekUitkomst = { data: Antwoord; txt: string; p: Record<string, unknown> | null; treffers: Treffer[]; tokIn: number; tokOut: number; trede: number; zoekopdrachten: number }
+type ZoekUitkomst = { data: Antwoord; txt: string; p: Record<string, unknown> | null; treffers: Treffer[]; tokIn: number; tokOut: number; trede: number; soort: Trede['soort']; zoekopdrachten: number }
 // De hele zoeklaag voor één wijn: de trap afdalen tot er een prijs is. null = op geen enkele trede zoekresultaten.
 // Een trede met resultaten maar zonder prijs geeft de laatste leesbeurt terug, zodat het logboek de reden ziet.
 async function zoekViaBrave(w: Wijn, key: string): Promise<ZoekUitkomst | null> {
   let uit: ZoekUitkomst | null = null, tokIn = 0, tokOut = 0, n = 0
   const treden = zoekTreden(w)
   for (let i = 0; i < treden.length; i++) {
-    const treffers = await braveHaal(treden[i], key); n++
-    if (!treffers.length) continue
+    const treffers = await braveHaal(treden[i].q, key); n++
+    if (!treffers.length) {
+      // laatste trede zonder resultaat en er is een streepjescode: de naam volgens Open Food Facts als extra trede
+      if (i === treden.length - 1 && eanVan(w) && treden[i].soort !== 'off') { const naam = await offNaam(eanVan(w)); if (naam) treden.push({ q: naam + ' kopen', soort: 'off' }) }
+      continue
+    }
     // Sonnet 5 denkt standaard mee in het antwoordbudget; voor JSON uit
-    const r = await anthropic({ model: MODEL_LEES, max_tokens: 1000, thinking: { type: 'disabled' }, messages: [{ role: 'user', content: [{ type: 'text', text: leesPrompt(w, treffers, i) }] }] })
+    const r = await anthropic({ model: MODEL_LEES, max_tokens: 1000, thinking: { type: 'disabled' }, messages: [{ role: 'user', content: [{ type: 'text', text: leesPrompt(w, treffers, treden[i].soort) }] }] })
     if (!r.ok) { console.error('lees', r.status); continue }
     const data = await r.json() as Antwoord
     tokIn += data?.usage?.input_tokens || 0; tokOut += data?.usage?.output_tokens || 0
     const txt = tekstUit(data), p = jsonUit(txt)
-    uit = { data, txt, p, treffers, tokIn, tokOut, trede: i, zoekopdrachten: n }
+    uit = { data, txt, p, treffers, tokIn, tokOut, trede: i, soort: treden[i].soort, zoekopdrachten: n }
     if (p && Number(p.value) > 0) break
+    if (i === treden.length - 1 && eanVan(w) && treden[i].soort !== 'off') { const naam = await offNaam(eanVan(w)); if (naam) treden.push({ q: naam + ' kopen', soort: 'off' }) }
   }
   if (uit) { uit.tokIn = tokIn; uit.tokOut = tokOut; uit.zoekopdrachten = n }
   return uit
@@ -289,7 +322,7 @@ function achtergrond(p: Promise<unknown>) {
 // Een automatische verversing mag een bestaande prijs alleen vervangen als de nieuwe geloofwaardig in de
 // buurt ligt (0,4× tot 2,5×): er kijkt geen mens mee. Een mislukte poging staat in het logboek (model
 // "+vers") en dezelfde rij wordt dan twee weken met rust gelaten.
-type PrijsRij = { key: string; name?: string | null; producer?: string | null; vintage?: number | null; value?: number | null }
+type PrijsRij = { key: string; name?: string | null; producer?: string | null; vintage?: number | null; value?: number | null; ean?: string | null }
 // deno-lint-ignore no-explicit-any
 async function versPrijzen(supa: any, rijen: PrijsRij[]) {
   const key = rijen.length ? await braveSleutel(supa) : ''
@@ -305,7 +338,7 @@ async function versPrijzen(supa: any, rijen: PrijsRij[]) {
     if (ruimte <= 0) break
     if (geprobeerd.has(row.key)) continue
     ruimte--
-    const w: Wijn = { name: row.name, producer: row.producer, vintage: row.vintage }
+    const w: Wijn = { name: row.name, producer: row.producer, vintage: row.vintage, ean: row.ean }
     const log = { key: row.key, model: MODEL_LEES + '+brave+vers', status: 200, text: '', value: null as number | null, error: null as string | null, tokens_in: 0, tokens_out: 0 }
     const via = await zoekViaBrave(w, key)
     if (!via) { await supa.from('wine_price_log').insert({ ...log, status: 204, error: 'geen zoekresultaten' }); continue }
@@ -431,6 +464,14 @@ Deno.serve(async (req) => {
       try {
         const keys = [...new Set(lijst.map(prijsSleutel))]
         const { data: rows } = await supa.from('wine_prices').select('*').in('key', keys)
+        // ook op streepjescode: een rij die een ander onder een andere naam opzocht komt zo alsnog aan (sleutel van déze fles)
+        const eans = lijst.filter((w) => eanVan(w) && !(rows || []).some((r) => r.key === prijsSleutel(w))).map(eanVan)
+        if (eans.length) {
+          try {
+            const { data: erows } = await supa.from('wine_prices').select('*').in('ean', [...new Set(eans)])
+            for (const r of erows || []) { const w = lijst.find((x) => eanVan(x) === r.ean); if (w && r.value != null) (rows || []).push({ ...r, key: prijsSleutel(w) }) }
+          } catch (_) { /* kolom ean nog niet aangemaakt */ }
+        }
         const vers = (rows || []).filter((r) => r.value != null)
         await Promise.all(vers.map((r) => supa.from('wine_prices').update({ hits: (r.hits || 0) + 1 }).eq('key', r.key)))
         // wat verouderd is gaat na het antwoord opnieuw langs de zoeklaag; de app krijgt nu de oude rij (met datum)
@@ -475,7 +516,10 @@ Deno.serve(async (req) => {
       if (body.refresh !== true) {
         try {
           const key = prijsSleutel(wijn)
-          const { data: row } = await supa.from('wine_prices').select('*').eq('key', key).maybeSingle()
+          let { data: row } = await supa.from('wine_prices').select('*').eq('key', key).maybeSingle()
+          if (!(row && row.value != null) && eanVan(wijn)) {
+            try { const { data: erow } = await supa.from('wine_prices').select('*').eq('ean', eanVan(wijn)).not('value', 'is', null).order('updated_at', { ascending: false }).limit(1).maybeSingle(); if (erow) row = erow } catch (_) { /* kolom ean nog niet aangemaakt */ }
+          }
           // een verouderde rij (90 dagen) geven we niet terug: dan zoekt de agent opnieuw en vervangt hem
           if (row && row.value != null && !prijsVerouderd(row)) {
             await supa.from('wine_prices').update({ hits: (row.hits || 0) + 1 }).eq('key', key)
@@ -626,7 +670,7 @@ Deno.serve(async (req) => {
       // logboek zonder gebruikers-id, en oude regels opruimen. Het model zegt welke weg het was: +brave (precies),
       // +brave2 (zonder jaargang), +brave3 (zonder cuvéenaam), +herkansing (agent na storing).
       try {
-        const logRij = { key: prijsSleutel(wijn), model: via ? model + '+brave' + (via.trede ? via.trede + 1 : '') : model + (herkanst ? '+herkansing' : ''), status: 200, text: txt.slice(0, 6000),
+        const logRij = { key: prijsSleutel(wijn), model: via ? model + '+brave' + (via.soort === 'ean' ? '+ean' : via.soort === 'off' ? '+off' : via.trede ? via.trede + 1 : '') : model + (herkanst ? '+herkansing' : ''), status: 200, text: txt.slice(0, 6000),
           value: goed ? v : null, error: p ? null : 'geen JSON', tokens_in: tokIn, tokens_out: tokOut }
         // Meting: wat de scanner schatte naast wat de zoekagent vond. Zolang de kolom `schatting`
         // nog niet bestaat (SQL in supabase/sql/schatting-3sep.sql) valt de insert terug op de oude rij.
@@ -646,7 +690,7 @@ Deno.serve(async (req) => {
             return json(data, 200)
           }
           await supa.from('wine_prices').upsert({
-            key: prijsSleutel(wijn), user_id: user.id,
+            key: prijsSleutel(wijn), user_id: user.id, ...(eanVan(wijn) ? { ean: eanVan(wijn) } : {}),
             name: tekstVeld(wijn.name, 200), producer: tekstVeld(wijn.producer, 200), vintage: Number(wijn.vintage) || null,
             value: v, low: Number.isFinite(Number(p.low)) ? Number(p.low) : null, high: Number.isFinite(Number(p.high)) ? Number(p.high) : null,
             // Brave-pad: het adres komt uit de zoekmachine en mag mee; agent-pad: alleen een bekende wijnsite

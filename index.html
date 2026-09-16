@@ -645,6 +645,78 @@ const norm = s => String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/
 const safeUrl = u => { try{ const x = new URL(String(u || '')); return /^https?:$/.test(x.protocol) ? x.href.slice(0, 500) : ''; }catch(e){ return ''; } };
 const jaarOk = v => { const n = parseInt(v, 10); return (n >= 1900 && n <= 2100) ? n : null; };
 const getalOk = v => { if(v == null || v === '') return null; const n = Number(String(v).replace(',', '.')); return Number.isFinite(n) ? n : null; };
+/* ---- streepjescode (EAN-13 en EAN-8), zonder bibliotheek (v83) ----
+   Een streepjescode is een exacte identiteit: winkels zetten het nummer op de productpagina. Android/Chrome
+   leest hem zelf (BarcodeDetector); iOS niet, daarom een eigen lezer: één beeldregel wordt een rij strepen,
+   en die worden per cijfer tegen de EAN-patronen gelegd. Het controlecijfer houdt misleesfouten buiten. */
+const EAN_L = ['3211','2221','2122','1411','1132','1231','1114','1312','1213','3112'];   /* breedtes spatie,streep,spatie,streep */
+const EAN_G = EAN_L.map(s => s.split('').reverse().join(''));
+const EAN_PARITEIT = ['LLLLLL','LLGLGG','LLGGLG','LLGGGL','LGLLGG','LGGLLG','LGGGLL','LGLGLG','LGLGGL','LGGLGL'];
+function eanGeldig(code){
+  const s = String(code || '').replace(/\D/g, '');
+  if(s.length !== 13 && s.length !== 8) return false;
+  let som = 0;
+  for(let i = 0; i < s.length - 1; i++){ const d = +s[i]; som += ((s.length - 1 - i) % 2 === 1) ? d * 3 : d; }
+  return (10 - som % 10) % 10 === +s[s.length - 1];
+}
+const eanSchoon = code => eanGeldig(code) ? String(code).replace(/\D/g, '') : '';
+/* runs: [{b:streep?, w:breedte}] afwisselend, beginnend met de stille zone (spatie). Geeft de code of null.
+   Lukt het niet, dan nog één keer van achteren naar voren: de code mag op zijn kop in beeld staan. */
+function eanUitRuns(runs, gekeerd){
+  const uit = eanLees(runs);
+  if(uit || gekeerd) return uit;
+  return eanUitRuns(runs.slice().reverse(), true);
+}
+function eanLees(runs){
+  const n = runs.length;
+  const past = (ws, patroon) => { const tot = ws[0] + ws[1] + ws[2] + ws[3]; let e = 0; for(let k = 0; k < 4; k++) e += Math.abs(ws[k] * 7 / tot - +patroon[k]); return e; };
+  const cijfer = (ws, sets) => { let best = null; for(const [naam, set] of sets) set.forEach((p, d) => { const e = past(ws, p); if(!best || e < best.e) best = {d, e, set: naam}; }); return best; };
+  for(let i = 1; i + 3 < n; i++){
+    if(!runs[i].b) continue;
+    const r = k => runs[i + k].w;
+    /* startteken: drie gelijke smalle strepen na een stille zone van minstens drie modules */
+    const m = (r(0) + r(1) + r(2)) / 3;
+    if(!(m > 0) || Math.abs(r(0) - m) > m * 0.5 || Math.abs(r(1) - m) > m * 0.5 || Math.abs(r(2) - m) > m * 0.5) continue;
+    if(runs[i - 1].w < m * 3) continue;
+    for(const lengte of [13, 8]){
+      const links = lengte === 13 ? 6 : 4, nodig = 3 + links * 4 + 5 + links * 4 + 3;
+      if(i + nodig > n) continue;
+      let p = i + 3, ok = true, pariteit = '', digits = '';
+      for(let d = 0; d < links && ok; d++){ const ws = [runs[p].w, runs[p+1].w, runs[p+2].w, runs[p+3].w]; const b = cijfer(ws, [['L', EAN_L], ['G', EAN_G]]); if(!b || b.e > 1.6) ok = false; else { digits += b.d; pariteit += b.set; } p += 4; }
+      if(!ok) continue;
+      let mid = 0; for(let k = 0; k < 5; k++) mid += Math.abs(runs[p + k].w - m); if(mid > m * 2.5) continue; p += 5;   /* middenteken: vijf smalle */
+      for(let d = 0; d < links && ok; d++){ const ws = [runs[p].w, runs[p+1].w, runs[p+2].w, runs[p+3].w]; const b = cijfer(ws, [['R', EAN_L]]); if(!b || b.e > 1.6) ok = false; else digits += b.d; p += 4; }
+      if(!ok) continue;
+      let code = digits;
+      if(lengte === 13){ const eerste = EAN_PARITEIT.indexOf(pariteit); if(eerste < 0) continue; code = eerste + digits; }
+      else if(pariteit !== 'LLLL') continue;
+      if(eanGeldig(code)) return code;
+    }
+  }
+  return null;
+}
+/* één beeldregel (grijswaarden) naar strepen; drempel midden tussen licht en donker van die regel */
+function eanRunsUitRij(g, w){
+  let lo = 255, hi = 0; for(let x = 0; x < w; x++){ if(g[x] < lo) lo = g[x]; if(g[x] > hi) hi = g[x]; }
+  if(hi - lo < 40) return null;
+  const t = (lo + hi) / 2, runs = [];
+  let cur = g[0] < t, len = 0;
+  for(let x = 0; x < w; x++){ const b = g[x] < t; if(b === cur) len++; else { runs.push({b:cur, w:len}); cur = b; len = 1; } }
+  runs.push({b:cur, w:len});
+  if(runs[0].b) runs.unshift({b:false, w:0});
+  return runs;
+}
+/* negen regels rond het midden van het beeld, in beide richtingen (de code mag op zijn kop) */
+function eanUitBeeld(ctx, w, h){
+  for(const f of [0.5, 0.44, 0.56, 0.38, 0.62, 0.32, 0.68, 0.47, 0.53]){
+    const d = ctx.getImageData(0, Math.round(h * f), w, 1).data;
+    const g = new Float32Array(w); for(let x = 0; x < w; x++) g[x] = d[x*4] * 0.299 + d[x*4+1] * 0.587 + d[x*4+2] * 0.114;
+    const runs = eanRunsUitRij(g, w); if(!runs) continue;
+    const code = eanUitRuns(runs);
+    if(code) return code;
+  }
+  return null;
+}
 const tekstOk = (v, n) => v == null ? '' : String(v).slice(0, n || 300);
 const lijstOk = (v, n, len) => Array.isArray(v) ? v.slice(0, n || 12).map(x => tekstOk(x, len || 120)).filter(Boolean) : [];
 /* antwoord van de scanner, herbereken of import: alleen de vorm die de app verwacht */
@@ -654,6 +726,7 @@ function schoonAI(d){
   for(const k of ['name','producer','type','country','region','appellation','zoek_producent','zoek_naam']) if(k in uit) uit[k] = tekstOk(uit[k], 200);
   for(const k of ['note']) if(k in uit) uit[k] = tekstOk(uit[k], 600);
   if('score_seen' in uit) uit.score_seen = tekstOk(uit.score_seen, 60);
+  if('ean' in uit) uit.ean = eanSchoon(uit.ean) || null;
   for(const k of ['vintage','drink_from','drink_to']) if(k in uit) uit[k] = jaarOk(uit[k]);
   for(const k of ['value_eur','value_low','value_high','price','value']) if(k in uit) uit[k] = getalOk(uit[k]);
   if('value_confidence' in uit) uit.value_confidence = ['hoog','middel','laag'].includes(uit.value_confidence) ? uit.value_confidence : null;
@@ -680,7 +753,7 @@ function schoonWijn(w){
     price: getalOk(w.price), value: getalOk(w.value), valueLow: getalOk(w.valueLow), valueHigh: getalOk(w.valueHigh),
     qty: Math.max(0, Math.min(999, parseInt(w.qty, 10) || 0)), type: eigenSleutel(TYPES, w.type) ? w.type : 'rood',
     grapes: lijstOk(w.grapes, 8, 60), pairing: lijstOk(w.pairing, 8, 120), photo: !!w.photo, valueAt: datumOk(w.valueAt),
-    zoekProducer: tekstOk(w.zoekProducer, 200) || undefined, zoekNaam: tekstOk(w.zoekNaam, 200) || undefined,
+    zoekProducer: tekstOk(w.zoekProducer, 200) || undefined, zoekNaam: tekstOk(w.zoekNaam, 200) || undefined, ean: eanSchoon(w.ean) || undefined,
     valueSrc: ['ai','zoek','eigen','samen'].includes(w.valueSrc) ? w.valueSrc : (w.value != null ? 'eigen' : undefined),
     samen: (w.samen && typeof w.samen === 'object' && getalOk(w.samen.n) >= 2) ? {n: Math.min(99999, Math.round(getalOk(w.samen.n))), low: getalOk(w.samen.low), high: getalOk(w.samen.high), med: getalOk(w.samen.med), at: tekstOk(w.samen.at, 40)} : undefined,
     valueBron: (w.valueBron && typeof w.valueBron === 'object') ? {...w.valueBron, name: tekstOk(w.valueBron.name, 80), url: safeUrl(w.valueBron.url), vintage: jaarOk(w.valueBron.vintage), n: getalOk(w.valueBron.n)} : null};
@@ -1371,7 +1444,7 @@ function parseJsonLoose(s){
 async function aiScan(dataUrl, onPartial){
   const b64 = dataUrl.split(',')[1];
   const prompt = `Je bent een ervaren sommelier die wijnetiketten leest. Analyseer de foto van dit etiket en antwoord UITSLUITEND met geldig JSON, zonder andere tekst:
-{"name":"naam van de wijn/cuvée","producer":"producent/château/domaine","vintage":2019 of null bij NV,"type":"rood|wit|oranje|rose|mousserend|zoet|versterkt","grapes":["druif",...],"country":"land","region":"regio","appellation":"appellation of null","drink_from":2024,"drink_to":2032,"value_eur":28,"value_low":24,"value_high":34,"value_confidence":"hoog|middel|laag","pairing":["gerecht 1","gerecht 2","gerecht 3","gerecht 4"],"note":"één zin in het Nederlands over stijl en karakter","score_seen":"92 Parker" of null,"zoek_producent":"producent zoals een webshop hem noemt","zoek_naam":"wijnnaam zoals een webshop hem noemt"}
+{"name":"naam van de wijn/cuvée","producer":"producent/château/domaine","vintage":2019 of null bij NV,"type":"rood|wit|oranje|rose|mousserend|zoet|versterkt","grapes":["druif",...],"country":"land","region":"regio","appellation":"appellation of null","drink_from":2024,"drink_to":2032,"value_eur":28,"value_low":24,"value_high":34,"value_confidence":"hoog|middel|laag","pairing":["gerecht 1","gerecht 2","gerecht 3","gerecht 4"],"note":"één zin in het Nederlands over stijl en karakter","score_seen":"92 Parker" of null,"zoek_producent":"producent zoals een webshop hem noemt","zoek_naam":"wijnnaam zoals een webshop hem noemt","ean":"de cijfers onder een streepjescode als die op de foto staat, anders null"}
 zoek_producent en zoek_naam zijn de zoekidentiteit: de kortste vorm waaronder een winkel deze fles verkoopt. Laat eigenaars- en familienamen weg (Famille de Wulf), rechtsvormen (SARL, SCEA) en importeurs; kies Château of Domaine zoals de producent zichzelf noemt. zoek_naam is alleen de cuvéenaam, zonder Cuvée, AOP of appellation; heeft de wijn geen eigen cuvéenaam, herhaal dan zoek_producent. drink_from/drink_to is jouw beste schatting van het drinkvenster (jaartallen) op basis van wijn, appellation, kwaliteit en jaargang. type: lees de kleur van het etiket (rosso, rouge, tinto, bianco, blanc, blanco) of leid hem af uit druiven en appellation; een Sangiovese of Nebbiolo is rood, een Vermentino wit. Is de kleur echt niet af te leiden, dan null in plaats van een gok. value_eur is de geschatte marktwaarde per fles in euro's van déze jaargang op dit moment (${YR()}) op de Europese markt (winkel of veiling), niet de introductieprijs. Reken met wat leeftijd doet: geklasseerde en bewaarwijnen worden duurder, eenvoudige wijnen zijn bijna niets meer waard zodra ze over hun venster zijn. value_low/value_high is een eerlijke bandbreedte; bij een wijn ouder dan acht jaar of een die je niet goed kent maak je die band breed. value_confidence: hoog als je deze producent en cuvée echt kent, middel bij een bekende appellation met een producent die je niet kent, laag als je de prijs eigenlijk raadt. Kies bij twijfel laag; een eerlijk "weet ik niet" is meer waard dan een gok. score_seen alleen als er letterlijk een cijfer met bron op de foto staat (halslabel, sticker, schapkaartje), bijvoorbeeld "92 Parker"; nooit uit je geheugen. pairing in het Nederlands. ${styleNote()} Onleesbare of onbekende velden: null.`;
   const out = await callClaude([
     {type:'image', source:{type:'base64', media_type:'image/jpeg', data:b64}},
@@ -2135,7 +2208,42 @@ function plekHtml(w){
   if(!zin && !chips.length && !zoek && !tafel) return '';
   const kop = tafel ? `Plek in je kelder: ${w.location ? esc(w.location) + (()=>{ const vk = rekVakken(w.location, w.id); return vk.length ? ' · ' + vakKort(vk) : ''; })() : 'geen locatie'}` : 'Plek in je kelder';
   return `<div class="eyebrow mb8">${kop}</div>${zin ? `<p class="verdict">${esc(zin)}</p>` : ''}
-    ${chips.length ? `<div class="grapes" style="margin-bottom:10px">${chips.join('')}</div>` : ''}${zoek ? `<div class="mb8" style="margin-bottom:12px">${zoek}</div>` : ''}`;
+    ${chips.length ? `<div class="grapes" style="margin-bottom:10px">${chips.join('')}</div>` : ''}${zoek ? `<div class="mb8" style="margin-bottom:12px">${zoek}</div>` : ''}${eanKnop(w)}`;
+}
+
+/* ---- streepjescode scannen: los van de etiketscan, alleen als er nog geen prijs met bron is (v83) ----
+   Nooit in de scanflow: de code zit op de achterkant en niemand wil bij elke fles omdraaien. */
+function eanKnop(w){
+  if(metBron(w) || w.ean || IN_SANDBOX || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) return '';
+  return `<div class="mb8" style="margin-bottom:12px"><button class="linkbtn" data-act="eanScan" data-id="${w.id}">${ik('zoek')} Streepjescode scannen</button><div class="small" style="margin-top:4px">Staat op de achterkant. Een winkel zet dat nummer bij het product, dus dan is de fles precies te vinden.</div></div>`;
+}
+let barcodeDoel = null, barcodeDet = null, barcodeBezig = false;
+ACT.eanScan = el => { barcodeDoel = el.dataset.id; openLiveScan('barcode'); };
+async function barcodeTick(v, volledig){
+  if(barcodeBezig || !v || !v.videoWidth) return; barcodeBezig = true;
+  try{
+    let code = null;
+    if('BarcodeDetector' in window){
+      try{ barcodeDet = barcodeDet || new BarcodeDetector({formats:['ean_13','ean_8']}); const r = await barcodeDet.detect(v); const hit = (r || []).find(x => eanGeldig(x.rawValue)); if(hit) code = eanSchoon(hit.rawValue); }catch(e){ /* niet ondersteund of geen code: eigen lezer */ }
+    }
+    if(!code){
+      const sc = volledig ? 1 : Math.min(1, 1000 / v.videoWidth);
+      const c = document.createElement('canvas'); c.width = Math.round(v.videoWidth * sc); c.height = Math.round(v.videoHeight * sc);
+      const ctx = c.getContext('2d', {willReadFrequently:true}); ctx.drawImage(v, 0, 0, c.width, c.height);
+      code = eanUitBeeld(ctx, c.width, c.height);
+    }
+    if(code) eanGevonden(code);
+    else { const h = document.getElementById('liveHint'); if(h && (volledig || Date.now() - liveStartAt > 6000)) h.textContent = 'Nog niets herkend: meer licht, dichterbij, en de code recht in beeld'; }
+  } finally { barcodeBezig = false; }
+}
+function eanGevonden(code){
+  const w = findWine(barcodeDoel); closeLiveScan();
+  if(!w){ toast('Deze fles ligt niet meer in je kelder'); return; }
+  try{ if(navigator.vibrate) navigator.vibrate(60); }catch(e){}
+  w.ean = code; save(); renderTenzijFormulier();
+  toast(`Streepjescode gelezen: ${code}`, null, null, 3000);
+  /* meteen zoeken op het nummer: dat is de exacte identiteit */
+  if(aiReady() && !metBron(w)) setTimeout(() => prijsAchteraf(w, true), 600);
 }
 
 /* ---- prijstabel: gratis raadplegen, voor nieuwe én oude scans ----
@@ -2147,7 +2255,7 @@ function prijsSleutel(w){
   return `${n(w.zoekProducer || w.producer)}|${n(w.zoekNaam || w.name)}|${jaar || 'nv'}`;
 }
 /* wat er van een fles naar de server gaat om hem te herkennen: naam, producent, jaargang en de zoekidentiteit; geen notities, geen prijzen */
-const wijnId = w => ({name:w.name, producer:w.producer, vintage:w.vintage, zoekProducer:w.zoekProducer || undefined, zoekNaam:w.zoekNaam || undefined});
+const wijnId = w => ({name:w.name, producer:w.producer, vintage:w.vintage, zoekProducer:w.zoekProducer || undefined, zoekNaam:w.zoekNaam || undefined, ean:eanSchoon(w.ean) || undefined});
 /* Mag een prijs uit de gedeelde tabel deze fles overschrijven? Nooit een zelf ingevulde waarde of
    aankoopprijs ('eigen'). Wel een fles zonder bron, een gemeenschapsprijs ('samen', de tabel kent de
    bron), en een eerder opgezochte prijs ('zoek') zodra de tabel een nieuwer datapunt heeft: zo komt een
@@ -3358,16 +3466,16 @@ async function openLiveScan(mode){
     liveStream = await navigator.mediaDevices.getUserMedia({ video:{facingMode:'environment', width:{ideal:1920}, height:{ideal:1080}}, audio:false });
   }catch(e){ document.getElementById('fCam').click(); return; } /* geweigerd of geen camera → systeemcamera */
   camGeteld();
-  const kaart = liveMode === 'kaart' || liveMode === 'menu';
+  const kaart = liveMode === 'kaart' || liveMode === 'menu', code = liveMode === 'barcode';
   const div = document.createElement('div'); div.className = 'livewrap'; div.id = 'liveScan';
   div.innerHTML = `<video autoplay playsinline muted></video>
     <div class="liveframe${kaart?' page':''}">${kaart?'':'<div class="livescanline"></div>'}</div>
-    <div class="livehint" id="liveHint">${kaart?'Hele pagina in beeld, tik op de knop':'Houd het etiket in het kader, hij vangt vanzelf'}</div>
+    <div class="livehint" id="liveHint">${kaart?'Hele pagina in beeld, tik op de knop':code?'Richt op de streepjescode op de achterkant van de fles':'Houd het etiket in het kader, hij vangt vanzelf'}</div>
     <div class="liveflash" id="liveFlash"></div>
     <div class="livebar">
       <button class="livex" data-act="liveClose" aria-label="Sluiten">✕</button>
       <button class="liveshut" data-act="liveSnap" aria-label="Maak foto"></button>
-      <button class="livelib" data-act="liveLib">galerij</button>
+      ${code ? '' : '<button class="livelib" data-act="liveLib">galerij</button>'}
       <button class="livelib" id="liveTorchBtn" data-act="liveTorch" style="display:none;opacity:.75">zaklamp</button>
     </div>`;
   document.body.appendChild(div); liveEl = div;
@@ -3386,6 +3494,7 @@ ACT.liveLib = () => { closeLiveScan(); document.getElementById('fLib').click(); 
 ACT.liveSnap = () => liveCapture();
 function liveCheck(v){
   if(!v || !v.videoWidth) return;
+  if(liveMode === 'barcode'){ barcodeTick(v, false); return; }
   if(liveMode !== 'etiket'){ /* kaart of menu: geen auto-vangst, de gast kadreert zelf */
     const h = document.getElementById('liveHint');
     if(h) h.textContent = 'Hele pagina in beeld, tik op de knop';
@@ -3423,6 +3532,7 @@ function liveCheck(v){
 function liveCapture(){
   const v = liveEl && liveEl.querySelector('video');
   if(!v || !v.videoWidth) return;
+  if(liveMode === 'barcode'){ barcodeTick(v, true); return; }   /* de knop: één keer op volle resolutie */
   const kaart = liveMode === 'kaart' || liveMode === 'menu';
   if(liveTimer && !kaart){ clearInterval(liveTimer); liveTimer = null; }
   const fl = document.getElementById('liveFlash');
@@ -3538,7 +3648,7 @@ ACT.scanAdd = async () => {
   if(d.location) S.settings.lastLocation = d.location;
   const w = { id:uid(), ...d, qty:formQty, pairing:lijstOk(scan.data&&scan.data.pairing, 8, 120).length ? lijstOk(scan.data.pairing, 8, 120) : (recalcPairing||[]), photo:!!scan.thumb, addedAt:Date.now() };
   /* de zoekidentiteit van de scanner (v82): de vorm waaronder een winkel de fles verkoopt, voor de prijstabel en de zoeklaag */
-  if(scan.data){ const zp = tekstOk(scan.data.zoek_producent, 200), zn = tekstOk(scan.data.zoek_naam, 200); if(zp) w.zoekProducer = zp; if(zn) w.zoekNaam = zn; }
+  if(scan.data){ const zp = tekstOk(scan.data.zoek_producent, 200), zn = tekstOk(scan.data.zoek_naam, 200); if(zp) w.zoekProducer = zp; if(zn) w.zoekNaam = zn; if(eanSchoon(scan.data.ean)) w.ean = eanSchoon(scan.data.ean); }
   if(scan.data && scan.data.value_low != null) w.valueLow = Math.round(scan.data.value_low);
   if(scan.data && scan.data.value_high != null) w.valueHigh = Math.round(scan.data.value_high);
   if(recalcValueRange){ w.valueLow = recalcValueRange.low; w.valueHigh = recalcValueRange.high; }
@@ -4751,7 +4861,7 @@ function viewPrivacyNL(){
     <p>Foto's van een <b>wijnkaart in een restaurant</b> zijn een uitzondering: die blijven in het geheugen van je telefoon zolang je ernaar kijkt en worden nooit opgeslagen, op je apparaat niet en in de cloud niet.</p>
 
     <h3>Prijzen opzoeken</h3>
-    <p>Vraag je om de prijs van een fles precies op te zoeken, dan zoekt de sommelier op internet bij wijnhandels en veilingsites. Daarvoor gaat alleen de naam, de producent en de jaargang van die fles naar Anthropic, dat de zoekopdracht uitvoert; niet wie het vraagt en niet wat er verder in je kelder ligt. Een gevonden prijs bewaren we in een gedeelde prijstabel (naam, jaargang, prijs, bron en datum), zodat de volgende die dezelfde fles scant hem gratis krijgt. De zoekopdracht zelf loopt via de zoekmachine van Brave (alleen naam, producent en jaargang), de leesbeurt via Anthropic. Zet je in Instellingen aan dat je deelt wat je betaalde, dan bewaren we je aankoopprijs bij naam en jaargang van de wijn, gekoppeld aan je account zodat je hem later kunt laten verwijderen; andere gebruikers zien alleen samengevoegde bedragen van minstens twee mensen, nooit wie wat betaalde. Uitzetten stopt het delen. Wie een prijs opzocht, staat er alleen bij als intern kenmerk, om misbruik te kunnen herleiden; het is voor niemand zichtbaar. Van elke zoekopdracht bewaren we dertig dagen het letterlijke antwoord van het model, zonder gebruikersgegevens, om fouten te kunnen opsporen.</p>
+    <p>Vraag je om de prijs van een fles precies op te zoeken, dan zoekt de sommelier op internet bij wijnhandels en veilingsites. Daarvoor gaat alleen de naam, de producent en de jaargang van die fles naar Anthropic, dat de zoekopdracht uitvoert; niet wie het vraagt en niet wat er verder in je kelder ligt. Een gevonden prijs bewaren we in een gedeelde prijstabel (naam, jaargang, prijs, bron en datum), zodat de volgende die dezelfde fles scant hem gratis krijgt. De zoekopdracht zelf loopt via de zoekmachine van Brave (alleen naam, producent en jaargang, en de streepjescode als je die hebt gescand), de leesbeurt via Anthropic. Een streepjescode kan ook worden opgezocht bij Open Food Facts (een vrije productdatabase); daar gaat alleen het nummer heen. Zet je in Instellingen aan dat je deelt wat je betaalde, dan bewaren we je aankoopprijs bij naam en jaargang van de wijn, gekoppeld aan je account zodat je hem later kunt laten verwijderen; andere gebruikers zien alleen samengevoegde bedragen van minstens twee mensen, nooit wie wat betaalde. Uitzetten stopt het delen. Wie een prijs opzocht, staat er alleen bij als intern kenmerk, om misbruik te kunnen herleiden; het is voor niemand zichtbaar. Van elke zoekopdracht bewaren we dertig dagen het letterlijke antwoord van het model, zonder gebruikersgegevens, om fouten te kunnen opsporen.</p>
 
     <h3>Betalen</h3>
     <p>Betalingen lopen via <b>Stripe</b>. Je kaartgegevens gaan rechtstreeks naar Stripe; CellarMentor ziet ze niet en bewaart ze niet. Wat wij wél bewaren is een klantnummer van Stripe en de status van je abonnement, zodat we weten hoeveel tegoed je hebt.</p>
@@ -5889,7 +5999,7 @@ const EN = {
   'Nog geen prijs met bron.':'No sourced price yet.', 'je aankoopprijs':'your purchase price', 'Prijs opzoeken':'Look up price', 'Prijs opzoeken · 1 credit':'Look up price · 1 credit', 'Opnieuw opzoeken · 1 credit':'Look up again · 1 credit',
   'Prijs zoeken bij wijnhandels…':'Looking up the price at wine merchants…', 'Diep zoeken bij wijnhandels en veilingen…':'Searching deeper at merchants and auctions…', 'Zoeken bij wijnhandels…':'Searching wine merchants…',
   'Geen prijs gevonden bij wijnhandels. Dieper zoeken?':'No price found at wine merchants. Search deeper?', 'Zoek diep':'Search deeper', 'Zoek diep · 5 credits':'Search deeper · 5 credits', 'Zoek op · 1 credit':'Look up · 1 credit',
-  'Geen prijs met bron. Opzoeken bij wijnhandels?':'No sourced price. Look it up at wine merchants?', 'Niets gevonden. Dieper zoeken · 5 credits':'Nothing found. Search deeper · 5 credits', 'Niets gevonden. Dieper zoeken':'Nothing found. Search deeper', 'Opnieuw proberen':'Try again',
+  'Geen prijs met bron. Opzoeken bij wijnhandels?':'No sourced price. Look it up at wine merchants?', 'Niets gevonden. Dieper zoeken · 5 credits':'Nothing found. Search deeper · 5 credits', 'Niets gevonden. Dieper zoeken':'Nothing found. Search deeper', 'Opnieuw proberen':'Try again', 'Streepjescode scannen':'Scan barcode', 'Staat op de achterkant. Een winkel zet dat nummer bij het product, dus dan is de fles precies te vinden.':'It is on the back. Shops list that number with the product, so the bottle can be found exactly.', 'Richt op de streepjescode op de achterkant van de fles':'Point at the barcode on the back of the bottle', 'Nog niets herkend: meer licht, dichterbij, en de code recht in beeld':'Nothing recognised yet: more light, closer, and the code straight in view',
   'Geen prijs bij de wijnhandels in de zoeklaag. Dieper zoeken kijkt ook op veilingen en buitenlandse sites':'No price at the merchants in the search layer. Searching deeper also covers auctions and foreign sites',
   'Elke fles op voorraad heeft al een prijs met bron':'Every bottle in stock already has a sourced price', 'Prijzen opzoeken?':'Look up prices?', 'Prijzen':'Prices',
   'Na een scan meteen de marktprijs opzoeken (1 credit)':'Look up the market price right after a scan (1 credit)',
@@ -5961,6 +6071,7 @@ const EN_RE = [
   [/^Prijs uit de CellarMentor-prijstabel: (.+)$/, 'Price from the CellarMentor price table: $1'],
   [/^(.+) \(uit de CellarMentor-prijstabel\)$/, '$1 (from the CellarMentor price table)'],
   [/^Geen prijs gevonden: (.+)$/, 'No price found: $1'],
+  [/^Streepjescode gelezen: (\d+)$/, 'Barcode read: $1'],
   [/^Opzoeken mislukte: (.+)$/, 'Lookup failed: $1'],
   [/^Lezen mislukt: (.+)$/, 'Reading failed: $1'],
   [/^Sync mislukt: (.+)$/, 'Sync failed: $1'],

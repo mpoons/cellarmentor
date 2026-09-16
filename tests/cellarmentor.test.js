@@ -43,7 +43,7 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, estimateWindow, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, estimateWindow, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, eanGeldig, eanUitRuns, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
@@ -52,13 +52,16 @@ function serverFn(naam) {
   assert.ok(m, `server heeft een functie ${naam}`);
   const js = m[0].replace(/\(w: Wijn\): string(?!\[)/, '(w)').replace(/\(x: unknown\)/g, '(x)').replace(/\(kind: string, images: number\): number/, '(kind, images)')
     .replace(/\(row: [^)]*\): boolean/, '(row)').replace(/\(treffers: [^)]*\): Treffer\[\]/, '(treffers, voorkeur, ruis)').replace(/\(t: Treffer\): number/, '(t)')
-    .replace(/\(s: string\): string/, '(s)').replace(/\(w: Wijn\): string\[\]/, '(w)').replace(/\(w: Wijn\): \{[^}]*\}/, '(w)');
+    .replace(/\(s: string\): string/, '(s)').replace(/\(w: Wijn\): Trede\[\]/, '(w)').replace(/\(w: Wijn\): \{[^}]*\}/, '(w)').replace(/\(code: unknown\): boolean/, '(code)')
+    .replace(/const t: Trede\[\] = /, 'const t = ');
   return vm.runInContext(`(${js})`, ctx);
 }
 /* constanten en hulpjes van de server die zo'n functie nodig heeft */
 vm.runInContext(`var PRIJS_VEROUDERD_DAGEN = ${serverBron.match(/const PRIJS_VEROUDERD_DAGEN = (\d+)/)[1]}`, ctx);
 vm.runInContext(`var KLEUR = ${serverBron.match(/const KLEUR: Record<string, string> = (\{[^}]*\})/)[1]}`, ctx);
 vm.runInContext("var tekstVeld = (x, n = 120) => String(x ?? '').replace(/[\\r\\n\\t]+/g, ' ').trim().slice(0, n)", ctx);
+ctx.eanGeldig = serverFn('eanGeldig');
+vm.runInContext("var eanVan = (w) => eanGeldig(w.ean) ? String(w.ean).replace(/\\D/g, '') : ''", ctx);
 
 /* ================= sync ================= */
 test('sync: zonder document in de cloud gaat alles omhoog', () => {
@@ -172,11 +175,51 @@ test('zoekidentiteit (server): eigenaarsfamilie en rechtsvorm vallen weg, de tra
   assert.equal(kortVorm('Louis Jadot'), 'Louis Jadot');
   ctx.kortVorm = kortVorm; ctx.zoekId = serverFn('zoekId');
   const zoekTreden = serverFn('zoekTreden');
-  assert.deepEqual([...zoekTreden({ producer: 'Famille de Wulf Domaine des Annibals', name: 'Cuvée des Annibals', vintage: 2025, appellation: 'Côtes de Provence', type: 'rose' })],
+  const qs = w => [...zoekTreden(w)].map(t => t.q);
+  assert.deepEqual(qs({ producer: 'Famille de Wulf Domaine des Annibals', name: 'Cuvée des Annibals', vintage: 2025, appellation: 'Côtes de Provence', type: 'rose' }),
     ['Domaine des Annibals Cuvée des Annibals 2025 prijs', 'Domaine des Annibals Cuvée des Annibals wijn kopen', 'Domaine des Annibals Côtes de Provence rosé kopen']);
-  assert.deepEqual([...zoekTreden({ producer: 'Château Talbot', name: 'Château Talbot', vintage: null })], ['Château Talbot wijn kopen'], 'zonder jaargang en zonder appellation blijft één trede');
-  assert.equal([...zoekTreden({ zoekProducer: 'Louis Jadot', zoekNaam: 'Les Petites Pierres', producer: 'Maison Louis Jadot', name: 'Bourgogne Les Petites Pierres', vintage: 2023, region: 'Bourgogne', type: 'wit' })][0], 'Louis Jadot Les Petites Pierres 2023 prijs', 'de zoekidentiteit van de scanner wint');
+  assert.deepEqual(qs({ producer: 'Château Talbot', name: 'Château Talbot', vintage: null }), ['Château Talbot wijn kopen'], 'zonder jaargang en zonder appellation blijft één trede');
+  assert.equal(qs({ zoekProducer: 'Louis Jadot', zoekNaam: 'Les Petites Pierres', producer: 'Maison Louis Jadot', name: 'Bourgogne Les Petites Pierres', vintage: 2023, region: 'Bourgogne', type: 'wit' })[0], 'Louis Jadot Les Petites Pierres 2023 prijs', 'de zoekidentiteit van de scanner wint');
+  const metEan = [...zoekTreden({ producer: 'Château Talbot', name: 'Château Talbot', vintage: 2016, ean: '5901234123457' })];
+  assert.equal(metEan[0].q, '5901234123457', 'de streepjescode is de eerste trede'); assert.equal(metEan[0].soort, 'ean');
+  assert.equal(qs({ producer: 'X', name: 'Y', ean: '5901234123458' })[0], 'X Y wijn kopen', 'een ongeldige streepjescode telt niet');
+  for (const c of ['5901234123457', '5901234123458', '96385074', '', null]) assert.equal(C.eanGeldig(c), ctx.eanGeldig(c), 'client en server gelijk: ' + c);
 });
+/* ================= streepjescode ================= */
+/* een EAN als rij strepen, zoals de lezer hem uit een beeldregel haalt; module = breedte van één streepje */
+function eanRuns(code, module, stoor) {
+  const runs = [{ b: false, w: module * 12 }];
+  const push = (b, n) => runs.push({ b, w: n * module + (stoor ? (runs.length % 3 === 0 ? 1 : 0) : 0) });
+  const digit = (d, set, eerstStreep) => { const p = set[d]; for (let k = 0; k < 4; k++) push(eerstStreep ? k % 2 === 0 : k % 2 === 1, +p[k]); };
+  push(true, 1); push(false, 1); push(true, 1);
+  const links = code.length === 13 ? code.slice(1, 7) : code.slice(0, 4), rechts = code.length === 13 ? code.slice(7) : code.slice(4);
+  const par = code.length === 13 ? C.EAN_PARITEIT[+code[0]] : 'LLLL';
+  for (let i = 0; i < links.length; i++) digit(+links[i], par[i] === 'G' ? C.EAN_G : C.EAN_L, false);
+  push(false, 1); push(true, 1); push(false, 1); push(true, 1); push(false, 1);
+  for (let i = 0; i < rechts.length; i++) digit(+rechts[i], C.EAN_L, true);
+  push(true, 1); push(false, 1); push(true, 1); push(false, module * 10);
+  return runs;
+}
+test('eanGeldig: controlecijfer van EAN-13 en EAN-8, niets anders', () => {
+  assert.equal(C.eanGeldig('5901234123457'), true);
+  assert.equal(C.eanGeldig('5901234123458'), false, 'verkeerd controlecijfer');
+  assert.equal(C.eanGeldig('8712100000003'), true);
+  assert.equal(C.eanGeldig('96385074'), true, 'EAN-8');
+  assert.equal(C.eanGeldig('12345'), false);
+  assert.equal(C.eanGeldig(null), false);
+});
+test('eanUitRuns: leest een EAN-13 en een EAN-8 uit strepen, ook op zijn kop en met een pixel storing, en weigert onzin', () => {
+  for (const code of ['5901234123457', '8712100000003', '3760091720511']) {
+    assert.equal(C.eanUitRuns(eanRuns(code, 3, false)), code, code);
+    assert.equal(C.eanUitRuns(eanRuns(code, 4, true)), code, code + ' met storing');
+    assert.equal(C.eanUitRuns(eanRuns(code, 3, false).slice().reverse()), code, code + ' op zijn kop');
+  }
+  assert.equal(C.eanUitRuns(eanRuns('96385074', 3, false)), '96385074', 'EAN-8');
+  assert.equal(C.eanUitRuns([{ b: false, w: 30 }, { b: true, w: 3 }, { b: false, w: 3 }, { b: true, w: 3 }, { b: false, w: 9 }]), null, 'te kort');
+  const kapot = eanRuns('5901234123457', 3, false); kapot[20].w = 9;
+  assert.equal(C.eanUitRuns(kapot), null, 'een kapotte streep geeft geen code, geen gok');
+});
+
 test('rangschik (server): bekende winkels eerst, folders en retourwinkels achteraan, verder de volgorde van Brave', () => {
   const rangschik = serverFn('rangschik');
   const t = u => ({ title: u.includes('folder') ? 'Aanbiedingen folder' : 'x', url: u, desc: '' });
