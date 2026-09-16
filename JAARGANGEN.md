@@ -2,7 +2,7 @@
 
 Bij dit bestand hoort de tabel `STREKEN` in `cellarmentor.html`. Elk jaar daar heeft een niveau van 1 tot 5, en een **plus** achter het niveau (`2016:5+`) betekent dat dat jaar in die streek tegen minstens twee onafhankelijke gepubliceerde bronnen is gelegd. Zonder plus is het een eigen schatting die nog niet is nagetrokken. De app zegt dat verschil per fles tegen de gebruiker, met een vraagteken achter het jaargangwoord en voluit in "Waar komt dit venster vandaan?". Dat onderscheid is de kern van dit bestand: een oordeel dat zich voordoet als gecontroleerd terwijl het dat niet is, is precies de zelfverzekerdheid die een kelderapp onbetrouwbaar maakt.
 
-**Stand: 16 september 2026, na ronde twee. 246 van de 818 jaren gecontroleerd.**
+**Stand: 16 september 2026, na ronde twee. 246 van de 821 jaren gecontroleerd.** Let op: dat getal meet maar één ding. Een streek die `streekVan` niet herkent telt hier helemaal niet mee, en dat bleek een groter gat dan verwacht; zie de sectie over streken die de app niet herkent.
 
 ## Waarom een eigen tabel, en niet die van een criticus
 
@@ -39,7 +39,7 @@ Een jaar dat niet in de tabel staat geeft niveau 3 zonder woord: "geen mening". 
 | `ribera` (Ribera del Duero en Toro) | 26 | 9 |
 | `californie` (Californië) | 30 | 8 |
 | `bourgogne_r` (Bourgogne rood) | 29 | 6 |
-| `toscane` (Toscane) | 28 | 6 |
+| `toscane` (Toscane) | 31 | 6 |
 | `languedoc` (Languedoc en Roussillon) | 12 | 3 |
 | `duitsland` (Duitsland) | 38 | 3 |
 | `sauternes` (Sauternes en Barsac) | 34 | 2 |
@@ -140,7 +140,8 @@ Deze punten kwamen uit de ronde als sterke aanwijzingen die de lat van twee bron
 4. **Elzas 2000 (nu 4), 2003 (nu 4) en 2012 (nu 4)** staan alle drie onder druk volgens één bron, en de Elzas mist de kruisverificatie van de CIVA volledig.
 5. **Loire 2019 (nu 5), 2022 en 2015.** En de vier jaren waar een kelderapp voor oude zoete Chenin het meest aan heeft, 1989, 1990, 1996 en 1997, zijn met geen enkele serieuze bron aangeraakt.
 6. ~~De Douro is de pijnlijkste lacune.~~ **Gedaan in ronde twee**, zie de sectie hierboven. Wat er van overblijft voor ronde drie: de rij splitsen in versterkte port en stille Douro, en de jaren 2004, 2005, 2008, 2012, 2013, 2015, 2019, 2020, 2021 en 2023 hebben nog geen tweede bron. Voor 2019 en 2023 ligt die er vermoedelijk wel zodra World of Fine Wine leesbaar is: die had per jaar een stuk, alleen gaf het domein op elk artikel een 403.
-7. **Duitsland 1999, 2003 en 2013 staan mogelijk te hoog** volgens de Decanter-gids, en voor Duitsland liggen droge en zoete riesling in sommige jaren ver uiteen (1988, 1994, 2003, 2010). De app onderscheidt die twee al in `vensterBasis`, dus een aparte rij voor droog en zoet is hier de logische volgende stap, zoals bij de Bourgogne al gebeurd is.
+7. **Twee streken bestaan nog niet en zijn wel nodig:** midden- en zuidoost-Spanje (Jumilla tot La Mancha) en Corsica. Nu krijgt zo'n fles helemaal geen jaargangoordeel. Zie de sectie over streken die de app niet herkent.
+8. **Duitsland 1999, 2003 en 2013 staan mogelijk te hoog** volgens de Decanter-gids, en voor Duitsland liggen droge en zoete riesling in sommige jaren ver uiteen (1988, 1994, 2003, 2010). De app onderscheidt die twee al in `vensterBasis`, dus een aparte rij voor droog en zoet is hier de logische volgende stap, zoals bij de Bourgogne al gebeurd is.
 
 ## Wanneer een streek gesplitst moet worden
 
@@ -168,6 +169,26 @@ Een streek verdient een eigen rij zodra bronnen melden dat de jaargangen er echt
 Uit ronde twee komt daar één waarschuwing bij, want die ronde liep er zelf bijna in. Het enige dat over Griekenland te lezen was, ging integraal over opbrengst en wijngaardschade: 180 millimeter winterregen in 2023, een hagelbui in april die de oogst halveerde, 100 millimeter in 2024, en in 2025 drieduizend flessen waar er normaal achtduizend zijn. Over de kwaliteit van de wijn stond er niets. Dat om te rekenen naar een laag niveau zou exact de fout zijn die ronde een twee keer aantrof en repareerde bij Champagne 2024 en Bourgogne wit 2024. Er is daarom geen enkel Grieks jaar ingevoerd. **Opbrengstverlies is geen kwaliteitsverlies, ook niet als het de enige beschikbare informatie is; dan is "geen mening" het antwoord.**
 
 Laat het onderzoek de divergentie zelf rapporteren in plaats van vooraf te beslissen. De opdracht hoort te zijn: meld per streek of bronnen melden dat deelgebieden of kleuren uiteenlopen, en zo ja voor welke jaren. Splits pas als het antwoord ja is en er voor beide helften data ligt.
+
+## Een gat dat geen jaargangonderzoek is: streken die de app niet herkent
+
+Naast "welk jaar is gecontroleerd" speelt een tweede vraag die de tabel stil kan laten falen: herkent `streekVan` de fles überhaupt? Zo niet, dan is er geen streek, dus geen jaargangoordeel, en de app zwijgt zonder te zeggen dat ze zwijgt. Dat is niet zichtbaar in de dekkingstabel hierboven, want die telt alleen jaren in streken die al bestaan.
+
+Op 16 september zijn 144 veelvoorkomende appellations door `streekVan` gehaald (script in de sessie, niet bewaard). Vijfentwintig kwamen op niets uit, ruim een zesde. De pijnlijkste waren **Prosecco** en **Cava**, twee van de meest verkochte wijnen ter wereld, allebei zonder streek. Verder Corpinnat en Costers del Segre, Cerasuolo di Vittoria, en heel Corsica en midden- en zuidoost-Spanje.
+
+Toegevoegd, alleen waar de streek onomstreden is: `veneto` kreeg prosecco, conegliano, valdobbiadene, asolo, glera, piave, montello en gambellara; `priorat` kreeg cava, corpinnat, costers del segre, catalunya, alella, pla de bages en tarragona; `zuiditalie` kreeg cerasuolo di vittoria, vittoria, frappato, nero d'avola, noto, faro, gaglioppo, irpinia, sannio en molise. Daarmee gaat het van vijfentwintig naar eenentwintig missers.
+
+Wat er bewust níet is bijgeprikt, want een verkeerde streek geeft een verkeerd drinkadvies en dat is erger dan geen advies: **midden- en zuidoost-Spanje** (Jumilla, Yecla, Alicante, Utiel-Requena, Valencia, La Mancha, Valdepeñas, Almansa, Calatayud, Madrid, Gredos, Málaga) past in geen bestaande rij, en Jumilla onder Rioja hangen zou onzin zijn. **Corsica** (Vin de Corse, Patrimonio, Ajaccio) net zo: het ligt dichter bij Sardinië dan bij de Provence. Allebei hebben een eigen rij nodig, met eigen jaargangen. Dat is werk voor een volgende ronde en het staat op de werklijst.
+
+Dit soort controle hoort periodiek te draaien, en is goedkoper dan jaargangonderzoek: het kost geen bronnen, alleen een lijst appellations tegen `streekVan`.
+
+## Toscane, bijgesteld maar niet gecontroleerd
+
+Vinous bleek voor Toscane terugkijkende jaargangstukken te hebben die integraal leesbaar zijn, en dat is precies het soort bron dat dit bestand het hoogst aanslaat. Er is geen tweede leesbare onafhankelijke bron voor Toscane, dus er staat **geen plus** bij; dit zijn betere schattingen, geen gecontroleerde jaren. Gebruikte vindplaatsen op `v1.vinous.com/articles/`: `the-landmark-vintage-2006-brunello-di-montalcino-retrospective-feb-2026`, `a-vintage-of-transcendence-2004-brunello-di-montalcino-retrospective-jan-2025` en `chianti-classico-looking-up-aug-2026`.
+
+Wat eruit kwam: 2004 en 2006 zijn bevestigd op 5 (Galloni noemde 2006 destijds "a benchmark vintage for Brunello di Montalcino", de terugblik van twintig jaar later geeft hem gelijk), 2005 blijft 3 ("beginning to fade"), en 2002 is nieuw op 1, want Vinous spreekt van "the nearly nonexistent 2002s". **2022 ging van 4 naar 3**, omdat Galloni in augustus 2026 schrijft dat 2022 en 2023 zwaar zijn geraakt door weersextremen die de kwaliteit aantoonbaar omlaag haalden, niet alleen de opbrengst. 2024 is nieuw op 3 ("surprisingly good in spots, despite some inconsistency") en 2025 op 4 ("hold significant promise").
+
+Let op de beperking, en die is dezelfde als bij de Douro: dit oordeel komt grotendeels uit Chianti Classico, terwijl de rij `toscane` ook Montalcino en Bolgheri vangt. Kust en binnenland lopen in hete jaren uiteen, dat staat al op de splitslijst. 2023 is daarom niet verlaagd hoewel Chianti dat jaar zwaar leed: dat is te specifiek om over heel Toscane uit te smeren.
 
 ## Hoe je een volgende ronde draait
 
