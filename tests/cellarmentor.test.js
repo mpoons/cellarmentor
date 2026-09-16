@@ -43,7 +43,7 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, estimateWindow, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, jaargangOordeel, streekVan, STREKEN, JAARTABEL, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
@@ -265,19 +265,107 @@ test('foodCats: trefwoorden gelden per heel woord, "ree" past niet op puree', ()
   assert.ok(ids('kippenbout').includes('kip'));
   assert.ok(!ids('Lamothe').includes('lam'));
 });
-test('windowStatus: jong, op dronk, drink binnenkort, over de piek, onbekend', () => {
+test('windowStatus: jong, op dronk, drink binnenkort, op z\u2019n rijpst, over de piek, onbekend', () => {
   const y = C.YR();
   assert.equal(C.windowStatus({ drinkFrom: y + 2, drinkTo: y + 8 }).k, 'jong');
   assert.equal(C.windowStatus({ drinkFrom: y - 5, drinkTo: y + 10 }).k, 'op');
   assert.equal(C.windowStatus({ drinkFrom: y - 5, drinkTo: y }).k, 'nu');
-  assert.equal(C.windowStatus({ drinkFrom: y - 5, drinkTo: y - 1 }).k, 'over');
+  assert.equal(C.windowStatus({ drinkFrom: y - 5, drinkTo: y - 1 }).k, 'rijp', 'net voorbij het venster is geen alarm');
+  assert.equal(C.windowStatus({ drinkFrom: y - 30, drinkTo: y - 20 }).k, 'over', 'ver voorbij het venster wel');
   assert.equal(C.windowStatus({}).k, 'onb');
+});
+test('windowStatus: "drink binnenkort" gaat nooit over meer dan drie jaar', () => {
+  const y = C.YR();
+  /* een venster van dertig jaar gaf met een vast percentage vijf jaar "binnenkort" */
+  assert.equal(C.windowStatus({ drinkFrom: y - 25, drinkTo: y + 5 }).k, 'op');
+  assert.equal(C.windowStatus({ drinkFrom: y - 25, drinkTo: y + 3 }).k, 'nu');
+});
+test('windowStatus: de uitloop groeit mee met wat de kelderregels van de fles denken', () => {
+  const y = C.YR();
+  /* korte vensters lopen kort uit */
+  const kort = { type: 'rose', vintage: y - 4, grapes: [], name: 'Ros\u00e9', region: 'Provence', drinkFrom: y - 4, drinkTo: y - 2 };
+  assert.equal(C.windowStatus(kort).k, 'over');
+  /* een vintage champagne uit een groot jaar met een veel te kort venster niet */
+  const champ = { type: 'mousserend', vintage: 2008, grapes: ['chardonnay', 'pinot noir'], name: 'Brut Vintage',
+    region: 'Champagne', appellation: 'Champagne', drinkFrom: 2013, drinkTo: 2023 };
+  assert.equal(C.windowStatus(champ).k, 'rijp', 'een 2008 champagne is in ' + y + ' niet over de piek');
+  assert.ok(C.vensterUitloop(champ, 2013, 2023) > 10);
 });
 test('estimateWindow: een fles zonder venster krijgt er altijd een, en die loopt vooruit', () => {
   for (const type of ['rood', 'wit', 'rose', 'mousserend', 'zoet', 'versterkt', 'oranje']) {
     const e = C.estimateWindow({ type, vintage: 2020, grapes: [], name: 'x' });
     assert.ok(e.from <= e.to && e.from >= 2020, type);
+    assert.ok(e.soort, 'elke schatting zegt welke soort fles hij dacht te zien');
   }
+});
+test('estimateWindow: bewaarwijnen krijgen de jaren die ze in het echt halen', () => {
+  const duur = w => { const e = C.estimateWindow(w); return e.to - (w.vintage || C.YR()); };
+  const champ2008 = { type: 'mousserend', vintage: 2008, grapes: ['chardonnay', 'pinot noir'], name: 'Brut Vintage', region: 'Champagne', appellation: 'Champagne' };
+  assert.ok(duur(champ2008) >= 25, 'vintage champagne uit 2008 gaat decennia mee, niet vijftien jaar');
+  const dp = { ...champ2008, name: 'Dom P\u00e9rignon', producer: 'Mo\u00ebt & Chandon' };
+  assert.ok(duur(dp) > duur(champ2008), 'een prestige cuv\u00e9e gaat langer mee dan een gewone vintage');
+  const barolo = { type: 'rood', vintage: 1996, grapes: ['nebbiolo'], name: 'Barolo Riserva', region: 'Piemonte', appellation: 'Barolo DOCG' };
+  assert.ok(duur(barolo) >= 30, 'een Barolo Riserva uit 1996 is geen fles van achttien jaar');
+  const yquem = { type: 'zoet', vintage: 1990, grapes: ['semillon'], name: "Ch\u00e2teau d'Yquem", region: 'Bordeaux', appellation: 'Sauternes' };
+  assert.ok(duur(yquem) >= 45, 'edelzoet uit een groot jaar gaat een halve eeuw mee');
+  const rose = { type: 'rose', vintage: 2024, grapes: ['grenache'], name: 'Ros\u00e9', region: 'Provence' };
+  assert.ok(duur(rose) <= 4, 'en een ros\u00e9 wordt daar niet in meegesleept');
+  const nouveau = { type: 'rood', vintage: 2025, grapes: ['gamay'], name: 'Beaujolais Nouveau', region: 'Beaujolais' };
+  assert.ok(duur(nouveau) <= 3, 'nouveau blijft nouveau, ook al is gamay een druif met een venster');
+});
+test('estimateWindow: de jaargang rekt en kort het venster', () => {
+  const basis = { type: 'rood', grapes: ['cabernet sauvignon'], name: 'Ch\u00e2teau x', region: 'Bordeaux', appellation: 'Pauillac' };
+  const groot = C.estimateWindow({ ...basis, vintage: 2016 });   // uitzonderlijk
+  const zwak = C.estimateWindow({ ...basis, vintage: 2013 });    // moeilijk
+  assert.ok(groot.to - 2016 > zwak.to - 2013, 'een groot jaar houdt langer dan een moeilijk jaar');
+  assert.ok(groot.from - 2016 >= zwak.from - 2013, 'en het heeft ook meer tijd nodig');
+});
+test('jaargangOordeel: kent de streek, en zwijgt waar hij niets weet', () => {
+  const o = C.jaargangOordeel({ vintage: 2008, type: 'mousserend', region: 'Champagne', name: 'x' });
+  assert.equal(o.niveau, 5);
+  assert.equal(o.woord, 'uitzonderlijk');
+  assert.match(o.streek, /Champagne/);
+  assert.equal(C.jaargangOordeel({ vintage: 2008, type: 'rood', region: 'Kosovo', name: 'x' }), null, 'een onbekende streek geeft geen oordeel');
+  assert.equal(C.jaargangOordeel({ vintage: null, type: 'rood', region: 'Bordeaux', name: 'x' }), null, 'zonder jaargang valt er niets te zeggen');
+  const leeg = C.jaargangOordeel({ vintage: 1954, type: 'rood', region: 'Bordeaux', name: 'x' });
+  assert.equal(leeg.woord, null, 'een jaar buiten de tabel is geen mening, geen gok');
+  assert.equal(leeg.niveau, 3);
+});
+test('jaargangOordeel: rood en wit uit de Bourgogne worden apart beoordeeld', () => {
+  const r = C.jaargangOordeel({ vintage: 2003, type: 'rood', region: 'Bourgogne', appellation: 'Gevrey-Chambertin', name: 'x' });
+  const wt = C.jaargangOordeel({ vintage: 2014, type: 'wit', region: 'Bourgogne', appellation: 'Meursault', name: 'x' });
+  assert.match(r.streek, /rood/);
+  assert.match(wt.streek, /wit/);
+});
+test('de jaargangtabel is goed gevormd: bekende streken, geldige jaren en niveaus', () => {
+  const keys = new Set();
+  for (const st of C.STREKEN) {
+    assert.ok(!keys.has(st.k), 'geen dubbele streeksleutel: ' + st.k);
+    keys.add(st.k);
+    assert.ok(st.l && st.kw.length, st.k);
+    for (const k of st.kw) assert.equal(k, k.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''), 'trefwoord moet al genormaliseerd zijn: ' + k);
+    for (const [jaar, niveau] of Object.entries(C.JAARTABEL[st.k])) {
+      assert.ok(+jaar >= 1900 && +jaar <= C.YR(), st.k + ' ' + jaar);
+      assert.ok(niveau >= 1 && niveau <= 5, st.k + ' ' + jaar + ': ' + niveau);
+    }
+  }
+});
+test('vensterMigratie: zet alleen vensters recht die de oude regels zelf hebben bedacht', () => {
+  const champ = { id: 'a1', type: 'mousserend', vintage: 2008, grapes: ['chardonnay', 'pinot noir'],
+    name: 'Brut Vintage', region: 'Champagne', appellation: 'Champagne', qty: 1 };
+  const oud = C.oudVenster(champ);
+  const eigen = { id: 'b2', type: 'mousserend', vintage: 2008, grapes: [], name: 'Brut Vintage',
+    region: 'Champagne', appellation: 'Champagne', qty: 1, drinkFrom: 2020, drinkTo: 2030 };
+  const vast = { id: 'c3', type: 'rood', vintage: 2016, grapes: ['nebbiolo'], name: 'Barolo',
+    region: 'Piemonte', qty: 1, drinkFrom: 2022, drinkTo: 2030, drinkSrc: 'eigen' };
+  C.S.wines = [{ ...champ, drinkFrom: oud.from, drinkTo: oud.to }, eigen, vast];
+  assert.equal(C.vensterMigratie(), 1, 'alleen de fles met een venster uit de oude regels');
+  assert.equal(C.S.wines[0].drinkSrc, 'regels');
+  assert.ok(C.S.wines[0].drinkTo > oud.to + 10, 'en die krijgt het venster dat hij verdient');
+  assert.equal(C.S.wines[1].drinkTo, 2030, 'wat iemand zelf invulde blijft staan');
+  assert.equal(C.S.wines[2].drinkTo, 2030, 'en een vastgelegde eigen bron ook');
+  assert.equal(C.vensterMigratie(), 0, 'twee keer draaien verandert niets meer');
+  C.S.wines = [];
 });
 
 /* ================= opslag ================= */
