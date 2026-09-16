@@ -141,6 +141,30 @@ def bouw():
     # de piek" roepen laat iemand een goede fles weggooien, terwijl een fles die volgens de app
     # nog kan wachten bij de eerste slok gecontroleerd wordt.
     CODE = {'bbr': 'B', 'decanter': 'D'}
+    # De jaargangsgidsen van Decanter geven per streek en jaargang ook een zin, en die zin staat
+    # voor 231 streek-jaargangen waar het dossier niets heeft - vooral jaren van vóór 1990, precies
+    # waar deze app het zwakst was. Er hoort nadrukkelijk géén niveau bij. Die gidsen geven wel een
+    # cijfer, en dat is getoetst tegen de 98 jaargangen die al tegen twee onafhankelijke bronnen
+    # liggen: een afleiding uit cijfer plus zin komt op 47% precies en 89% binnen één stap, op de
+    # uitersten 73% en 96%. Dat is te weinig voor een sterretje, want dat zegt dat een betrouwbare
+    # bron dít niveau draagt. De zin is wel gepubliceerd en na te lezen, dus die tonen we en het
+    # oordeel blijft "geen mening". Ze vullen alleen aan, ze overschrijven nooit een vindplaats uit
+    # het dossier zelf.
+    zinpad = WORTEL / 'bronnen' / 'jaargangzinnen-decanter.json'
+    if zinpad.exists():
+        zin = json.loads(zinpad.read_text(encoding='utf-8'))
+        for streek, jaren in zin['per_streek'].items():
+            for jaar, e in jaren.items():
+                if int(jaar) in citaat.get(streek, {}):
+                    continue
+                if not zegt_iets(e['zin']):
+                    continue
+                u = zin['uitgever']
+                uitgevers.setdefault(u, basis(e['url']))
+                citaat.setdefault(streek, {})[int(jaar)] = {
+                    'u': u, 'p': e['url'][len(uitgevers[u]):], 't': e['zin'],
+                    'y': e.get('jaar'), 'r': 1 if RIJPTAAL.search(e['zin']) else 0}
+
     rijp = {}
     for pad in sorted((WORTEL / 'bronnen').glob('rijpheid-*.json')):
         sleutel = pad.stem.split('-', 1)[1]

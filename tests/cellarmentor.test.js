@@ -426,6 +426,44 @@ test('rijpheid uit een bron houdt "Over de piek?" tegen, en nooit andersom', () 
     region: 'Champagne', appellation: 'Champagne', name: 'Brut', qty: 1, drinkFrom: C.YR() + 3, drinkTo: C.YR() + 20 };
   assert.equal(C.windowStatus(jong).k, 'jong');
 });
+test('streekVan leest afkortingen zoals ze op etiketten staan', () => {
+  /* Gemeten over 18.675 echte wijnnamen uit de catalogus van Berry Bros: 661 vielen buiten elke
+     streek, en 170 daarvan alleen door de schrijfwijze. "St Joseph" en "Nuits St Georges" staan zo
+     op het etiket; "Ermitage" is hoe Chapoutier zijn Hermitage schrijft. */
+  const pak = (naam, extra) => ({ id: 'a', type: 'rood', vintage: 2015, name: naam, qty: 1, ...extra });
+  assert.equal(C.streekVan(pak('St Joseph Les Granits')).k, 'rhone_n');
+  assert.equal(C.streekVan(pak('Nuits St Georges Les Boudots')).k, 'bourgogne_r');
+  /* Dit stond fout in de app: 'saint georges' is in Bordeaux een satelliet van Saint-Émilion en
+     Bordeaux staat eerder in de tabel, dus Nuits-Saint-Georges kreeg een Bordeaux-drinkadvies.
+     Een machinale sweep over alle 68 streken vond vier van zulke botsingen. */
+  assert.equal(C.streekVan(pak('Nuits-Saint-Georges Les Boudots')).k, 'bourgogne_r');
+  assert.equal(C.streekVan(pak('Saint-Georges-Saint-Emilion')).k, 'bordeaux');
+  assert.equal(C.streekVan(pak('Saint-Georges d Orques')).k, 'languedoc');
+  assert.equal(C.streekVan(pak('Conca de Barbera Tinto')).k, 'priorat');
+  /* 'montagne' is weg als los trefwoord: elk Montagne-Saint-Emilion draagt 'saint emilion' al,
+     en los ving het ook Montagne de Reims en elk domein met dat woord in de naam. */
+  assert.equal(C.streekVan(pak('Montagne-Saint-Emilion')).k, 'bordeaux');
+  const reims = C.streekVan(pak('Montagne de Reims Blanc de Noirs', { type: 'mousserend' }));
+  assert.ok(!reims || reims.k !== 'bordeaux', 'Montagne de Reims is geen Bordeaux');
+  assert.equal(C.streekVan(pak('Ch St Emilion')).k, 'bordeaux');
+  assert.equal(C.streekVan(pak('Ermitage Le Pavillon')).k, 'rhone_n');
+  /* Ermitage is in de Valais ook de naam voor marsanne. Een verkeerde streek geeft een verkeerd
+     drinkadvies, dus daar houdt de uitzondering het tegen. */
+  const zwitsers = C.streekVan(pak('Ermitage', { type: 'wit', region: 'Valais', country: 'Zwitserland' }));
+  assert.ok(!zwitsers || zwitsers.k !== 'rhone_n', 'een Valais-Ermitage is geen noordelijke Rhône');
+});
+test('een gepubliceerde zin zonder niveau claimt ook geen niveau', () => {
+  /* De jaargangsgidsen van Decanter leveren 231 streek-jaargangen waar het dossier niets heeft.
+     Hun zin wordt getoond, hun cijfer niet: een afleiding uit dat cijfer haalde tegen de bekende
+     jaargangen maar 47% precies, en een sterretje zou beweren dat een bron dít niveau draagt. */
+  const bourgogne = { id: 'z1', type: 'rood', vintage: 1969, region: 'Bourgogne', appellation: 'Vosne-Romanée', name: 'Vosne', qty: 1 };
+  const c = C.citaatVan(bourgogne);
+  assert.ok(c && c.tekst, '1969 rode Bourgogne heeft een zin uit de gids');
+  assert.equal(c.uitgever, 'Decanter');
+  assert.equal(c.geschreven, 2015, 'met het jaar waarin de gids is herzien');
+  const o = C.jaargangOordeel(bourgogne);
+  assert.ok(!o || !o.woord || o.bron === 0, 'maar geen onderbouwd niveau: ' + JSON.stringify(o));
+});
 test('een uitspraak over rijpheid telt vanaf het jaar waarin hij is gedaan', () => {
   /* 154 van de Decanter-gidsen zijn voor het laatst herzien in 2015. Hun "Keep" bij een 1997 ging
      over een wijn van achttien jaar, niet over een wijn van negenentwintig. De app rekende dat

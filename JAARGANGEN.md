@@ -254,6 +254,60 @@ cijferpatroon, niet meer dan 55% hoofdletterwoorden, hoogstens twee jaartallen. 
 streek-jaargangen raakten daarmee hun citaat kwijt, en dat is de goede ruil. Berry Bros' cijfers en
 Decanters `x/5` zijn gelezen om er een eigen oordeel uit af te leiden, en staan niet in de app.
 
+## Getoetst aan een catalogus in plaats van aan eigen voorbeelden
+
+De dekkingstabel hierboven telt cellen in onze eigen tabel. Dat zegt niet wat iemand met een kelder
+merkt, want een kelder is niet gelijkmatig over streken en jaren verdeeld. De catalogus van Berry
+Bros die al voor het prijswerk was opgehaald bevat 18.675 echte wijnnamen met jaargang, en die is
+als proef gebruikt: elke naam als fles door `streekVan`, `jaargangOordeel`, `rijpheidVan`,
+`citaatVan` en `genoemdDoor`.
+
+| | aandeel |
+|---|---|
+| streek herkend | 97,5% |
+| jaargangoordeel | 94,8% |
+| daarvan tegen twee onafhankelijke bronnen | 70,7% |
+| gepubliceerde uitspraak over rijpheid | 68,3% |
+| vindplaats of citaat | 62,2% |
+| zin die we mogen tonen | 42,6% |
+| producent bij de besten genoemd | 0,4% |
+
+Per jaargangblok is het beeld scheef, en precies omgekeerd aan waar het nodig is:
+
+| jaargang | dubbel onderbouwd | rijpheid | citaat |
+|---|---|---|---|
+| 1960–1989 | 13% | 38% | 23% |
+| 1990–1999 | 51% | 66% | 44% |
+| 2000–2009 | 71% | 76% | 51% |
+| 2010–2019 | 65% | 64% | 45% |
+| 2020–2025 | 82% | 73% | 34% |
+
+Een oude fles is nu juist waar iemand niet zelf weet of hij nog goed is. Dat blok is deze ronde van
+4% naar 23% citaatdekking gegaan door de jaargangsgidsen van Decanter erbij te halen, maar de
+dubbele onderbouwing blijft er 13%. Dat is het eerste wat een volgende ronde moet aanpakken.
+
+**Twee fouten die geen eigen steekproef had gevonden.** Van de 661 namen die buiten elke streek
+vielen, viel 170 alleen op de schrijfwijze: "St Joseph", "Nuits St Georges", en "Ermitage" zoals
+Chapoutier zijn Hermitage schrijft. En ernstiger: `saint georges` stond als Bordeaux-trefwoord,
+want Saint-Georges-Saint-Émilion is een satelliet, en Bordeaux staat eerder in de tabel. Daardoor
+kreeg **Nuits-Saint-Georges een Bordeaux-drinkadvies** — 41 flessen in die ene catalogus, en
+Nuits-Saint-Georges is geen obscure appellatie. Een sweep die elk trefwoord van elke streek tegen
+alle latere streken legt vond nog drie: Saint-Georges-d'Orques in de Languedoc, Conca de Barberà
+onder Piemonte, en `montagne`, dat elk domein met dat woord in de naam naar Bordeaux trok. Dat
+laatste trefwoord is geschrapt: elk etiket van Montagne-Saint-Émilion draagt `saint emilion` al.
+
+**Wat de gidsen van Decanter wel en niet mogen leveren.** Die gidsen geven per streek en jaargang
+een cijfer x/5 én een zin, en voor 231 streek-jaargangen zegt onze tabel niets terwijl de gids er
+wel is. Het cijfer overnemen is getoetst en afgewezen. Tegen de 98 jaargangen die al tegen twee
+onafhankelijke bronnen liggen komt een afleiding uit cijfer plus zin op 47% precies en 89% binnen
+één stap; op de gevallen waar cijfer en zin allebei uitgesproken zijn op 73% en 96%. Dat is te
+weinig voor een sterretje, dat immers zegt dat een betrouwbare bron dít niveau draagt. De ijking
+laat ook zien waarom: hun zinnen gaan vaak over een deel van de oogst ("some classic wines", "the
+finest wines were rich") of over één fles ("Petrus was the wine of the vintage and is still
+magnificent", bij drie sterren). En vijf van de tien grootste missers zijn de premox-jaren in de
+witte Bourgogne, waar ons lagere niveau juist bewust afwijkt van wat er in 2015 werd geschreven.
+De zinnen zelf worden wel getoond, met vindplaats en jaartal, en het oordeel blijft "geen mening".
+
 ## Hoe onafhankelijk is een bron eigenlijk
 
 Dit is de vraag die de tabel maakt of breekt. Een promotie-organisatie van een wijnland of een streek verklaart een jaargang vrijwel nooit slecht, want het is hun eigen sector. Het harde bewijs staat in de Ribera del Duero-reeks: het Consejo Regulador gaf in veertig jaar nooit een "Deficiente" en maar twee keer "Regular". Tegelijk is Rioja het tegenvoorbeeld, want dat Consejo varieert zijn oordeel wel degelijk. De regel is dus niet dat je ze niet gebruikt, de regel is waarvoor je ze gebruikt.
