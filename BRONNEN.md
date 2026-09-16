@@ -1,78 +1,139 @@
-# Bronnen-allowlist voor het jaargangonderzoek
+# Bronnen voor het jaargangonderzoek: wat werkt, en wat welke bron mag beslissen
 
-Deze lijst hoort op de netwerk-allowlist van de uitvoeromgeving. Hij is geordend naar de bronlagen uit `JAARGANGEN.md`, want die bepalen wat een bron mag beslissen: laag A beslist over kwaliteit, laag B weegt zwaar bij een láág oordeel, laag C levert feiten en nooit de doorslag.
+Dit bestand had twee doelen. Het eerste was een wenslijst voor de netwerk-allowlist, want in ronde
+een en twee was vrijwel alles geblokkeerd. Dat doel is grotendeels vervallen: **op 16 september,
+ronde drie, bleek 91 van de 141 hosts gewoon bereikbaar**, waaronder de twee bronnen waarvan het
+vorige bestand zei dat ze samen meer streken dekken dan alle andere bij elkaar, Decanter en World
+of Fine Wine. Wat overblijft is het tweede doel, en dat is het belangrijkere: vastleggen welke soort
+bron waarover mag beslissen, en hoe je meet of een bron leesbaar is in plaats van het aan te nemen.
 
-**Drie dingen om te weten voor je hem invoert.**
+## De les van ronde drie: een 403 is een eigenschap van het verzoek, niet van het domein
 
-De allowlist werkt **exact per host**. `decanter.com` toelaten is niet genoeg: de site leidt door naar `www.decanter.com`, en als die er niet op staat loopt het dood op een 301 naar een geblokkeerde host. Zet daarom overal de kale naam én de `www.`-variant op de lijst. Bij Wikipedia bleek `en.wikipedia.org` open terwijl `nl.wikipedia.org` dicht zat, dus subdomeinen erven niets.
+Ronde twee schreef Decanter, Wine Spectator, World of Fine Wine, The Wine Society en de hele
+handelslaag af als geblokkeerd. Dat was voor een deel de netwerkpolicy en voor een deel iets anders:
+**de user-agent.** Gemeten over alle 141 hosts, elk met twee user-agents:
 
-**Whitelisten is niet altijd genoeg.** Drie sites blokkeren de bot zelf, los van de netwerkpolicy: `jancisrobinson.com` en `corneyandbarrow.com` geven 403 op elk verzoek, en `worldoffinewine.com` geeft 200 op de voorpagina en 403 op elk artikel. Die drie zijn het meest waard en het minst zeker; zet ze erop, maar reken er niet op.
-
-**Lees met `curl`, niet met WebFetch.** WebFetch loopt over een andere uitgang en is voor élk domein geblokkeerd, ook voor hosts die met curl gewoon opengaan. Curl kost bovendien geen zoekbudget.
-
-## Laag A — critici en specialisten (beslissende stem over kwaliteit)
-
-| host | waarom |
+| user-agent | leesbaar |
 |---|---|
-| `vinous.com`, `v1.vinous.com`, `www.vinous.com` | **werkt al.** Nu de enige integraal leesbare laag-A-bron, en de dragende bron van ronde twee. Terugkijkende jaargangrapportages per streek. |
-| `decanter.com`, `www.decanter.com` | jaargangkaarten en -gidsen per streek, de breedste dekking die er is |
-| `jancisrobinson.com`, `www.jancisrobinson.com` | `/learn/vintages/` is letterlijk een jaargangkaart per streek. Bot-geblokkeerd, zie boven |
-| `worldoffinewine.com`, `www.worldoffinewine.com` | per jaar een stuk, ook over streken die verder niemand dekt. Artikelen nu 403 |
-| `winespectator.com`, `www.winespectator.com` | jaargangkaarten, brede dekking inclusief Nieuwe Wereld |
-| `wineenthusiast.com`, `www.wineenthusiast.com` | idem, en sterk op Nieuwe Wereld |
-| `thewineindependent.com`, `www.thewineindependent.com` | **deels bereikbaar.** Napa en Bordeaux, terugkijkend |
-| `jamessuckling.com`, `www.jamessuckling.com` | Italië en Bordeaux |
-| `timatkin.com`, `www.timatkin.com` | Rioja, Zuid-Afrika, Argentinië en Chili: precies de lege streken |
-| `wineanorak.com`, `www.wineanorak.com` | Jura, Portugal, Zuid-Afrika, buitenbeentjes |
-| `guildsomm.com`, `www.guildsomm.com` | streekdossiers met oogstverslagen |
-| `drinkrhone.com`, `www.drinkrhone.com` | **werkt al.** Livingstone-Learmonth, de Rhône-specialist |
-| `moselfinewines.com`, `www.moselfinewines.com` | **werkt al.** Duitsland, en de enige die droog en zoet apart weegt |
-| `cluboenologique.com`, `www.cluboenologique.com` | **deels bereikbaar** |
-| `thewinecellarinsider.com` | Bordeaux per jaargang, gratis toegankelijk |
-| `robertparker.com`, `www.robertparker.com` | jaargangkaart; alleen als feitelijke steun, nooit als scorekaart |
+| `curl/8.0` | `worldoffinewine.com`, `thewinesociety.com`, `vinsalsace.com`, `winecountryontario.ca` geven 200 — en 403 op Chrome |
+| Chrome-string | `docalatayud.com`, `somontano.org`, `thewinecellarinsider.com`, `beaujolais.com` geven 200 — en 403 of 522 op curl |
+| allebei | de overige 84 bereikbare hosts |
 
-## Laag B — handelaren met een lange publieke jaargangstaat
+De praktische regel is dus: **toets elke host met bèide, en schrijf er pas een af als hij op allebei
+faalt.** Dat kost één extra verzoek en het verschil is deze ronde twee van de drie belangrijkste
+bronnen geweest.
 
-Hun láge oordelen wegen zwaar, hun hoge met terughoudendheid.
+Twee andere valkuilen uit eerdere rondes staan nog steeds overeind. **Lees met `curl` vanuit Bash,
+niet met WebFetch**: WebFetch loopt over een andere uitgang en is voor élk domein geblokkeerd, ook
+voor hosts die met curl opengaan; curl kost bovendien geen zoekbudget, dus zoek alleen om een URL te
+vínden en lees die dan met curl. En **een 200 op de voorpagina is geen leesbaar artikel**: controleer
+de tekst. Bij Decanter betekent een 404 een verkeerde URL en geen blokkade, dus haal de indexpagina's
+op en grep de links eruit in plaats van slugs te raden.
 
-| host | waarom |
-|---|---|
-| `farrvintners.com`, `www.farrvintners.com` | **werkt al.** Blog met terugkijkende blindproeverijen (Southwold, "Ten Years On") |
-| `bbr.com`, `www.bbr.com` | Berry Bros & Rudd: jaargangkaart plus drinkvensters per wijn |
-| `justerinis.com`, `www.justerinis.com` | lange publieke jaargangstaat |
-| `corneyandbarrow.com`, `www.corneyandbarrow.com` | idem. Bot-geblokkeerd, zie boven |
-| `idealwine.com`, `www.idealwine.com` | Frankrijk, met jaargangoverzichten per streek |
-| `thewinesociety.com`, `www.thewinesociety.com` | jaargangkaart én drinkvensters, breed |
-| `laywheeler.com`, `www.laywheeler.com` | Bourgogne en Bordeaux |
-| `millesima.com`, `www.millesima.com` | Frankrijk breed |
-| `goedhuiswaddesdon.com` | Bourgogne |
+Wat een geblokkeerd verzoek wél precies is, is nu ook gemeten. Een `000` komt niet van een niet
+bestaand domein maar van de uitvoeromgeving: `curl -sS "$HTTPS_PROXY/__agentproxy/status"` noteert
+per host `gateway answered 502 to CONNECT (policy denial or upstream failure)`. Dat onderscheid is
+nuttig, want het betekent dat de 35 onbereikbare hosts hieronder wél bestaan en alleen op de
+allowlist hoeven.
 
-## Laag C — streekinstanties en oogstverslagen (feiten, nooit de doorslag)
+## Wat bereikbaar is, per laag
 
-Opbrengst, vorstdata, hittegolven, ziektedruk, oogstdata, declaraties.
+**Laag A, critici en specialisten — beslissende stem over kwaliteit.**
+Bereikbaar: `vinous.com` en `v1.vinous.com` (integraal leesbaar, per streek terugkijkende
+jaargangrapportages, de dragende bron van ronde twee en drie), `decanter.com` (jaargangkaarten per
+jaar en per streek, zie hieronder), `worldoffinewine.com` (met `curl/8.0`), `winespectator.com`,
+`jamessuckling.com`, `timatkin.com`, `wineanorak.com`, `guildsomm.com`, `drinkrhone.com`,
+`moselfinewines.com`, `thewinecellarinsider.com`, `thewineindependent.com`, `cluboenologique.com`,
+`thedrinksbusiness.com`, `harpers.co.uk`, `robertparker.com`, `terredevins.com`, `vinetur.com`.
+Nog steeds dicht: `jancisrobinson.com` (403 op beide), `falstaff.com`, `gamberorosso.it`,
+`larvf.com`, `wineenthusiast.com` en `winemag.com` (403 op beide), `bourgogne-report.com` (policy).
 
-**Let op bij deze laag:** de hosts hieronder kon ik niet verifiëren, want ze zijn nu allemaal geblokkeerd en een geblokkeerd verzoek zegt niets over of het domein bestaat. Ze komen uit kennis, niet uit een meting. Controleer ze kort voor je ze invoert; een verkeerd gespelde host kost je niets behalve een regel op de lijst. De hosts met "**werkt al**" zijn wél gemeten.
+**Laag B, handelaren met een lange publieke jaargangstaat — lage oordelen wegen zwaar, hoge met
+terughoudendheid.** Bereikbaar: `bbr.com` (de volledige jaargangkaart 1978-2025 voor 21 streken,
+inclusief rijpheidscode per jaar; zie de waarschuwing hieronder), `thewinesociety.com` (met
+`curl/8.0`), `farrvintners.com`, `justerinis.com`, `idealwine.com`, `millesima.com`,
+`goedhuiswaddesdon.com`. Dicht: `corneyandbarrow.com`, `laywheeler.com`, `leaandsandeman.co.uk`
+(403 op beide), `armit.co.uk` (policy).
 
-**Frankrijk:** `bordeaux.com`, `www.bordeaux.com` · `bourgogne-wines.com`, `www.bourgogne-wines.com` · `vins-rhone.com`, `inter-rhone.com` · `champagne.fr`, `www.champagne.fr` · `vinsvaldeloire.fr`, `loirevalleywine.com` · `vinsdeprovence.com` · `languedoc-wines.com` · `vinsalsace.com`, `civa.fr` · `jura-vins.com` · `beaujolais.com` · `vins-sud-ouest.com` · `vinsdecorse.com`
+**Laag C, streekinstanties en oogstverslagen — feiten, nooit de doorslag.** Ruim veertig bereikbaar,
+waaronder `bordeaux.com`, `chablis-wines.com`, `chateauneuf.com`, `vins-rhone.com`,
+`vinsvaldeloire.fr`, `vinsdeprovence.com`, `languedoc-wines.com`, `vinsalsace.com`, `jura-vins.com`,
+`beaujolais.com`, `sauternes-barsac.com`, `vinsdecorse.com`, `madiran-pacherenc.com`,
+`chianticlassico.com`, `consorziobrunellodimontalcino.it`, `consorziovalpolicella.it`,
+`consorziovinochianti.it`, `consorziovinonobile.it`, `langhevini.it`, `coneglianovaldobbiadene.it`,
+`prosecco.it`, `consorziomontefalco.it`, `winesofsicily.com`, `imtdoc.it`, `riojawine.com`,
+`riberadelduero.es`, `doqpriorat.org`, `domontsant.com`, `dopenedes.cat`, `dorueda.com`,
+`doriasbaixas.com`, `dotoro.es`, `navarrawine.com`, `somontano.org`, `docalatayud.com`,
+`jumillawine.com`, `utielrequena.org`, `sherry.wine`, `ivdp.pt`, `winesofportugal.com`, `cvrdao.pt`,
+`vinhosdoalentejo.pt`, `deutscheweine.de`, `germanwines.de`, `vdp.de`, `moselwein.de`,
+`rheingau.com`, `oesterreichwein.at`, `tokaj.hu`, `winesofgreece.org`, `newwinesofgreece.com`,
+`wineaustralia.com`, `nzwine.com`, `wosa.co.za`, `winesofargentina.org`, `winesofchile.org`,
+`napavintners.com`, `sonomawinegrape.org`, `sonomawine.com`, `wineinstitute.org`, `oregonwine.org`,
+`washingtonwine.org`, `pasowine.com`, `sbcountywines.com`, `montereywines.org`, `winebc.com`,
+`winecountryontario.ca`.
 
-**Italië:** `consorziobrunellodimontalcino.it` (**werkt al**) · `chianticlassico.com` · `consorziovalpolicella.it` · `langhevini.it` · `consorziobarolobarbarescoalbalanghe.it` · `consorziovinodoc.it` · `altoadigewines.com` · `winesofsicily.com`
+Geblokkeerd door de netwerkpolicy (allemaal laag C op `armit.co.uk` en `bourgogne-report.com` na, en
+dus de moeite van het whitelisten waard, maar geen van alle beslissend voor kwaliteit):
+`alicantedop.org`, `altoadigewines.com`, `aoc-cahors.fr`, `armit.co.uk`, `banyuls-collioure.com`,
+`bergerac-duras.fr`, `bierzo.wine`, `bourgogne-report.com`, `bourgogne-wines.com`, `cava.wine`,
+`champagne.fr`, `civa.fr`, `consorziobarolobarbarescoalbalanghe.it`, `consorziobolgheri.com`,
+`consorziofranciacorta.it`, `consorzioproseccodoc.it`, `consorziotutelalambrusco.it`,
+`consorziotutelavinidabruzzo.it`, `consorziovinietna.it`, `consorziovinipuglia.it`,
+`consorziovinisoave.it`, `consorziovinitaurasi.it`, `consorziovinivaltellina.com`, `cvrbairrada.pt`,
+`empordawines.com`, `inter-rhone.com`, `ivbam.gov.pt`, `jurancon-vins.fr`, `lamanchawines.es`,
+`loirevalleywine.com`, `vindesavoie.net`, `vinhoverde.pt`, `vinidocsardegna.it`, `vinitrentino.com`,
+`vins-sud-ouest.com`.
 
-**Spanje en Portugal:** `riojawine.com` (**werkt al**) · `riberadelduero.es` · `doqpriorat.org` · `sherry.wine` · `ivdp.pt` (**werkt al**) · `winesofportugal.com` · `vinhoverde.pt`
+De kale hostlijst om te plakken staat in `BRONNEN-HOSTS.txt`. De allowlist werkt exact per host, dus
+de kale naam én de `www.`-variant zijn allebei nodig; `en.wikipedia.org` mag terwijl
+`nl.wikipedia.org` niet mag, en subdomeinen erven niets.
 
-**Duitsland, Oostenrijk, Hongarije, Griekenland:** `deutscheweine.de`, `germanwines.de` · `vdp.de` · `austrianwine.com` · `tokaj.hu` · `winesofgreece.org` (**werkt al**)
+## Welke bron mag wat beslissen
 
-**Nieuwe Wereld:** `wineaustralia.com` · `nzwine.com` · `wosa.co.za` · `winesofargentina.org` · `winesofchile.org` · `napavintners.com` · `sonomawinegrape.org` · `wineinstitute.org` · `oregonwine.org` · `washingtonwine.org` · `winebc.com` · `winesvinesanalytics.com`
+Deze indeling is de kern van het bestand en verandert niet.
 
-## Referentie en drinkvensters
+**Laag A** zijn critici met terugkijkende proeverijen en specialisten. Zij hebben er commercieel
+niets aan om een jaargang mooier te maken dan hij is, en zij beslissen over kwaliteit.
 
-| host | waarom |
-|---|---|
-| `en.wikipedia.org` | **werkt al.** Goed voor discrete publieke feiten (welke jaren algemeen gedeclareerd zijn), niet voor kwaliteitsnuance |
-| `cellartracker.com`, `www.cellartracker.com` | de enige brede publieke bron met **drinkvensters per wijn**, uit duizenden proefnotities. Precies het deel dat in ronde een en twee niet lukte |
-| `wine-searcher.com`, `www.wine-searcher.com` | jaargangkaarten plus marktprijzen; ook bruikbaar voor de prijslaag |
+**Laag B** zijn handelaren met een lange publieke jaargangstaat. Ze willen verkopen, maar hun staat
+kost hen reputatie als hij niet klopt. Behandel hun **lage** oordelen als een sterk signaal en hun
+hoge met terughoudendheid.
 
-## Wat dit oplevert
+**Laag C** zijn streekinstanties en promotie-organisaties. Uitstekend en vaak gezaghebbend voor wat
+controleerbaar is — opbrengst, vorstdata, hittegolven, ziektedruk, oogstdata, declaraties — en
+**nooit de beslissende stem over kwaliteit**, want ze verklaren hun eigen jaargang bijna nooit
+slecht. Het gemeten bewijs staat in `JAARGANGEN.md`: Ribera del Duero gaf in veertig jaar nooit een
+onvoldoende.
 
-De plus-eis is twee onafhankelijke bronnen. Nu is Vinous de enige integraal leesbare laag-A-bron, dus komt vrijwel elke streek op één bron uit en mag er geen plus staan. **Eén tweede leesbare bron verdubbelt het werk niet maar ontgrendelt het:** met Decanter of World of Fine Wine erbij kan bijna elke Europese streek naar twee bronnen, en met Tim Atkin en de Nieuwe-Wereldinstanties komen Zuid-Afrika, Argentinië, Chili en Australië voor het eerst binnen bereik.
+## De twee jaargangkaarten, en waarom ze nooit in hun eentje beslissen
 
-Als er maar één ding op kan: **`worldoffinewine.com` plus `decanter.com`**. Die twee samen dekken meer streken dan alle andere bij elkaar.
+Twee bronnen geven een volledige kaart over veel streken tegelijk, en dat is verleidelijk genoeg om
+er een aparte waarschuwing bij te zetten.
+
+- **Berry Bros & Rudd**, `https://www.bbr.com/vintage-chart`: 858 jaarvakjes over 21 streken van 1978
+  tot 2025, met een eigen schaal van "1 (very poor) to 10 (outstanding)" en een rijpheidscode per
+  jaar. De gegevens zitten in de Nuxt-payload van de pagina en zijn er met `node` uit te halen.
+- **Wine Spectator**, de portemonneekaart achter `https://www.winespectator.com/vintage-charts`
+  (een PDF op `s3.amazonaws.com`): ruim vijftig streken, maar alleen de recente jaren, met naast het
+  cijfer een gepubliceerde bandnaam (Classic, Outstanding, Very Good, Good, Mediocre) en een
+  drinkadvies.
+
+Beide zijn gemeten tegen de jaren die deze tabel onafhankelijk al had vastgesteld. Berry Bros komt
+op 47 procent exact gelijk en 92 procent binnen één stap (n=223); Wine Spectator op 55 procent exact
+en 98 procent binnen één stap (n=62). Dat is goed genoeg om te bevestigen en te ontkennen, en te
+slecht om op te varen: de afwijking loopt op precies waar je het verwacht, namelijk waar hun rij
+breder is dan de onze. Berry Bros' rij "Italy" tegen onze Piemonte haalt 39 procent en zit zes keer
+twee stappen mis; hun "Red Bordeaux" tegen onze Bordeaux haalt 78 procent.
+
+**De regel die daaruit volgt: een jaargangkaart is een tweede stem, nooit de eerste.** Het niveau
+komt uit wat een laag-A-bron kwalitatief zegt; de kaart bevestigt of spreekt tegen. Een kaart van
+één uitgever omrekenen naar onze schaal blijft verboden, en dat is niet hetzelfde als hem lezen.
+
+## Wat nog niet lukt
+
+`cellartracker.com` geeft 405 op curl en 202 met een lege body op Chrome: een anti-botmaatregel van
+de site zelf, niet de netwerkpolicy. Dat is jammer, want het is de enige brede publieke bron met
+**drinkvensters per wijn**, uit duizenden proefnotities, en dat is precies het deel dat in ronde een,
+twee en drie niet is gelukt. `wine-searcher.com` (403 op beide) valt om dezelfde reden af.
+`thewinesociety.com` is nu wel leesbaar en publiceert drinkvensters bij zijn wijnen; dat is de beste
+overgebleven ingang voor een volgende ronde.

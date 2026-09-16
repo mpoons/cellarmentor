@@ -371,6 +371,39 @@ test('de jaargangtabel is goed gevormd: bekende streken, geldige jaren en niveau
     }
   }
 });
+test('streekVan: brengt bekende appellations thuis, en niet bij de buren', () => {
+  /* Een verkeerde streek geeft een verkeerd drinkadvies, en dat is erger dan geen advies.
+     Deze gevallen kwamen op 16 sep uit een ronde langs 299 appellations en waren allemaal fout:
+     'peninsula' ving Mornington en Niagara voor de Alentejo, 'vesuvio' ving Quinta do Vesuvio
+     uit de Douro voor Campanië, 'orange' ving elke oranjewijn voor Nieuw-Zuid-Wales, 'sicilia'
+     ving Vega Sicilia voor Sicilië, en 'alicante' ving de druif Alicante Bouschet uit de
+     Alentejo en de Douro voor zuidoost-Spanje. */
+  const streek = (appellation, land, type, naam) =>
+    (C.streekVan({ appellation, country: land, type, name: naam || '' }) || {}).k || null;
+  assert.equal(streek('Mornington Peninsula', 'Australië', 'rood'), 'australie_vic');
+  assert.equal(streek('Niagara Peninsula', 'Canada', 'wit'), 'canada');
+  assert.equal(streek('Península de Setúbal', 'Portugal', 'rood'), 'alentejo');
+  assert.equal(streek('Douro', 'Portugal', 'versterkt', 'Quinta do Vesuvio Vintage Port'), 'douro_port');
+  assert.equal(streek('Lacryma Christi del Vesuvio', 'Italië', 'rood'), 'campanie');
+  assert.equal(streek('Kakheti', 'Georgië', 'wit', 'Orange Wine Rkatsiteli'), null, 'een oranjewijn is geen streek');
+  assert.equal(streek('Orange, New South Wales', 'Australië', 'wit'), 'australie_nsw');
+  assert.equal(streek('Ribera del Duero', 'Spanje', 'rood', 'Vega Sicilia Único'), 'ribera');
+  assert.equal(streek('Sicilia', 'Italië', 'rood', 'Planeta'), 'sicilie');
+  assert.equal(streek('Vinho Regional Alentejano', 'Portugal', 'rood', 'Alicante Bouschet'), 'alentejo');
+  assert.equal(streek('Alicante', 'Spanje', 'rood', 'Bodegas Enrique Mendoza'), 'spanje_midden');
+  assert.equal(streek('Entre-Deux-Mers', 'Frankrijk', 'wit'), 'bordeaux');
+  /* en de gewone gevallen blijven staan */
+  assert.equal(streek('Vino Nobile di Montepulciano', 'Italië', 'rood'), 'toscane');
+  assert.equal(streek("Montepulciano d'Abruzzo", 'Italië', 'rood'), 'italie_midden');
+  assert.equal(streek('Los Carneros', 'VS', 'rood', 'Napa Valley'), 'napa');
+  assert.equal(streek('Carneros', 'VS', 'wit', 'Hyde Vineyard'), 'sonoma');
+  /* de uitzonderingslijst hoort net als de trefwoorden al genormaliseerd te zijn */
+  for (const st of C.STREKEN) {
+    for (const k of (st.niet || [])) {
+      assert.equal(k, k.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''), 'uitzondering moet genormaliseerd zijn: ' + k);
+    }
+  }
+});
 test('vensterMigratie: zet alleen vensters recht die de oude regels zelf hebben bedacht', () => {
   const champ = { id: 'a1', type: 'mousserend', vintage: 2008, grapes: ['chardonnay', 'pinot noir'],
     name: 'Brut Vintage', region: 'Champagne', appellation: 'Champagne', qty: 1 };
