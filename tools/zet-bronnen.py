@@ -63,8 +63,60 @@ RIJPTAAL = re.compile(
 #
 #   Naamregels. "Sogrape Casa Ferreirinha Barca Velha 2011 Douro, Portugal" is een wijnnaam uit een
 #   kop, geen oordeel. Onder een fles leest dat als een uitspraak die er niet is.
-SCORE = re.compile(r'\d+(?:[.,]\d+)?\s*/\s*(?:5|10|20|100)\b|\b\d{2,3}\s*(?:points?|pts)\b'
-                   r'|\brating:?\s*\d|\b\d{2,3}[-\u2013]\d{2,3}\s*(?:points?|pts)\b', re.I)
+SCORE = re.compile(r'\d+(?:[.,]\d+)?\s*/\s*(?:5|10|20|100)\b'
+                   r'|\b\d{2,3}\s*[-\u2013]?\s*(?:points?|pts?|pointer)\b'
+                   r'|\brating:?\s*\d|\b\d{2,3}[-\u2013]\d{2,3}\s*(?:points?|pts?)\b'
+                   r'|\b(?:one|two|three|four|five)\s+stars?\b|\b\d\s*stars?\b', re.I)
+# De hyphen en de losse "pt" stonden er eerst niet bij, en daar kwamen vier scores doorheen die in
+# de app terechtkwamen: "the 100pt Chateau Cheval Blanc 1990", "among my top-scoring wines with
+# 96-points", "the first 100-point wine from Oregon" en "100-point The High Wire Chardonnay".
+
+
+# Een medaille, een trofee of een plaats in een proeverij is een cijfer in woorden. Het valt onder
+# hetzelfde verbod: de app zegt wat een wijn is, niet welke prijs hij won.
+WEDSTRIJD = re.compile(r'\b(top[-\s]scoring|highest[-\s]scoring|best in show|platinum|gold medal|'
+                       r'silver medal|bronze medal|medal winner|medall?ist|DWWA|'
+                       r'Decanter World Wine Awards|trophy|came? out on top|top of the tasting|'
+                       r'won the|awarded the vintage|in score order)\b', re.I)
+
+
+# Een prijs uit een artikel van vijf jaar geleden is geen feit over de fles die iemand in de kelder
+# heeft, en de app heeft zijn eigen prijsvelden. Waar te koop hoort hier evenmin.
+WINKEL = re.compile(r'[\u00a3$\u20ac]\s?\d|\bRRP\b|\bin bond\b|\bretails? at\b|\bper bottle\b|'
+                    r'\bavailable (?:from|at|in|to buy)\b|\bstockists?\b|\bimported by\b|'
+                    r'\bworth seeking out\b|\bwines to seek out\b|\bbuy now\b', re.I)
+
+
+# Verwijzingen naar het blad zelf. Onder een fles staat geen artikel: "(pictured above)", "see the
+# tasting notes below" en "you might also like" wijzen naar iets wat de lezer niet ziet.
+BLADTAAL = re.compile(r'\b(pictured (?:above|below|right|left)|(?:tasting )?notes below|see below|'
+                      r'scroll|click here|subscribe|you might also like|read more|see all of|'
+                      r'this article|Decanter Premium|vintage box below|homepage|credit:)\b', re.I)
+
+
+# Een jaartal in een zin is niet altijd een jaargang. "Acquired by Niepoort in 2012" is geschiedenis
+# en geldt voor elke fles; "2019 sits just behind 2023" gaat over een oogst en hoort alleen onder
+# een fles van dat jaar. Het woord ervoor verraadt welke van de twee het is.
+HISTORIE = re.compile(r'\b(?:in|since|from|until|by|after|before|during|between|founded|established|'
+                      r'acquired|bought|purchased|planted|replanted|built|created|started|began|'
+                      r'took over|arrived|joined|back to|dating|dates|circa|around)\s+(?:the\s+)?$', re.I)
+
+
+# Een lidwoord pal voor het jaartal maakt er een wijn van: "manifested in the 2020" gaat over de
+# oogst, "acquired in 2012" over het huis.
+LIDWOORD = re.compile(r'\b(?:the|a|an|its|his|her|their|our|this|that)\s+$', re.I)
+OOGSTWOORD = re.compile(r'^s?\s*(?:vintage|harvest|crop|release|bottling|wine)', re.I)
+
+
+def jaargebonden(zin):
+    """Gaat deze zin over een bepaalde oogst? Dan mag hij alleen onder een fles van dat jaar staan."""
+    for m in re.finditer(r'\b(?:19|20)\d\d\b', zin):
+        voor = zin[max(0, m.start() - 34):m.start()]
+        if LIDWOORD.search(voor) or OOGSTWOORD.match(zin[m.end():m.end() + 12]):
+            return True
+        if not HISTORIE.search(voor):
+            return True
+    return False
 
 
 # Een citaat dat met een ánder jaartal begint gaat over een andere jaargang. Onder een Bardolino
@@ -116,9 +168,36 @@ def staat_op_zichzelf(zin):
     return bool(z) and z[:1].isupper() and not BIJZIN.match(z)
 
 
+# Een citaat is uit een langer stuk geknipt en houdt daarom lang niet altijd een punt over. Dat
+# mag: "Alsace was probably the luckiest French wine region in 2016" is een hele gedachte. Maar
+# "Many producers sold off or declassified a significant portion of their" is er een die halverwege
+# ophoudt, en dat leest onder een fles als een app die zijn zin niet afmaakt. Het laatste woord
+# verraadt het verschil: een lidwoord, een voorzetsel of een komma vraagt om wat erna komt.
+STAART = set("""the a an this that these those their its his her our my your one another each every
+of in to and or but with for from as at by on into onto than then when while which who whom whose
+is are was were be been being has have had will would can could should might must do does did
+more most less least very such some any no not also even under about between
+towards during before after because so if though although however whether both either neither""".split())
+# up, out en off staan er bewust niet bij: die maken een werkwoord juist af ("have not been borne
+# out", "is being talked up"), en zonder die uitzondering sneuvelden hele zinnen.
+
+
+def afgemaakt(zin):
+    z = zin.strip()
+    # staat er een punt achter, dan is de zin af, ook al eindigt hij op "one" of "in 2023"
+    if re.search(r'[.!?][\u2019\u201d"\')]?$', z):
+        return True
+    if z.endswith((',', ';', ':', '-', '\u2013', '\u2014')):
+        return False
+    woorden = re.findall(r"[\w'\u2019-]+", z)
+    return not (woorden and woorden[-1].lower().strip("'\u2019") in STAART)
+
+
 def zegt_iets(zin):
     woorden = re.findall(r"[A-Za-z\u00c0-\u024f][A-Za-z\u00c0-\u024f'\-]*", zin)
-    if SCORE.search(zin) or len(woorden) < 5:
+    if len(woorden) < 5:
+        return False
+    if SCORE.search(zin) or WEDSTRIJD.search(zin) or WINKEL.search(zin) or BLADTAAL.search(zin):
         return False
     # een kop of een wijnnaam staat vol hoofdletters; een zin niet
     if sum(1 for w in woorden if w[0].isupper()) / len(woorden) > 0.55:
@@ -149,10 +228,19 @@ def kies_citaat(bevinding):
     kand = [b for b in bevinding['bronnen'] if b['uitgever'] not in GEWEIGERD]
     if not kand:
         return None
-    kand = [b for b in kand if zegt_iets(b['citaat'])
-            and hoort_bij_jaar(b['citaat'], bevinding['jaar'])
-            and not VERWIJST.match(b['citaat'])
-            and staat_op_zichzelf(b['citaat'])]
+    # Van een uitgever die niet geciteerd wil worden toont de app alleen de naam en de link. Aan
+    # de zin zelf hoeven dan geen leeseisen te worden gesteld: niemand krijgt hem te zien, en een
+    # halve zin weggooien zou een bron kosten die we wél mogen noemen. Waar het stuk over gaat
+    # blijft wel gelden, want de link moet bij deze jaargang horen.
+    def deugt(b):
+        z = b['citaat']
+        if not hoort_bij_jaar(z, bevinding['jaar']):
+            return False
+        if b['uitgever'] in STIL:
+            return True
+        return zegt_iets(z) and not VERWIJST.match(z) and afgemaakt(z) and staat_op_zichzelf(z)
+
+    kand = [b for b in kand if deugt(b)]
     if not kand:
         return None
     laagA = [b for b in kand if b['laag'] == 'A'] or kand
@@ -162,12 +250,18 @@ def kies_citaat(bevinding):
     def rang(b):
         zin, jaar = b['citaat'], b.get('jaar')
         past = 0 if 30 <= len(zin) <= MAX_CITAAT else 1
+        # een zin met een punt eraan is uit zichzelf af; bij gelijke geschiktheid wint die
+        heel = 0 if re.search(r'[.!?][\u2019\u201d"\')]?$', zin.strip()) else 1
         lof, kritiek = bool(LOF.search(zin)), bool(KRITIEK.search(zin))
         # een zin die het omgekeerde vindt van ons eigen niveau spreekt de app tegen
         botst = 1 if ((niveau >= 4 and kritiek and not lof) or (niveau <= 2 and lof and not kritiek)) else 0
         oordeelt = 0 if (lof or kritiek) else 1
         terugblik = 0 if (jaar and jaar - bevinding['jaar'] >= 3) else 1
-        return (past, botst, 1 if b['uitgever'] in STIL else 0, oordeelt, terugblik, len(zin))
+        # De uitgever die geciteerd mag worden gaat vóór alles: een zin die de lezer te zien
+        # krijgt is meer waard dan een link zonder zin. Toen dit verderop in de rij stond, won een
+        # Vinous-vermelding het van een citaat zodra dat citaat net wat te lang was, en verloren
+        # 107 streek-jaargangen hun zin.
+        return (1 if b['uitgever'] in STIL else 0, past, botst, oordeelt, terugblik, heel, len(zin))
 
     return sorted(laagA, key=rang)[0]
 
@@ -181,8 +275,11 @@ def bouw():
             continue
         u = keus['uitgever']
         uitgevers.setdefault(u, basis(keus['url']))
+        # Van een uitgever die niet geciteerd wil worden gaat de zin het bestand niet in. De app
+        # toonde hem al niet, maar hij stond wel in de html, en dat is ook kopiëren.
         citaat.setdefault(b['streek'], {})[b['jaar']] = {
-            'u': u, 'p': keus['url'][len(uitgevers[u]):], 't': keus['citaat'],
+            'u': u, 'p': keus['url'][len(uitgevers[u]):],
+            't': '' if u in STIL else keus['citaat'],
             'y': keus.get('jaar'), 'r': 1 if RIJPTAAL.search(keus['citaat']) else 0}
 
     # Een rijpheidsuitspraak is een waarneming op een moment, geen eigenschap van de wijn.
@@ -207,11 +304,15 @@ def bouw():
         zin = json.loads(zinpad.read_text(encoding='utf-8'))
         for streek, jaren in zin['per_streek'].items():
             for jaar, e in jaren.items():
-                if int(jaar) in citaat.get(streek, {}):
+                al = citaat.get(streek, {}).get(int(jaar))
+                # Ze vullen alleen aan en overschrijven nooit een vindplaats uit het dossier - met
+                # één uitzondering: staat er een uitgever die niet geciteerd wil worden, dan ziet
+                # de lezer alleen een link. Een zin die hij wél mag lezen is dan meer waard.
+                if al and al['u'] not in STIL:
                     continue
                 # dezelfde eisen als aan de vindplaatsen uit het dossier: een hele zin, over
                 # deze jaargang, en niet beginnend met een verwijswoord
-                if not (zegt_iets(e['zin']) and staat_op_zichzelf(e['zin'])
+                if not (zegt_iets(e['zin']) and staat_op_zichzelf(e['zin']) and afgemaakt(e['zin'])
                         and hoort_bij_jaar(e['zin'], int(jaar)) and not VERWIJST.match(e['zin'])):
                     continue
                 u = zin['uitgever']
@@ -248,7 +349,24 @@ def bouw():
         rauw = json.loads(huispad.read_text(encoding='utf-8'))
         for streek, huizen in rauw.get('per_streek', {}).items():
             for naam, lijst in huizen.items():
-                goed = [x for x in lijst if zegt_iets(x['zin']) and staat_op_zichzelf(x['zin'])]
+                goed = []
+                for x in lijst:
+                    z = x['zin']
+                    if not (zegt_iets(z) and staat_op_zichzelf(z)):
+                        continue
+                    # Een verwijswoord voorop kan alleen kwaad als de huisnaam niet in de zin
+                    # staat: dan wijst "it" naar een kop die de lezer niet ziet.
+                    if x.get('via') == 'kop' and VERWIJST.match(z):
+                        continue
+                    # Een zin die over een andere oogst gaat dan de wijn waar hij bij stond, gaat
+                    # over iets anders dan waar hij is gevonden en is hier niets waard.
+                    if x['jaar'] and not hoort_bij_jaar(z, int(x['jaar'])):
+                        continue
+                    x = dict(x, gebonden=jaargebonden(z))
+                    goed.append(x)
+                # Een zin die voor elke fles van dit huis geldt gaat voor op een zin die aan één
+                # oogst vastzit: de eerste kan de app altijd tonen, de tweede alleen soms.
+                goed.sort(key=lambda x: (x['gebonden'], -len(x['zin'])))
                 if goed:
                     huis.setdefault(streek, {})[naam] = goed[:2]
 
@@ -301,7 +419,11 @@ def main():
             for k, v in sorted(prod['per_streek'].items()))),
         ('HUISZIN', ',\n'.join(
             f'  {k}: {{' + ', '.join(
-                js(n) + ':[' + ','.join('{z:%s,j:%d,p:%s}' % (js(x['zin']), int(x['jaar'] or 0), js(x['pad'])) for x in v) + ']'
+                js(n) + ':[' + ','.join(
+                    '{z:%s,j:%d,p:%s%s%s}' % (js(x['zin']), int(x['jaar'] or 0), js(x['pad']),
+                                              ',v:1' if x['gebonden'] else '',
+                                              ',k:1' if x.get('via') == 'kop' else '')
+                    for x in v) + ']'
                 for n, v in sorted(m.items())) + '}'
             for k, m in sorted(huis.items()))),
         ('ACHTERGROND', ',\n'.join(
