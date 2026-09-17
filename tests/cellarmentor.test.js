@@ -43,7 +43,7 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, tabelMigratie, TABEL_VERSIE, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, rijpheidVan, rijpheidReikt, rijpheidZin, citaatVan, RIJPHEID, CITAAT, CITAAT_STIL, PRODUCENT, genoemdDoor, ACHTERGROND, achtergrondVan, PROD_VAAK, vaakGenoemd, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, waardeSub, jaargangKloof, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, tabelMigratie, TABEL_VERSIE, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, rijpheidVan, rijpheidReikt, rijpheidZin, citaatVan, RIJPHEID, CITAAT, CITAAT_STIL, PRODUCENT, genoemdDoor, ACHTERGROND, achtergrondVan, PROD_VAAK, vaakGenoemd, HUISZIN, huisZin, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, waardeSub, jaargangKloof, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
@@ -451,6 +451,34 @@ test('streekVan leest afkortingen zoals ze op etiketten staan', () => {
      drinkadvies, dus daar houdt de uitzondering het tegen. */
   const zwitsers = C.streekVan(pak('Ermitage', { type: 'wit', region: 'Valais', country: 'Zwitserland' }));
   assert.ok(!zwitsers || zwitsers.k !== 'rhone_n', 'een Valais-Ermitage is geen noordelijke Rhône');
+});
+test('een zin over dit huis gaat over dit huis, en is geen navigatietekst', () => {
+  /* Een zin over de streek zegt iets over duizend wijnen; een zin over het domein zegt iets over
+     de fles in je hand. Deze komen uit de lopende tekst van Decanters verslagen. */
+  const tempier = { id: 'h1', type: 'rood', vintage: 2020, producer: 'Domaine Tempier',
+    name: 'Bandol', region: 'Provence', appellation: 'Bandol', qty: 1 };
+  const h = C.huisZin(tempier);
+  assert.ok(h && h.zin, 'Domaine Tempier heeft een zin');
+  assert.equal(h.naam, 'Domaine Tempier');
+  assert.equal(h.bron, 'Decanter');
+  assert.ok(h.url.startsWith('https://www.decanter.com/'), 'met een link naar het stuk');
+  assert.ok(h.zin.includes('Tempier'), 'en de zin noemt het huis: ' + h.zin);
+  /* geen navigatie, geen opsommingskop, geen brokstuk, en de naam staat in de eerste helft */
+  const ROMMEL = /newsletter|Future brands|Image credit|Scroll down|Copy link|Pinterest|Join Decanter|Subscribe|\| Decanter|top picks?:|best wines?:/i;
+  let fout = 0;
+  for (const s of Object.keys(C.HUISZIN)) {
+    assert.ok(C.STREKEN.some(x => x.k === s), 'onbekende streek ' + s);
+    for (const naam of Object.keys(C.HUISZIN[s])) {
+      for (const e of C.HUISZIN[s][naam]) {
+        if (ROMMEL.test(e.z)) { fout++; console.error('rommel', s, naam, e.z); continue; }
+        if (!/^[A-Z\u00c0-\u00dc\u2018"\u201c]/.test(e.z)) { fout++; console.error('fragment', s, naam, e.z); continue; }
+        if (!e.z.includes(naam)) { fout++; console.error('noemt het huis niet', s, naam, e.z); continue; }
+        if (e.z.indexOf(naam) > e.z.length * 0.55) { fout++; console.error('huis pas achteraan', s, naam, e.z); }
+        assert.ok(typeof e.p === 'string' && e.p.length > 4, s + ' ' + naam + ': geen vindplaats');
+      }
+    }
+  }
+  assert.equal(fout, 0, fout + ' huiszinnen deugen niet');
 });
 test('de staat van dienst van een maker zegt niets over deze fles', () => {
   /* Dat Decanter de 2015 aanraadde zegt niets over de 2018, en die redenering maakt de app niet:
