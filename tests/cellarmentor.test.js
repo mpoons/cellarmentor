@@ -43,7 +43,7 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, tabelMigratie, TABEL_VERSIE, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, rijpheidVan, rijpheidReikt, rijpheidZin, citaatVan, RIJPHEID, CITAAT, CITAAT_STIL, PRODUCENT, genoemdDoor, ACHTERGROND, achtergrondVan, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, waardeSub, jaargangKloof, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, tabelMigratie, TABEL_VERSIE, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, rijpheidVan, rijpheidReikt, rijpheidZin, citaatVan, RIJPHEID, CITAAT, CITAAT_STIL, PRODUCENT, genoemdDoor, ACHTERGROND, achtergrondVan, PROD_VAAK, vaakGenoemd, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, waardeSub, jaargangKloof, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
@@ -452,6 +452,39 @@ test('streekVan leest afkortingen zoals ze op etiketten staan', () => {
   const zwitsers = C.streekVan(pak('Ermitage', { type: 'wit', region: 'Valais', country: 'Zwitserland' }));
   assert.ok(!zwitsers || zwitsers.k !== 'rhone_n', 'een Valais-Ermitage is geen noordelijke Rhône');
 });
+test('de staat van dienst van een maker zegt niets over deze fles', () => {
+  /* Dat Decanter de 2015 aanraadde zegt niets over de 2018, en die redenering maakt de app niet:
+     er staat hoe vaak en in welke jaren, en verder niets. 1060 makers komen in twee of meer
+     jaargangen terug. */
+  let streek = null, naam = null, jaren = null;
+  for (const k of Object.keys(C.PROD_VAAK)) {
+    for (const n of Object.keys(C.PROD_VAAK[k])) {
+      if (C.PROD_VAAK[k][n].length >= 3) { streek = k; naam = n; jaren = C.PROD_VAAK[k][n]; break; }
+    }
+    if (naam) break;
+  }
+  assert.ok(naam, 'er is minstens één maker met drie jaargangen');
+  const st = C.STREKEN.find(s => s.k === streek);
+  const fles = jaar => ({ id: 'v1', type: (st.t && st.t[0]) || 'rood', vintage: jaar, producer: naam,
+    name: naam, region: st.l, appellation: st.kw[0], qty: 1 });
+  /* voor een jaargang die wél in de lijst staat zegt genoemdDoor het al, en preciezer */
+  assert.equal(C.vaakGenoemd(fles(jaren[0])), null, 'geen dubbele melding bij een genoemd jaar');
+  /* voor een jaargang die er niet in staat komt de staat van dienst */
+  let ander = 1961;
+  while (jaren.includes(ander)) ander++;
+  const v = C.vaakGenoemd(fles(ander));
+  assert.ok(v, 'een andere jaargang krijgt de staat van dienst: ' + naam + ' ' + ander);
+  assert.equal(v.aantal, jaren.length);
+  assert.ok(v.aantal >= 2, 'nooit op grond van één enkele jaargang');
+  /* elke regel in de tabel draagt minstens twee jaargangen */
+  for (const k of Object.keys(C.PROD_VAAK)) {
+    for (const n of Object.keys(C.PROD_VAAK[k])) {
+      const jj = C.PROD_VAAK[k][n];
+      assert.ok(Array.isArray(jj) && jj.length >= 2, k + ' ' + n + ': ' + JSON.stringify(jj));
+      assert.equal(new Set(jj).size, jj.length, k + ' ' + n + ': dubbele jaargang');
+    }
+  }
+});
 test('een zin over de plek hoort bij de meest specifieke plek, niet bij de langste naam', () => {
   /* De app wist wat een jaargang in een streek deed en niets over de grond eronder. Nu staat er
      per plek één zin uit Wikipedia over de bodem, de helling of de geschiedenis. */
@@ -492,6 +525,7 @@ test('een nieuwe jaargangtabel werkt door in bestaande kelders, maar niet over j
     { ...basis, id: 'm3', drinkFrom: 1990, drinkTo: 1995, drinkSrc: 'ai' },
     { ...basis, id: 'm4', drinkFrom: 1990, drinkTo: 1995 },
   ];
+  C.S.pairCache = [{ key: 'k', dish: 'lamsbout', at: 1, matches: [], buyTip: null }];
   C.S.settings.tabelVersie = 1;
   const n = C.tabelMigratie();
   assert.equal(n, 1, 'precies één fles herrekend');
@@ -503,6 +537,8 @@ test('een nieuwe jaargangtabel werkt door in bestaande kelders, maar niet over j
   assert.equal(c.drinkTo, 1995, 'een venster uit de etiketscan blijft staan');
   assert.equal(d.drinkTo, 1995, 'zonder bekende herkomst blijft het staan');
   assert.equal(C.S.settings.tabelVersie, C.TABEL_VERSIE);
+  assert.equal(C.S.pairCache.length, 0, 'de opgeslagen spijs-wijncombinaties zijn geschreven tegen de oude tabel');
+  assert.equal(C.S.wines.length, 4, 'en er verdwijnt geen enkele fles');
   assert.equal(C.tabelMigratie(), 0, 'een tweede keer draaien doet niets meer');
   C.S.wines = [];
 });

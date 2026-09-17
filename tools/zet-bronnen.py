@@ -232,6 +232,9 @@ def main():
         ('ACHTERGROND', ',\n'.join(
             f'  {js(kw)}: {{s:{js(v["s"])},z:{js(v["z"])},t:{js(v["t"])},n:{v["n"]}}}'
             for kw, v in sorted(achter.items()))),
+        ('PROD_VAAK', ',\n'.join(
+            f'  {k}: {{' + ', '.join(f'{js(n)}:{js(jj)}' for n, jj in sorted(v.items())) + '}'
+            for k, v in sorted(prod.get('vaak', {}).items()))),
         ('PROD_JAAR', ',\n'.join(
             f'  {k}: {{' + ', '.join(f'{j}:{y}' for j, y in sorted(v.items(), key=lambda t: int(t[0]))) + '}'
             for k, v in sorted(prod.get('peiljaar', {}).items()))),
@@ -251,6 +254,7 @@ def main():
     vermeld = sum(len(x) for v in prod['per_streek'].values() for x in v.values())
     print(f'producenten: {vermeld} vermeldingen over {len(prod["per_streek"])} streken en '
           f'{sum(len(v) for v in prod["per_streek"].values())} jaargangen')
+    print(f'staat van dienst: {sum(len(v) for v in prod.get("vaak", {}).values())} makers in twee of meer jaargangen')
     print(f'achtergrond: {len(achter)} plekken met een zin uit Wikipedia')
     print(f'rijpheid: {sum(len(v) for v in rijp.values())} jaren over {len(rijp)} streken')
     for k in sorted(rijp):
