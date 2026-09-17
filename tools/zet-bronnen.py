@@ -239,6 +239,19 @@ def bouw():
     for streek, jaren in rijp.items():
         codes = {c for _, _, c in jaren.values()}
         rijpbron[streek] = ' en '.join(n for c, n in (('B', 'Berry Bros & Rudd'), ('D', 'Decanter')) if c in codes)
+    # Eén of twee zinnen per wijnhuis uit de lopende tekst van Decanter. Dit is het meest
+    # specifieke wat de app over een fles kan zeggen: niet over de streek en niet over de jaargang,
+    # maar over dit domein.
+    huispad = WORTEL / 'bronnen' / 'huiszinnen-decanter.json'
+    huis = {}
+    if huispad.exists():
+        rauw = json.loads(huispad.read_text(encoding='utf-8'))
+        for streek, huizen in rauw.get('per_streek', {}).items():
+            for naam, lijst in huizen.items():
+                goed = [x for x in lijst if zegt_iets(x['zin']) and staat_op_zichzelf(x['zin'])]
+                if goed:
+                    huis.setdefault(streek, {})[naam] = goed[:2]
+
     # Eén zin per plek: de grond, de helling, het klimaat of de geschiedenis. Geen oordeel en geen
     # jaargang, want dat verandert niet per oogst. De zinnen zijn onze eigen formulering van een
     # feit en gaan daarom zonder bronvermelding de app in; waar het is nagekeken staat in
@@ -253,7 +266,7 @@ def bouw():
 
     prodpad = WORTEL / 'bronnen' / 'producenten.json'
     prod = json.loads(prodpad.read_text(encoding='utf-8')) if prodpad.exists() else {'per_streek': {}, 'urls': {}}
-    return citaat, uitgevers, rijp, rijpbron, prod, achter
+    return citaat, uitgevers, rijp, rijpbron, prod, achter, huis
 
 
 def js(v):
@@ -261,7 +274,7 @@ def js(v):
 
 
 def main():
-    citaat, uitgevers, rijp, rijpbron, prod, achter = bouw()
+    citaat, uitgevers, rijp, rijpbron, prod, achter, huis = bouw()
     tekst = BRON.read_text(encoding='utf-8')
 
     rij_regels = ',\n'.join(
@@ -286,6 +299,11 @@ def main():
         ('PRODUCENT', ',\n'.join(
             f'  {k}: {{' + ', '.join(f'{j}:{js(namen)}' for j, namen in sorted(v.items(), key=lambda t: int(t[0]))) + '}'
             for k, v in sorted(prod['per_streek'].items()))),
+        ('HUISZIN', ',\n'.join(
+            f'  {k}: {{' + ', '.join(
+                js(n) + ':[' + ','.join('{z:%s,j:%d,p:%s}' % (js(x['zin']), int(x['jaar'] or 0), js(x['pad'])) for x in v) + ']'
+                for n, v in sorted(m.items())) + '}'
+            for k, m in sorted(huis.items()))),
         ('ACHTERGROND', ',\n'.join(
             f'  {js(kw)}: {{s:{js(v["s"])},z:{js(v["z"])},n:{v["n"]}}}'
             for kw, v in sorted(achter.items()))),
@@ -312,6 +330,7 @@ def main():
     print(f'producenten: {vermeld} vermeldingen over {len(prod["per_streek"])} streken en '
           f'{sum(len(v) for v in prod["per_streek"].values())} jaargangen')
     print(f'staat van dienst: {sum(len(v) for v in prod.get("vaak", {}).values())} makers in twee of meer jaargangen')
+    print(f'huiszinnen: {sum(len(v) for m in huis.values() for v in m.values())} zinnen over {sum(len(m) for m in huis.values())} huizen')
     print(f'achtergrond: {len(achter)} plekken met een zin over de plek')
     print(f'rijpheid: {sum(len(v) for v in rijp.values())} jaren over {len(rijp)} streken')
     for k in sorted(rijp):

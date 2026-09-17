@@ -301,3 +301,14 @@ De Bardolino-melding bleek de kop van een grotere stapel. Een bredere controle o
 **Verwijswoorden.** "It is the first Monfortino since the 2015 vintage" staat niet op zichzelf en gaat bovendien over een wijn en niet over de jaargang.
 
 Samen kostte dit 133 van de 674 citaten. De gidsenzinnen van Decanter liepen via een eigen pad de tabel in en ontsnapten eerst aan alle drie; die krijgen nu dezelfde eisen. Een test telt fragmenten en jaartallen en houdt het aantal op nul.
+
+## 17 sep 2026 · Een zin over het huis, want die zegt meer dan een zin over de streek
+Een zin over de Provence zegt iets over duizend wijnen; een zin over Domaine Tempier zegt iets over de fles in je hand. Dat onderscheid kwam van de gebruiker en het klopt. Wikipedia is voor huizen geen bruikbare bron — de dekking is halfslachtig en de naamherkenning gevaarlijk, "Gaja" leverde een artikel over het Sanskriet-woord voor olifant — dus komt dit uit de vakpers.
+
+Decanter laat in zijn jaargangs- en proefverslagen de makers zelf aan het woord, in gewone lopende tekst die publiek wordt geserveerd. Uit 765 artikelen kwamen 2680 zinnen die een huis bij naam noemen; daarvan bleven er 703 over, over 561 huizen. "Cossart Gordon dates back to 1745 and is the oldest company still trading on Madeira." "At Domaine Fourrier, cellar master François Orisé says that the domaine lost 70% of its crop to mildew."
+
+Vier filters, elk uit een fout geleerd. **Alleen huizen waarvan hetzelfde artikel ook een wijn toont** — zonder die eis belandde een zin over het gehucht San Polo bij het gelijknamige domein in Montalcino. **Geen navigatie- en nieuwsbrieftekst**, die anders als staart aan een zin meeglipt. **Geen opsommingen**: onder Château Margaux stond "… a more classic balance is found in the wines.' Top picks: Château Margaux, Château d'Issan, Château Palmer." **En de zin moet over dít huis gaan**: noemt hij er drie of meer, of staat de naam pas in de tweede helft, dan is het huis een bijzin en geen onderwerp — zo verdween "La Gerla's La Pieve as well as both Cortonesi's … while Riccardo Campinoti at Le Ragnaie continues to impress" ten gunste van een zin die wel over Le Ragnaie gaat.
+
+De volgorde onder een fles is nu van specifiek naar algemeen: wat een criticus over dit huis schrijft, dan dat hij deze maker in deze jaargang aanraadt, dan zijn staat van dienst over andere jaargangen, dan de plek, dan de jaargang. Gemeten over 18.675 echte wijnnamen: 13,5% krijgt een zin over het eigen huis, en het aandeel zonder enige regel zakt naar 39,3%.
+
+Eén koppeling moest daarvoor worden verruimd. `huisVan` zocht in de namen uit de producententabel, en Madeira heeft die niet; daardoor bleef de zin over Cossart Gordon onbereikbaar terwijl hij er wel stond. De namenlijst per streek bevat nu ook de huizen waar alleen een zin over bestaat.
