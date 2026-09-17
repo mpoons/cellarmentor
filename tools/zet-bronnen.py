@@ -67,6 +67,21 @@ SCORE = re.compile(r'\d+(?:[.,]\d+)?\s*/\s*(?:5|10|20|100)\b|\b\d{2,3}\s*(?:poin
                    r'|\brating:?\s*\d|\b\d{2,3}[-\u2013]\d{2,3}\s*(?:points?|pts)\b', re.I)
 
 
+# Een citaat dat met een ánder jaartal begint gaat over een andere jaargang. Onder een Bardolino
+# 2018 stond "2019, a promising vintage that combines richness and freshness": waar, maar niet over
+# deze fles. Een jaartal verderop in de zin mag wel, want dat is meestal een vergelijking ("the
+# best on par with 1963"), en die zegt juist iets.
+VERWIJST = re.compile(r'^(it |its |this |that |these |those |they |their |he |she |there |such )', re.I)
+
+
+def hoort_bij_jaar(zin, jaar):
+    kop = zin[:20]
+    for m in re.finditer(r'\b(19\d\d|20\d\d)\b', kop):
+        if int(m.group(1)) != jaar:
+            return False
+    return True
+
+
 def zegt_iets(zin):
     woorden = re.findall(r"[A-Za-z\u00c0-\u024f][A-Za-z\u00c0-\u024f'\-]*", zin)
     if SCORE.search(zin) or len(woorden) < 5:
@@ -100,7 +115,9 @@ def kies_citaat(bevinding):
     kand = [b for b in bevinding['bronnen'] if b['uitgever'] not in GEWEIGERD]
     if not kand:
         return None
-    kand = [b for b in kand if zegt_iets(b['citaat'])]
+    kand = [b for b in kand if zegt_iets(b['citaat'])
+            and hoort_bij_jaar(b['citaat'], bevinding['jaar'])
+            and not VERWIJST.match(b['citaat'])]
     if not kand:
         return None
     laagA = [b for b in kand if b['laag'] == 'A'] or kand
@@ -184,15 +201,17 @@ def bouw():
     for streek, jaren in rijp.items():
         codes = {c for _, _, c in jaren.values()}
         rijpbron[streek] = ' en '.join(n for c, n in (('B', 'Berry Bros & Rudd'), ('D', 'Decanter')) if c in codes)
-    # Eén zin per plek uit Wikipedia. Geen oordeel en geen jaargang: dit gaat over de grond, de
-    # helling en de geschiedenis, en dat verandert niet per oogst.
-    achterpad = WORTEL / 'bronnen' / 'achtergrond-wikipedia.json'
+    # Eén zin per plek: de grond, de helling, het klimaat of de geschiedenis. Geen oordeel en geen
+    # jaargang, want dat verandert niet per oogst. De zinnen zijn onze eigen formulering van een
+    # feit en gaan daarom zonder bronvermelding de app in; waar het is nagekeken staat in
+    # bronnen/achtergrond.json, met de oorspronkelijke zin erbij.
+    achterpad = WORTEL / 'bronnen' / 'achtergrond.json'
     achter = {}
     if achterpad.exists():
         rauw = json.loads(achterpad.read_text(encoding='utf-8'))
         for kw, e in rauw.get('per_trefwoord', {}).items():
-            if e and e.get('zin') and e.get('titel'):
-                achter[kw] = {'s': e['streek'], 'z': e['zin'], 't': e['titel'], 'n': int(e.get('breedte') or 0)}
+            if e and e.get('zin'):
+                achter[kw] = {'s': e['streek'], 'z': e['zin'], 'n': int(e.get('breedte') or 0)}
 
     prodpad = WORTEL / 'bronnen' / 'producenten.json'
     prod = json.loads(prodpad.read_text(encoding='utf-8')) if prodpad.exists() else {'per_streek': {}, 'urls': {}}
@@ -230,7 +249,7 @@ def main():
             f'  {k}: {{' + ', '.join(f'{j}:{js(namen)}' for j, namen in sorted(v.items(), key=lambda t: int(t[0]))) + '}'
             for k, v in sorted(prod['per_streek'].items()))),
         ('ACHTERGROND', ',\n'.join(
-            f'  {js(kw)}: {{s:{js(v["s"])},z:{js(v["z"])},t:{js(v["t"])},n:{v["n"]}}}'
+            f'  {js(kw)}: {{s:{js(v["s"])},z:{js(v["z"])},n:{v["n"]}}}'
             for kw, v in sorted(achter.items()))),
         ('PROD_VAAK', ',\n'.join(
             f'  {k}: {{' + ', '.join(f'{js(n)}:{js(jj)}' for n, jj in sorted(v.items())) + '}'
@@ -255,7 +274,7 @@ def main():
     print(f'producenten: {vermeld} vermeldingen over {len(prod["per_streek"])} streken en '
           f'{sum(len(v) for v in prod["per_streek"].values())} jaargangen')
     print(f'staat van dienst: {sum(len(v) for v in prod.get("vaak", {}).values())} makers in twee of meer jaargangen')
-    print(f'achtergrond: {len(achter)} plekken met een zin uit Wikipedia')
+    print(f'achtergrond: {len(achter)} plekken met een zin over de plek')
     print(f'rijpheid: {sum(len(v) for v in rijp.values())} jaren over {len(rijp)} streken')
     for k in sorted(rijp):
         print(f'  {k}: {len(rijp[k])} jaren, {rijpbron[k]}')
