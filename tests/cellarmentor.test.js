@@ -472,8 +472,12 @@ test('een zin over dit huis gaat over dit huis, en is geen navigatietekst', () =
       for (const e of C.HUISZIN[s][naam]) {
         if (ROMMEL.test(e.z)) { fout++; console.error('rommel', s, naam, e.z); continue; }
         if (!/^[A-Z\u00c0-\u00dc\u2018"\u201c]/.test(e.z)) { fout++; console.error('fragment', s, naam, e.z); continue; }
-        if (!e.z.includes(naam)) { fout++; console.error('noemt het huis niet', s, naam, e.z); continue; }
-        if (e.z.indexOf(naam) > e.z.length * 0.55) { fout++; console.error('huis pas achteraan', s, naam, e.z); }
+        /* k:1 betekent: de zin stond in de alinea onder een kop met deze huisnaam erin. Decanters
+           portretten zetten de naam boven de tekst en herhalen hem er niet in, en zonder deze
+           uitzondering bleven juist die alinea's onbereikbaar. */
+        if (!e.z.includes(naam) && !e.k) { fout++; console.error('noemt het huis niet', s, naam, e.z); continue; }
+        if (!e.k && e.z.indexOf(naam) > e.z.length * 0.55) { fout++; console.error('huis pas achteraan', s, naam, e.z); }
+        if (!/[.!?][\u2019\u201d"')]?$/.test(e.z)) { fout++; console.error('geen hele zin', s, naam, e.z); }
         assert.ok(typeof e.p === 'string' && e.p.length > 4, s + ' ' + naam + ': geen vindplaats');
       }
     }
@@ -519,11 +523,31 @@ test('een citaat gaat over déze jaargang en is een hele zin', () => {
      the stellar 2015 vintage". Allebei waar, allebei over een andere fles. En 53 citaten begonnen
      met een kleine letter, wat onder een fles leest als een half afgemaakte gedachte. */
   const VERGELIJKT = /\b(than|since|versus|vs\.?|compared (to|with)|on par with|after|before|following|preceding|succeeding|unlike|rivall?ing|reminiscent of|in a row|repeat of|echo of|match for)\b/i;
-  let fragment = 0, misJaar = 0;
+  let fragment = 0, misJaar = 0, halfAf = 0;
+  /* Een zin die halverwege ophoudt leest onder een fles als een app die zijn zin niet afmaakt:
+     "Many producers sold off or declassified a significant portion of their". Een lidwoord of
+     voorzetsel achteraan verraadt dat, behalve als er gewoon een punt staat. */
+  const STAART = new Set(('the a an this that these those their its his her our my your one another each every ' +
+    'of in to and or but with for from as at by on into onto than then when while which who whom whose ' +
+    'is are was were be been being has have had will would can could should might must do does did ' +
+    'more most less least very such some any no not also even under about between ' +
+    'towards during before after because so if though although however whether both either neither').split(' '));
   for (const k of Object.keys(C.CITAAT)) {
     for (const j of Object.keys(C.CITAAT[k])) {
+      /* Van een uitgever die niet geciteerd wil worden staat de zin niet in het bestand; daar valt
+         niets te toetsen behalve dat er inderdaad niets staat. */
       const zin = C.CITAAT[k][j].t;
+      if (C.CITAAT_STIL.includes(C.CITAAT[k][j].u)) {
+        assert.equal(zin, '', k + ' ' + j + ': van deze uitgever hoort geen zin in het bestand te staan');
+        continue;
+      }
       if (!/^[A-Z\u00c0-\u00dc"\u201c]/.test(zin.trim())) { fragment++; console.error('fragment', k, j, zin); }
+      if (!/[.!?][\u2019\u201d"')]?$/.test(zin.trim())) {
+        const w = zin.trim().match(/[\w'\u2019-]+/g) || [];
+        if (/[,;:\u2013\u2014-]$/.test(zin.trim()) || (w.length && STAART.has(w[w.length - 1].toLowerCase()))) {
+          halfAf++; console.error('half af', k, j, zin);
+        }
+      }
       if (zin.includes(j)) continue;
       for (const m of zin.matchAll(/\b(19\d\d|20\d\d)\b/g)) {
         if (m[1] === j) continue;
@@ -534,6 +558,7 @@ test('een citaat gaat over déze jaargang en is een hele zin', () => {
     }
   }
   assert.equal(fragment, 0, fragment + ' citaten beginnen met een kleine letter');
+  assert.equal(halfAf, 0, halfAf + ' citaten houden halverwege op');
   assert.equal(misJaar, 0, misJaar + ' citaten gaan over een andere jaargang');
 });
 test('een zin over de plek hoort bij de meest specifieke plek, en zegt iets over déze wijn', () => {
@@ -720,10 +745,15 @@ test('een citaat is een zin die iets beweert, geen puntenscore en geen wijnnaam'
   /* Dit stond fout in de app: elf citaten toonden Decanters cijfers ("Languedoc 2022 vintage
      rating: 4.5 / 5", "2023 4/5 2022 3/5 ..."). Punten overnemen is precies wat deze app niet
      doet, en via een citaat kwam het er alsnog in. */
-  const SCORE = /\d+([.,]\d+)?\s*\/\s*(5|10|20|100)\b|\b\d{2,3}\s*(points?|pts)\b|\brating:?\s*\d/i;
+  /* De koppelteken-vorm stond er eerst niet bij, en daar kwamen vier scores doorheen tot in de
+     app: "the 100pt Chateau Cheval Blanc 1990", "among my top-scoring wines with 96-points",
+     "the first 100-point wine from Oregon" en "100-point The High Wire Chardonnay". Sterren
+     tellen ook: "not awarding so hedonistic a vintage the full 5 stars". */
+  const SCORE = /\d+([.,]\d+)?\s*\/\s*(5|10|20|100)\b|\b\d{2,3}\s*[-\u2013]?\s*(points?|pts?|pointer)\b|\brating:?\s*\d|\b(one|two|three|four|five)\s+stars?\b|\b\d\s*stars?\b/i;
   for (const k of Object.keys(C.CITAAT)) {
     for (const j of Object.keys(C.CITAAT[k])) {
       const zin = C.CITAAT[k][j].t;
+      if (!zin) continue;
       assert.ok(!SCORE.test(zin), k + ' ' + j + ': puntenscore in een citaat \u2014 ' + zin);
       const woorden = zin.match(/[A-Za-z\u00c0-\u024f][A-Za-z\u00c0-\u024f'-]*/g) || [];
       assert.ok(woorden.length >= 5, k + ' ' + j + ': te kort om een bewering te zijn \u2014 ' + zin);
@@ -766,7 +796,8 @@ test('citaten: de juiste bron bij de juiste fles, en niet citeren wie dat niet w
   for (const k of Object.keys(C.CITAAT)) {
     for (const j of Object.keys(C.CITAAT[k])) {
       const e = C.CITAAT[k][j];
-      assert.ok(e.u && e.p !== undefined && e.t, k + ' ' + j + ': vindplaats is niet compleet');
+      assert.ok(e.u && e.p !== undefined && (e.t || C.CITAAT_STIL.includes(e.u)),
+        k + ' ' + j + ': vindplaats is niet compleet');
       assert.ok(!/winespectator/i.test(e.p), 'Wine Spectator weigert ClaudeBot en hoort er niet in te staan');
     }
   }

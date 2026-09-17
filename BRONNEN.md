@@ -153,8 +153,15 @@ en GPTBot niet. `vinous.com`, `moselfinewines.com`, `larvf.com` en `bbr.com` heb
 Vinous-artikel staat: "No portion of this article may be copied, shared or redistributed without
 prior consent from Vinous." De app toont bij die jaargangen dus de uitgever en een link naar het
 stuk, en niet hun zin. De lezer ziet nog steeds wie het oordeel draagt en komt met één tik bij het
-origineel uit, wat is wat die notitie beschermt. Van de 426 vindplaatsen in de app zijn er 237 op
+origineel uit, wat is wat die notitie beschermt. Van de 649 vindplaatsen in de app zijn er 203 op
 die manier stil.
+
+Sinds v98 staat hun zin ook niet meer in het bestand zelf. Hij werd niet getoond, maar hij stond wel
+in de html die iedereen kan openen, en dat is ook kopiëren. Daarmee verviel meteen de reden om hun
+vindplaats aan leeseisen te onderwerpen — of zo'n zin mooi loopt doet er niet toe als niemand hem
+ziet — en dat leverde 108 streek-jaargangen op die nu een uitgever met een link tonen waar eerder
+niets stond. De eis dat het stuk over déze jaargang gaat blijft wel staan, want daar wijst de link
+naartoe.
 
 **Bij de rest staat een kort citaat, met bronvermelding en link.** Dat is waar het citaatrecht voor
 bestaat: een korte aanhaling uit een rechtmatig openbaar gemaakt werk, in dienst van een oordeel,
