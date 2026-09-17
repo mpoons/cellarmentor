@@ -175,3 +175,26 @@ de site zelf, niet de netwerkpolicy. Dat is jammer, want het is de enige brede p
 twee en drie niet is gelukt. `wine-searcher.com` (403 op beide) valt om dezelfde reden af.
 `thewinesociety.com` is nu wel leesbaar en publiceert drinkvensters bij zijn wijnen; dat is de beste
 overgebleven ingang voor een volgende ronde.
+
+## Wikipedia, en waarom de user-agent er toe doet
+
+De achtergrondzinnen per plek komen uit de Engelstalige Wikipedia, via de action-API
+(`https://en.wikipedia.org/w/api.php`). Twee dingen die gemeten zijn en die een volgende ronde
+zich kan besparen.
+
+Wikimedia weigert vanaf dit netwerk elk verzoek met `429 You are making too many requests`, ook
+het eerste, zolang de user-agent geen contactgegevens draagt. Een browserstring helpt niet; de
+gevraagde vorm wel: `CellarMentor-research/1.0 (https://github.com/mpoons/cellarmentor; <e-mail>)`.
+Daarmee komt hetzelfde verzoek meteen door. Dat staat zo in hun eigen beleid, en het is geen
+omweg maar precies wat ze vragen.
+
+De tekst staat onder CC BY-SA 4.0. De app toont daarom een korte zin met de naam van de bron, de
+titel van het artikel, de licentie en een link naar het artikel zelf — dezelfde vorm als bij de
+citaten van uitgevers. De zinnen worden niet vertaald: een vertaling is niet machinaal terug te
+zoeken in het artikel, en die controle is wat de rest van dit dossier draagt.
+
+Het artikel over een appellation is vaak niet het artikel over de plaats. "Pauillac" is een
+gemeente met een zeehaven; "Pauillac AOC" is de appellation. De zoekvolgorde is daarom
+`<naam> wine appellation`, `<naam> AOC`, `<naam>`, en er wordt alleen een titel gekozen die de
+naam zelf bevat — zonder die eis kreeg "Barolo" het artikel over het huis Gaja en "Chablis" het
+algemene artikel Burgundy wine.

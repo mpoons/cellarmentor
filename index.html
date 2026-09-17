@@ -1591,6 +1591,211 @@ function citaatVan(w){
     geschreven: c.y || null, rijptaal: !!c.r };
 }
 
+/* Wat voor plek dit is. De app wist tot nu toe wat een jaargang in een streek deed en niets over
+   de grond eronder. Een zin als "The characteristic terroir of Ch\u00e2teauneuf-du-Pape comes from a
+   layer of stones called Galets roul\u00e9s" is wat een sommelier erbij zou zeggen, en anders dan een
+   jaargangoordeel veroudert hij niet.
+
+   De tekst komt van Wikipedia en staat onder CC BY-SA. De app toont daarom een korte zin met de
+   bron erbij en een link naar het artikel, net als bij de citaten van uitgevers; de licentie staat
+   in het blad achter de fles. Elke zin is machinaal teruggezocht in het artikel.
+
+   De koppeling loopt via de streek die streekVan al heeft bepaald. Dat is met opzet: een trefwoord
+   als 'saint georges' hoort bij twee verschillende plekken, en de streek is al uitgezocht. Binnen
+   die streek wint het langste trefwoord, zodat een Pauillac de zin over Pauillac krijgt en niet
+   die over Bordeaux. */
+const ACHTERGROND_BASIS = 'https://en.wikipedia.org/wiki/';
+const ACHTERGROND_BRON = 'Wikipedia';
+const ACHTERGROND = {
+  "abruzzo": {s:"italie_midden",z:"Abruzzo is known for its landscapes and natural environment, parks and nature reserves, and characteristic hillside areas rich in vineyards and olive groves.",t:"Abruzzo",n:18},
+  "aconcagua": {s:"chili_centraal",z:"Soils: clay and sandy to the east; granite and clay to the west.",t:"Aconcagua (wine region)",n:28},
+  "ajaccio": {s:"corsica",z:"The vineyards are planted on granitic soil that is particularly suited to wine-growing.",t:"Ajaccio AOC",n:1},
+  "alexander valley": {s:"sonoma",z:"Further acreage was realigned in 1988 from Chalk Hill AVA to accommodate existing vineyards that long labeled their wines as Alexander Valley but existed across the southeastern boundary.",t:"Alexander Valley AVA",n:7},
+  "alicante": {s:"spanje_midden",z:"In 1958, Alicante Bouschet covered 24,168 hectares (mainly across southern France); by 2011, plantings represented less than 4,000 hectares.",t:"Alicante Bouschet",n:0},
+  "aloxe": {s:"bourgogne_w",z:"In 2007, 38.08 hectares (94.1 acres) of the total Aloxe-Corton vineyard surface consisted of Premier Cru vineyards, all of them for red wine only.",t:"Aloxe-Corton wine",n:18},
+  "alsace": {s:"alsace",z:"Alsace's geology is quite varied, with many different kinds of soils represented in the vineyards.",t:"Alsace wine",n:118},
+  "anderson valley": {s:"ca_noord",z:"The bottom land soils in Anderson Valley are all either derived from old valley filling material, or more recent alluvial deposits.",t:"Anderson Valley AVA",n:2},
+  "australia": {s:"australie",z:"In 1853, Australia had less than six hundred hectares of grapes, with only a portion used for winemaking.",t:"Australian wine",n:457},
+  "barbaresco": {s:"piemonte",z:"The soils of the Barbaresco zone are composed primarily of calcareous marl dating from the Tortonian epoch.",t:"Barbaresco",n:208},
+  "barbera": {s:"piemonte",z:"Barbera can adapt to a wide range of vineyard soils but tends to thrive most in less fertile calcareous soils and clay loam.",t:"Barbera",n:24},
+  "barolo": {s:"piemonte",z:"The Central Valley to the west includes the communes of Barolo and La Morra with soils higher in clay, manganese and magnesium oxide.",t:"Barolo",n:748},
+  "barossa": {s:"australie_za",z:"The many hectares of vineyards are the most distinctive feature of the area, especially when viewed from the Mengler Hill lookout, positioned on the Barossa Range which forms much of the eastern side of the valley.",t:"Barossa Valley",n:155},
+  "batard montrachet": {s:"bourgogne_w",z:"In terms of the Côte d'Or hillside, Bâtard-Montrachet is located below Montrachet, with the Route des Grands Crus running between the two vineyards.",t:"Bâtard-Montrachet",n:143},
+  "beaujolais": {s:"beaujolais",z:"The southern half of the region, also known as the Bas Beaujolais, has flatter terrain with richer, sandstone and clay based soils with some limestone patches.",t:"Beaujolais",n:99},
+  "beaune": {s:"bourgogne_w",z:"Côte de Beaune AOC, often confused with Côte de Beaune-Villages AOC, is an AOC for a small number of vineyards high on the slopes above Beaune.",t:"Beaune wine",n:313},
+  "bergerac": {s:"sudwest",z:"Bergerac soil also features excellent drainage as a result of its proximity to the river Dordogne.",t:"Bergerac wine",n:0},
+  "bonnes mares": {s:"bourgogne_r",z:"Bonnes Mares is located a little to the north of the Chambolle-Musigny village, and borders the Route des Grands Crus in the east and the Grand Cru vineyard Clos de Tart in the north.",t:"Bonnes Mares",n:142},
+  "bordeaux": {s:"bordeaux",z:"The soil of Bordeaux is composed of gravel, sandy stone, and clay.",t:"Bordeaux wine",n:2366},
+  "brunello": {s:"toscane",z:"Vineyards in Montalcino are planted in varied soils—including limestone, clay, schist, volcanic soil and a crumbly marl known as galestro—at altitudes ranging from 149 m to 500 m.",t:"Brunello di Montalcino",n:339},
+  "bugey": {s:"jura",z:"Vineyards of the two Bugey appellations cover around 500 hectares (1,200 acres) spread over 67 communes in the department of Ain.",t:"Bugey wine",n:0},
+  "burgundy": {s:"bourgogne_w",z:"Burgundy is in some ways the most terroir-oriented region in France; immense attention is paid to the area of origin, and in which of the region's 400 types of soil a wine's grapes are grown.",t:"Burgundy wine",n:7750},
+  "cabardes": {s:"languedoc",z:"The soil composition varies between chalky clay, limestone and rocky foothill terroir.",t:"Cabardès AOC",n:0},
+  "cadillac": {s:"bordeaux",z:"The grape-pickers are ordered to pick only those clusters or part-clusters which are either fully ripe or have heightened sugar content brought about by noble rot.",t:"Cadillac AOC",n:0},
+  "california": {s:"californie",z:"California has over 477,000 acres (193,000 ha) planted under vines mostly located in a stretch of land covering over 700 miles (1,100 km) from Mendocino County to the southwestern tip of Riverside County.",t:"California wine",n:632},
+  "calistoga": {s:"napa",z:"Slope aspect and exposure to the sun in the Calistoga region thus is quite distinct from that in any other AVA within the Napa Valley region.",t:"Calistoga AVA",n:1},
+  "campo de borja": {s:"rioja",z:"The soils are mainly dark lime-bearing soils, of average rockiness, good drainage, average level of organic matter and rich in nutrients.",t:"Campo de Borja (DO)",n:0},
+  "central otago": {s:"nieuwzeeland",z:"At around 300 metres (980 ft) elevation, Central Otago's vineyards are protected from New Zealand's characteristic maritime climate by high mountains up to 3,700 metres (12,100 ft) high.",t:"Central Otago wine region",n:66},
+  "chablis": {s:"bourgogne_w",z:"By the 19th century there were nearly 40,000 hectares (98,840 acres) of vines planted in Chablis with vineyards stretching from the town of Chablis to Joigny and Sens along the Yonne.",t:"Chablis (AOC)",n:411},
+  "chalone": {s:"ca_kust",z:"The soils of the Chalone area has limestone and decomposed granite soil and significantly differ from soils of surrounding areas.",t:"Chalone AVA",n:3},
+  "chambertin": {s:"bourgogne_w",z:"In 2007, 78.24 hectares (193.3 acres) of the total Gevrey-Chambertin vineyard surface consisted of Premier Cru vineyards.",t:"Gevrey-Chambertin wine",n:1434},
+  "chambertin clos de beze": {s:"bourgogne_r",z:"In 2008, 14.67 hectares (36.3 acres) of vineyard surface was in production for Chambertin AOC, and 508 hectoliter of wine was produced under the Chambertin designation, corresponding to slightly under 68,000 bottles.",t:"Chambertin-Clos de Bèze",n:100},
+  "charlemagne": {s:"bourgogne_w",z:"In 2008, only 0.28 hectares (0.69 acres) of the En Charlemagne vineyard surface was in production for Charlemagne AOC, producing a total of 7 hectoliters (essentially three barrels worth of wine).",t:"Corton-Charlemagne",n:130},
+  "chassagne": {s:"bourgogne_w",z:"Criots-Bâtard-Montrachet, 1.57 hectares (3.9 acres), is located entirely within Chassagne-Montrachet.",t:"Chassagne-Montrachet wine",n:260},
+  "chateauneuf": {s:"rhone_z",z:"The characteristic terroir of Châteauneuf-du-Pape comes from a layer of stones called Galets roulés (\"pebbles\").",t:"Châteauneuf-du-Pape AOC",n:384},
+  "chevalier montrachet": {s:"bourgogne_w",z:"In terms of the Côte d'Or hillside, Chevalier-Montrachet is located above Montrachet and is located highest of the five \"Montrachet\" vineyards.",t:"Chevalier-Montrachet",n:47},
+  "chianti": {s:"toscane",z:"The vineyard soils of the area are predominantly marl and chalk.",t:"Chianti",n:59},
+  "chinon": {s:"loire",z:"The vineyards of the Chinon AOC cover the relatively steep banks of the Vienne as well as the less steep slopes running northward from the hills above Chinon to the Loire.",t:"Chinon AOC",n:29},
+  "cigales": {s:"ribera",z:"The soil is light brown in color and is formed by lime-bearing sand and gypsum-bearing clays, lying on a subsoil of clays and marls.",t:"Cigales (wine)",n:0},
+  "clos de la roche": {s:"bourgogne_r",z:"The largest landholder in Clos de la Roche is Domaine Ponsot, who own 3 of the original 4 hectares of the vineyard, which has since been expanded to the current 13.41 hectares.",t:"Clos de la Roche",n:144},
+  "clos de tart": {s:"bourgogne_r",z:"Clos de Tart is a monopole, owned in its entirety by the French holding company Groupe Artemis since its 2017 purchase from the Mommessin family.",t:"Clos de Tart",n:16},
+  "clos de vougeot": {s:"bourgogne_r",z:"The soils of the middle part of the vineyard consist of softer limestone with clay and some gravel, and moderate drainage.",t:"Clos de Vougeot",n:174},
+  "clos des lambrays": {s:"bourgogne_r",z:"Clos de Lambrays totals 8.84 hectares (21.8 acres) and most of it (8.66 hectares (21.4 acres)) is owned by the winery Domaine des Lambrays.",t:"Clos des Lambrays",n:18},
+  "clos saint denis": {s:"bourgogne_r",z:"Clos Saint-Denis was originally a church-owned vineyard, belonging to the Collégiale de St-Denis de Vergy, named after Saint Denis.",t:"Clos Saint-Denis",n:85},
+  "colares": {s:"alentejo",z:"Because grapevines there are grown directly in the sand, and phylloxera aphids cannot live on sand, Colares vineyards are some of the only European vines that are not grafted upon American rootstocks.",t:"Colares DOC",n:2},
+  "colli orientali": {s:"italie_no",z:"The climate and soil is very similar to the neighboring DOC of Collio Goriziano and the two region share many winemaking similarities as well.",t:"Colli Orientali del Friuli",n:5},
+  "columbia valley": {s:"washington",z:"The viticultural area includes the drainage basin of the Columbia River and its tributaries through much of Washington.",t:"Columbia Valley AVA",n:2},
+  "condrieu": {s:"rhone_n",z:"The Condrieu AOC covers more than 500 acres (202 ha) of hilly terrain located along a 12 miles (19 km) stretch of the Rhône.",t:"Condrieu AOC",n:22},
+  "coombsville": {s:"napa",z:"Coombsville lies upon wide alluvial deposits created by the weathering of the hillsides and its soils contain abundant rock, gravel and, in some areas, layered with volcanic ash deposits from Mount George.",t:"Coombsville AVA",n:8},
+  "coonawarra": {s:"australie_za",z:"Coonawarra's terra rossa soil is one of the notable terroirs of the New World, covering an area of just 15 km x 2 km north of Penola.",t:"Coonawarra wine region",n:16},
+  "corbieres": {s:"languedoc",z:"Due to its size and geography, Corbières encompasses an enormous variety of soil types and microclimates.",t:"Corbières AOC",n:2},
+  "corsica": {s:"corsica",z:"The average elevation of vineyards in Corsica is 300 metres (1,000 ft) above sea levels where they are susceptible to strong winds.",t:"Corsican wine",n:3},
+  "corton": {s:"bourgogne_r",z:"The vineyard surface of these three appellations totalled 147.5 hectares (364 acres) in 2008.",t:"Corton (wine)",n:344},
+  "corton charlemagne": {s:"bourgogne_w",z:"In 1998, the combined Corton-Charlemagne and Charlemagne grand cru contained 51 hectares (130 acres) that produced 2325 hectoliters of Grand Cru white wine.",t:"Corton-Charlemagne",n:119},
+  "costieres": {s:"rhone_z",z:"The soil depth from 3 to 15 metres is largely responsible for the variations of style within this AOC.",t:"Costières de Nîmes AOC",n:0},
+  "cote rotie": {s:"rhone_n",z:"The Côte-Rôtie is subdivided into two main sections of varying soil compositions - the Côte Brune (\"brown slope\") in the north on dark, iron-rich schist and the Côte Blonde with its pale granite and schist soil.",t:"Côte-Rôtie AOC",n:216},
+  "coteaux du layon": {s:"loire",z:"The AOC of Bonnezeaux is located in the eastern part of the Coteaux du Layon area, and has about 110 hectares (270 acres) of vineyards.",t:"Coteaux du Layon",n:1},
+  "cotes du rhone": {s:"rhone_z",z:"The vines are cultivated on very steep slopes making the harvest extremely arduous.",t:"Côtes du Rhône AOC",n:50},
+  "dry creek": {s:"sonoma",z:"At the turn of the 20th century, Dry Creek Valley was one of California's most prominent producers of Zinfandel with nine wineries and 883 acres (357 ha) of vineyards contributing to the state's wine boom.",t:"Dry Creek Valley AVA",n:7},
+  "dundee": {s:"oregon",z:"The Yamhill-Carlton region, to the Dundee area's west and northwest, has soils derived from marine sediments and ocean floor volcanic basalt with high water holding capacity.",t:"Dundee Hills AVA",n:6},
+  "echezeaux": {s:"bourgogne_r",z:"Échezeaux, which in the early 2000s had 80 vineyard owners, has a reputation for being somewhat variable in quality, which is a reputation it shares with its likewise much sub-divided neighbour Clos de Vougeot.",t:"Échezeaux",n:233},
+  "edna valley": {s:"ca_kust",z:"With moderate sunshine, cool maritime fog, and rich oceanic and volcanic soils, the Edna Valley appellation has California's longest growing season.",t:"Edna Valley AVA",n:1},
+  "el dorado": {s:"californie",z:"Varying in elevation and topography, each soil offers good drainage and the nutrients needed to encourage vines producing rich, deeply flavored grapes.",t:"El Dorado AVA",n:4},
+  "faugeres": {s:"languedoc",z:"The appellation area covers 1800 hectares, and consists mainly of primary, schist soils.",t:"Faugères AOC",n:0},
+  "fixin": {s:"bourgogne_w",z:"Premiers Crus located within the commune of Fixin: Arvelets, Hervelets, Clos du Chapitre, Clos Napoléon, and Clos de la Perrière.",t:"Fixin wine",n:30},
+  "gaillac": {s:"sudwest",z:"On the Gaillac terroir, the variety Fer Servadou is known as Braucol.",t:"Gaillac AOC",n:0},
+  "gevrey": {s:"bourgogne_w",z:"In 2007, 78.24 hectares (193.3 acres) of the total Gevrey-Chambertin vineyard surface consisted of Premier Cru vineyards.",t:"Gevrey-Chambertin wine",n:721},
+  "gioia del colle": {s:"puglia",z:"Gioia del Colle's climate is mediterranean (Köppen Csa), but it has peaks of continentality due to the altitude and the distance from the sea.",t:"Gioia del Colle",n:0},
+  "grands echezeaux": {s:"bourgogne_r",z:"Grands Échezeaux borders on Clos de Vougeot and its wall in the east and north, and on Échezeaux in the west and south.",t:"Grands Échezeaux",n:40},
+  "hermitage": {s:"rhone_n",z:"With 345 acres (140 ha) of vines, in soil composed greatly of granite and gravels, Hermitage produces 730,000 bottles of mostly red wines, annually.",t:"Hermitage AOC",n:181},
+  "howell mountain": {s:"napa",z:"The soil in the appellation is volcanic with excellent drainage.",t:"Howell Mountain AVA",n:11},
+  "hungary": {s:"tokaj",z:"Hungary lies within the Danube River's drainage basin and is dominated by great lowland plains.",t:"Hungary",n:31},
+  "irouleguy": {s:"sudwest",z:"The vineyards are often located on extremely steep slopes with inclines of up to 60°.",t:"Irouléguy AOC",n:0},
+  "ischia": {s:"campanie",z:"Vineyards planted within the 179 hectares (440 acres) boundaries of the DOC tend to be on volcanic soils with high pumice, phosphorus and potassium content.",t:"Ischia",n:0},
+  "julienas": {s:"beaujolais",z:"The area of Juliénas has one of the most varied soil types in the region and includes schist, diorite, sandstone and some clay.",t:"Juliénas AOC",n:0},
+  "knights valley": {s:"sonoma",z:"Mallocomes Valley would later be renamed \"Knights Valley.\" It's documented that Knight grew 17 acres (6.9 ha) of wine grapes, thought to have been planted in 1874, and shipped to wineries in Napa Valley.",t:"Knights Valley AVA",n:2},
+  "la clape": {s:"languedoc",z:"The Cers blows through this corridor towards the Mediterranean, striking the topography of the Massif de la Clape, sometimes with enough force to uproot large trees on the massif's steep slopes with flat soils.",t:"Massif de la Clape",n:0},
+  "la grande rue": {s:"bourgogne_r",z:"The grand cru appellation occupies an area of 1.6525 hectares, 1.4207 in the historic lieu-dit Grande Rue, and parcels of .2096h and .0222h in \"les Gaudichots\".",t:"La Grande Rue",n:15},
+  "la mancha": {s:"spanje_midden",z:"The La Mancha DO, which spans parts of Albacete and Cuenca, is the world's largest wine DO, covering 190,980 hectares (471,900 acres) and 182 municipalities.",t:"La Mancha",n:0},
+  "lalande de pomerol": {s:"bordeaux",z:"The estates of Néac feature clay and gravelly soil more commonly seen in neighboring Pomerol, while the estates of Lalande lie on sandier soil.",t:"Lalande-de-Pomerol AOC",n:1},
+  "languedoc": {s:"languedoc",z:"The composition of soil in the Languedoc varies from the chalk, limestone and gravel based soils inland to more alluvial soils near the coast.",t:"Languedoc-Roussillon wine",n:57},
+  "lirac": {s:"rhone_z",z:"The terroir in Lirac is somewhat similar to Châteauneuf-du-Pape both in variety and hours of sun (2700).",t:"Lirac AOC",n:7},
+  "loire": {s:"loire",z:"The soil around the Touraine area is a variety of limestone with excellent drainage that is known as tuffeau which is the same material used to build many of the famous Loire Valley Châteaux.",t:"Loire Valley (wine)",n:261},
+  "macon": {s:"bourgogne_w",z:"Mâcon is surrounded by a vineyard of 12,355 acres (5,000 ha) which produces 49 million bottles of wine including the famous crus like Saint-Véran or Pouilly-Fuissé.",t:"Mâcon",n:36},
+  "malleco": {s:"chili_zuid",z:"The volcanic soil in Malleco, composed mainly of sand and clay, are reasonably well drained.",t:"Malleco Province",n:2},
+  "marcillac": {s:"sudwest",z:"The vines are planted in red clay soils rich in iron oxide that are known locally as rougiers.",t:"Marcillac AOC",n:0},
+  "margaret river": {s:"australie_wa",z:"Margaret River is the major geographical indication wine region in southwest Western Australia, with 5,840 hectares under vine and 215 wineries as at 2012.",t:"Margaret River (wine region)",n:47},
+  "margaux": {s:"bordeaux",z:"Margaux contains 1,413 hectares (3,490 acres) of vineyards, making it the second largest appellation in the Haut-Médoc (after Saint-Estèphe).",t:"Margaux AOC",n:257},
+  "marsannay": {s:"bourgogne_r",z:"In 2008, 227 hectares (560 acres) of vineyard surface was in production for Marsannay wine, of which 32.01 hectares (79.1 acres) were used for Marsannay rosé.",t:"Marsannay wine",n:62},
+  "mcminnville": {s:"oregon",z:"According to the petitioner, this higher elevation causes the McMinnville viticultural area to have distinctive soils and climate when compared to the lower parts of the Willamette Valley.",t:"McMinnville AVA",n:5},
+  "menetou salon": {s:"loire",z:"Menetou-Salon is the name of an Appellation d'origine contrôlée for wine (AOC), with vineyards extending over 330 hectares (820 acres) over the hill.",t:"Menetou-Salon",n:1},
+  "meursault": {s:"bourgogne_w",z:"In 2007, 96.97 hectares (239.6 acres) of the total Meursault vineyard surface consisted of Premier Cru vineyards, of which 0.82 hectares (2.0 acres) red Meursault Premier Cru.",t:"Meursault wine",n:506},
+  "monbazillac": {s:"sauternes",z:"Only wine made from grapes grown in Monbazillac that are affected by the \"noble rot\" (Botrytis cinerea) can be sold under the Monbazillac designation.",t:"Monbazillac AOC",n:0},
+  "montalcino": {s:"toscane",z:"The lower slopes of the Montalcino hill itself are dominated by vines and olive orchards.",t:"Montalcino",n:365},
+  "monthelie": {s:"bourgogne_r",z:"In 2007, 35.57 hectares (87.9 acres) of the total Monthélie vineyard surface consisted of Premier Cru vineyards, of which 33.94 hectares (83.9 acres) red and 1.63 hectares (4.0 acres) white Monthélie Premier Cru.",t:"Monthélie wine",n:28},
+  "montrachet": {s:"bourgogne_w",z:"Montrachet and Bâtard-Montrachet cross the communal border and are shared with Chassagne-Montrachet, totaling respectively 7.99 hectares (19.7 acres) and 11.24 hectares (27.8 acres) of vineyards in 2008.",t:"Puligny-Montrachet wine",n:838},
+  "moon mountain": {s:"sonoma",z:"Moon Mountain's volcanic origins gave the area's winemakers cause to petition for a separate AVA title, which was approved in 2013.",t:"Moon Mountain District Sonoma County",n:1},
+  "moriles": {s:"jerez",z:"The white soil of Montilla-Moriles is rich in calcium carbonate; the soil and subsoil are formed by soft loams, poor in natural organic material, and are not very fertile.",t:"Montilla-Moriles",n:5},
+  "mosel": {s:"duitsland",z:"In southeastern Luxembourg, along the country's 42 km river border with Germany, 1 290 hectares of vines are used to produce wine under the designation Appellation Contrôlée Moselle Luxembourgeoise.",t:"Moselle wine",n:188},
+  "mount veeder": {s:"napa",z:"The soils have developed from sandstones and shales which are absent on the southwest slopes of the Mayacamas Mountains in Sonoma County.",t:"Mount Veeder AVA",n:6},
+  "muscadet": {s:"loire",z:"The soil in this area is rich in magnesium and potassium, made up of clay, gravel and sand above subsoils of gneiss, schist, granite and volcanic rock.",t:"Muscadet",n:1},
+  "musigny": {s:"bourgogne_w",z:"In 2008, 10.32 hectares (25.5 acres) of vineyard surface was in production within the Musigny AOC, and 307 hectoliter of wine was produced, of which 284 hectoliter red wine and 23 hectoliter white wine.",t:"Musigny AOC",n:544},
+  "nero d avola": {s:"sicilie",z:"In 2020, Sonoma County's Hanna Winery planted 2.4 acres of Nero on a Hillside block in their Alexander Valley Vineyard.",t:"Nero d'Avola",n:0},
+  "new zealand": {s:"nieuwzeeland",z:"The vineyards are the highest in New Zealand – at 200 to 400 metres (660 to 1,310 ft) above sea level – on the steep slopes of lakesides and the edges of deep river gorges, often in glacial soils.",t:"New Zealand wine",n:212},
+  "oakville": {s:"napa",z:"The contribution of small percentages of metamorphic clasts (such as serpentine and chert) on the Rutherford fan soils contributes to minor soil differences between the Rutherford viticultural area and Oakville.",t:"Oakville AVA",n:23},
+  "oregon": {s:"oregon",z:"The Oregon subsection has 5 wineries and 1,200 acres (486 ha) planted.",t:"Oregon wine",n:74},
+  "ornellaia": {s:"toscane",z:"From a 91 ha (220-acre) estate, the vineyard area extends 76 ha (190 acres) in two separate locations, Ornellaia and Bellaria.",t:"Ornellaia",n:42},
+  "penedes": {s:"priorat",z:"The Alt Penedès vineyards are at an elevation of up to 800 metres (2,600 ft) above sea level, where the native Parellada is the dominant variety.",t:"Penedès DOP",n:5},
+  "pomerol": {s:"bordeaux",z:"The soils of the Pomerol region are very diverse with a mixture of gravel, sand and clay scattered across the plateau.",t:"Pomerol AOC",n:290},
+  "pommard": {s:"bourgogne_r",z:"In 2007, 116.44 hectares (287.7 acres) of the total Pommard vineyard surface consisted of Premier Cru vineyards.",t:"Pommard wine",n:212},
+  "portugal": {s:"portugal",z:"The quality and great variety of wines in Portugal are due to noble castas, microclimates, soils and proper technology.",t:"Portuguese wine",n:186},
+  "pouilly fuisse": {s:"bourgogne_w",z:"West of Mâcon the land rises up to form Mont de Pouilly and other limestone hills, covered in the alkaline clay that best suits Chardonnay.",t:"Pouilly-Fuissé",n:55},
+  "priorat": {s:"priorat",z:"The area is characterised by its unique terroir of black slate and quartz soil known as llicorella.",t:"Priorat DOQ",n:61},
+  "provence": {s:"provence",z:"The soil across Provence is varied, lacking uniformity and generalization.",t:"Provence wine",n:32},
+  "puligny": {s:"bourgogne_w",z:"Bienvenues-Bâtard-Montrachet, 3.53 hectares (8.7 acres), and Chevalier-Montrachet, 7.47 hectares (18.5 acres), are located entirely within Puligny-Montrachet.",t:"Puligny-Montrachet wine",n:333},
+  "quincy": {s:"loire",z:"The soil has three layers: a soil made up of sand and gravel on an underlay of clay, a sandy soil covered by red sand and a sandy-silt soil on a clayey-sand or clay with slightly sandy soil.",t:"Quincy AOC",n:0},
+  "ribbon ridge": {s:"oregon",z:"Vineyard activity began on Ribbon Ridge in 1980 with the establishment of Ridgecrest Vineyards by Harry Peterson-Nedry beginning with 12 acres (5 ha).",t:"Ribbon Ridge AVA",n:2},
+  "ribeira sacra": {s:"spanje_wit",z:"Most of the vineyards in Ribeira Sacra are planted along the Miño, Sil, Cabe and Bibei river canyons, with slopes that can reach nearly 100% gradient in some points.",t:"Ribeira Sacra (DO)",n:2},
+  "ribeiro": {s:"spanje_wit",z:"Most of Ribeiro's soils are granitic, with sandy loam textures.",t:"Ribeiro (DO)",n:0},
+  "romanee": {s:"bourgogne_w",z:"In 2008, 153.6 hectares (380 acres) of vineyard surface was in production for Vosne-Romanée wine at village and Premier Cru level, and 5,955 hectoliters of wine was produced, corresponding to almost 800,000 bottles.",t:"Vosne-Romanée wine",n:585},
+  "romanee conti": {s:"bourgogne_r",z:"In the 1750s, the price of de Croonembourg's La Romanée wine was six to seven times as high as Clos de Vougeot wine, and it was sold in feuillettes, half-size 114 litre barrels.",t:"Romanée-Conti",n:41},
+  "romanee saint vivant": {s:"bourgogne_r",z:"In 1966, the last member of the Marey-Monge family leased the remaining 5.28 hectares (13.0 acres) to Domaine de la Romanée-Conti, and also gave them an option to be first buyers if the vineyard would come up for sale.",t:"Romanée-Saint-Vivant",n:9},
+  "roussillon": {s:"languedoc",z:"Côtes du Roussillon-Villages is a sub-appellation in the northern half of the appellation in the valley of the river Agly, from the best slopes around the valley.",t:"Côtes du Roussillon AOC",n:14},
+  "russian river": {s:"sonoma",z:"The predominant soils of the Russian River Valley viticultural area are Huichica Loam, Yolo Clay Loam, and Yolo Silt Loam, as depicted on the Sonoma County Soil Survey map (USDA, 1972), in the petition.",t:"Russian River Valley AVA",n:25},
+  "rutherford": {s:"napa",z:"Rutherford, the seventh sub-appellation designated within Napa Valley AVA, is known for its unique terroir particularly with its Cabernet Sauvignon.",t:"Rutherford AVA",n:23},
+  "saint aubin": {s:"bourgogne_w",z:"Another group is situated on an east-facing slope in the side valley, forming a band immediately above the village of Saint-Aubin itself.",t:"Saint-Aubin wine",n:2},
+  "saint chinian": {s:"languedoc",z:"To the south of the appellation, beyond the village of Saint-Chinian, the soils are quite clayey and chalky.",t:"Saint-Chinian AOC",n:0},
+  "saint julien": {s:"bordeaux",z:"The tradition of wine-growing in Saint-Julien-Beychevelle and the way in which its terroir has come to prominence parallels the history of the Médoc wines in general.",t:"Saint-Julien AOC",n:1},
+  "saint nicolas": {s:"loire",z:"The AOC was created by a decree on July 31, 1937, covering about 800 hectares in the commune of Saint-Nicolas-de-Bourgueil in the département of Indre-et-Loire.",t:"Saint-Nicolas-de-Bourgueil AOC",n:0},
+  "saint romain": {s:"bourgogne_w",z:"Most vineyards of Saint-Romain are located on slopes of various directions.",t:"Saint-Romain wine",n:1},
+  "sainte croix du mont": {s:"sauternes",z:"The appellation extends over 500 hectares (1,200 acres) and the grape varieties grown are Sémillon, Sauvignon and Muscadelle.",t:"Sainte-Croix-du-Mont AOC",n:0},
+  "sancerre": {s:"loire",z:"Heading closer to the city of Sancerre the soil picks up more gravel mixed with the limestone and tends to produce more light bodied wines with delicate aroma.",t:"Sancerre (wine)",n:71},
+  "santa barbara": {s:"ca_kust",z:"By the late 1800s, there were 45 vineyards in the area including a 150 acres (61 ha) vineyard on Santa Cruz Island.",t:"Santa Barbara County wine",n:23},
+  "santa cruz": {s:"californie",z:"The appellation encompasses some 480,000 acres (750 sq mi) extending through Santa Cruz, Santa Clara and San Mateo counties.",t:"Santa Cruz Mountains AVA",n:38},
+  "santa maria": {s:"ca_kust",z:"The soils are mainly sand, sandy loam, and loam on the valley floor, but are mixed sandy, clay, shaly, and silt loams on mountain slopes.",t:"Santa Maria Valley AVA",n:31},
+  "santa ynez": {s:"ca_kust",z:"The Shedd-Santa Lucia-Diablo association consists of steep, well-drained shaly clay loams and silty clay loams.",t:"Santa Ynez Valley AVA",n:3},
+  "santenay": {s:"bourgogne_r",z:"In 2007, 130.02 hectares (321.3 acres) of the total Santenay vineyard surface consisted of Premier Cru vineyards, of which 110.12 hectares (272.1 acres) red and 12.90 hectares (31.9 acres) white Santenay Premier Cru.",t:"Santenay wine",n:78},
+  "santorini": {s:"santorini",z:"Because of its unique ecology and climate – and especially its volcanic ash soil – Santorini is home to unique and prized produce such as the Santorini cherry tomato.",t:"Santorini",n:3},
+  "saussignac": {s:"sauternes",z:"The grapes used are generally Sémillon grapes which have been affected by Botrytis cinerea.",t:"Saussignac AOC",n:0},
+  "sauternes": {s:"sauternes",z:"Sauternes wine is made from Sémillon, sauvignon blanc, and muscadelle grapes that have been affected by Botrytis cinerea, also known as noble rot.",t:"Sauternes (wine)",n:94},
+  "savennieres": {s:"loire",z:"Savennières-Roche-aux-Moines covers 33 hectares (82 acres) and Savennières-Coulée-de-Serrant covers 7 hectares (17 acres).",t:"Savennières wine",n:17},
+  "sherry": {s:"jerez",z:"The albariza soil is the best for growing the Palomino grape, and by law, 40 percent of the grapes making up a sherry must come from albariza soil.",t:"Sherry",n:12},
+  "sicily": {s:"sicilie",z:"Sicily has long been noted for its fertile soil, which is the result of past volcanic eruptions.",t:"Sicily",n:29},
+  "sierras de malaga": {s:"spanje_midden",z:"The soil is mostly alluvial with carbonates present on the surface, although near the coastline the composition is more varied, including clay, quartz and mica.",t:"Málaga and Sierras de Málaga",n:1},
+  "soave": {s:"veneto",z:"The classico zone was first delineated by Veneto authorities in 1927 and originally encompassed 2,720 acres (1,100 ha) of hillside vineyards within the Soave zone.",t:"Soave (wine)",n:5},
+  "somontano": {s:"rioja",z:"The vines here enjoy a dark sandy-clay soil, particularly high in lime content and rich in alluvial matter.",t:"Somontano",n:0},
+  "sonoma": {s:"sonoma",z:"In 1900, there were approximately 4,000 acres (1,600 ha) of vineyards in the Sonoma Valley producing hundreds of thousands of gallons of premium wine.",t:"Sonoma Valley AVA",n:109},
+  "south africa": {s:"zuidafrika",z:"Vineyard soil types range from decomposed granite on the hillside near the mountains to sandy, alluvial loam in the valleys near the rivers.",t:"South African wine",n:291},
+  "sta rita": {s:"ca_kust",z:"Rita Hills\" AVA and the adjacent Santa Ynez Valley AVA show a distinct difference resulting from a high percentage of alluvial and marine sand within the Sta.",t:"Sta. Rita Hills AVA",n:3},
+  "stellenbosch": {s:"zuidafrika",z:"The soils of Stellenbosch range from dark alluvium to clay.",t:"Stellenbosch",n:79},
+  "tavel": {s:"rhone_z",z:"The 933 hectares produce an average yield of 42 hectolitres per hectare The vineyards are located in the commune of Tavel only.",t:"Tavel AOC",n:0},
+  "terra alta": {s:"priorat",z:"The soils are clayey, with a good lime content, poor in organic material, with a significant proportion of sizable elements which allows for good drainage.",t:"Terra Alta (DO)",n:0},
+  "tokaji": {s:"tokaj",z:"The soil is of volcanic origin, with high concentrations of iron and lime.",t:"Tokaji",n:34},
+  "tulbagh": {s:"zuidafrika",z:"Accordingly, Tulbagh enjoys some of the most diverse and attractive conditions for viticulture in the Cape, and the differences in terroir available to wine makers allow for a wide diversity of distinctive wines.",t:"Tulbagh",n:2},
+  "utiel requena": {s:"spanje_midden",z:"The soils are dark in colour with a high lime content, permeable and poor in organic matter.",t:"Utiel-Requena",n:0},
+  "valencia": {s:"spanje_midden",z:"The Moscatel sub-zone is located at the western boundary of the city of Valencia and the vineyards rise from sea level to an altitude of 100 m.",t:"Valencia (DO)",n:0},
+  "verdicchio": {s:"italie_midden",z:"In her book, Jancis Robinson's Guide to Wine Grapes, Robinson reports in 1996 that there were nearly 10,000 acres (4,000 ha) of Verdicchio found mostly in the provinces along the Adriatic coast.",t:"Verdicchio",n:6},
+  "volnay": {s:"bourgogne_r",z:"In 2007, 132.68 hectares (327.9 acres) of the total Volnay vineyard surface consisted of Premier Cru vineyards.",t:"Volnay wine",n:398},
+  "vosne": {s:"bourgogne_w",z:"In 2008, 153.6 hectares (380 acres) of vineyard surface was in production for Vosne-Romanée wine at village and Premier Cru level, and 5,955 hectoliters of wine was produced, corresponding to almost 800,000 bottles.",t:"Vosne-Romanée wine",n:490},
+  "vouvray": {s:"loire",z:"Vineyards are usually planted on the plateau above the river bank in soils composed of gravel and clay on top of tuffeau.",t:"Vouvray (wine)",n:28},
+  "wachau": {s:"oostenrijk",z:"The vineyard soils of the Wachau are varied but consist primarily of rock outcrops with occasional layers of loess.",t:"Wachau wine",n:25},
+  "walla walla": {s:"washington",z:"The soils of the Walla Walla Valley consist largely of wind-deposited loess, which provides good drainage for vines.",t:"Walla Walla Valley AVA",n:40},
+  "washington": {s:"washington",z:"Most of the vineyards planted on the Washington side of the appellation are located on southward facing slopes along the river where they can receive some protection from the winds.",t:"Washington wine",n:43},
+  "willamette": {s:"oregon",z:"The appellation is the wine growing region which encompasses the drainage basin of the Willamette River.",t:"Willamette Valley AVA",n:34},
+  "yakima": {s:"washington",z:"The appellation encompasses 600,000 acres (938 sq mi) mostly contained within Yakima County, Washington with the eastern edge extending into Benton County.",t:"Yakima Valley AVA",n:1},
+  "yamhill": {s:"oregon",z:"Hyndman, the soils of the Yamhill-Carlton, formed in the Eocene era, are derived from marine sediments and ocean floor volcanic basalt that have a high water-holding capacity with moderate to high erosion levels.",t:"Yamhill-Carlton AVA",n:13},
+  "yountville": {s:"napa",z:"The Yountville area is unusual as a Napa Valley floor viticultural region in that it is not dominated geomorphically by large alluvial fans.",t:"Yountville AVA",n:3}
+};
+function achtergrondVan(w){
+  const st = streekVan(w);
+  if(!st) return null;
+  const tekst = ' ' + norm([w.appellation, w.region, w.name, w.producer].filter(Boolean).join(' ')) + ' ';
+  let beste = null;
+  for(const kw in ACHTERGROND){
+    const e = ACHTERGROND[kw];
+    if(e.s !== st.k) continue;
+    if(!tekst.includes(' ' + kw + ' ')) continue;
+    /* De meest specifieke plek wint, en specifiek is niet hetzelfde als lang. 'bordeaux' is een
+       langer woord dan 'margaux' en raakt in een catalogus van 18.675 flessen 2366 wijnen tegen
+       'margaux' een paar honderd; zonder deze maat kreeg elke Pauillac de algemene zin over de
+       grond van Bordeaux. n is het aantal flessen dat het trefwoord raakt, gemeten bij het
+       schrijven van de tabel; laag is specifiek. */
+    if(!beste || e.n < beste.e.n || (e.n === beste.e.n && kw.length > beste.kw.length)) beste = { kw, e };
+  }
+  if(!beste) return null;
+  return { zin: beste.e.z, titel: beste.e.t, bron: ACHTERGROND_BRON,
+    url: ACHTERGROND_BASIS + encodeURIComponent(beste.e.t.replace(/ /g, '_')), plek: beste.kw };
+}
+
 /* Producenten die een criticus per streek en jaargang bij de besten noemt. Dat is iets anders dan
    een puntenscore: het is een lijst namen uit een gepubliceerde jaargangsgids, geen cijfer aan één
    fles. Het wordt alleen getoond als de naam in de producent of de wijnnaam staat, nooit op de
@@ -3362,7 +3567,7 @@ function vensterHtml(w){
      het meest specifieke: een criticus die déze maker in dít jaar bij de besten noemt zegt iets
      over de fles in je hand, een zin over de streek zegt iets over duizend flessen. De rest staat
      achter de knop, waar je er om vraagt. */
-  const g = genoemdDoor(w), c = citaatVan(w);
+  const g = genoemdDoor(w), a = achtergrondVan(w), c = citaatVan(w);
   let regel = '';
   if(g){
     /* "Raadt aan" en niet "bij de beste wijnen van". De lijsten komen uit twee soorten stukken:
@@ -3371,6 +3576,10 @@ function vensterHtml(w){
        amphora wines to seek out"), en dan is "de beste wijnen van die jaargang" een bewering die
        de bron niet doet. Dit is in beide gevallen waar. */
     regel = `${esc(g.bron)} raadt <span class="q">${esc(g.naam)}</span> aan bij ${esc(String(g.jaar))} in ${esc(g.streek)}.`;
+  }else if(a){
+    /* Wat voor plek dit is, gaat voor wat de jaargang deed: het chipje erboven noemt het oordeel
+       al, en de grond onder een wijngaard verandert niet per oogst. */
+    regel = `<span class="q">\u201c${esc(a.zin)}\u201d</span> \u2014 ${esc(a.bron)}`;
   }else if(c && c.tekst && !c.rijptaal){
     /* Een zin over rijpheid slaat op de wijn zoals die was toen het stuk verscheen, en dat kan
        jaren geleden zijn. Die staat alleen in het blad erachter, met het jaartal erbij. */
@@ -3422,6 +3631,10 @@ ACT.vensterUit = el => {
         : `${esc(c.uitgever)} beoordeelde ${esc(c.jaar + ' in ' + c.streek)}${c.geschreven ? ' in ' + c.geschreven : ''}. Die uitgever wil niet geciteerd worden, dus staat hier de vindplaats en niet de zin.`}
         ${c.rijptaal && c.geschreven ? `<br><span class="muted">Die zin gaat over rijpheid, en is geschreven toen deze jaargang ${c.geschreven - c.jaar} jaar oud was. Nu is dat ${YR() - c.jaar}; reken er dus ${YR() - c.geschreven} jaar bij.</span>` : ''}
         <br><a class="linkbtn" href="${esc(c.url)}" target="_blank" rel="noopener noreferrer">Lees het bij ${esc(c.uitgever)}</a></p>`; })()}
+    ${(() => { const a = achtergrondVan(w); if(!a) return '';
+      return `<div class="eyebrow mb8 mt14">Over deze plek</div>
+      <p class="small">\u201c${esc(a.zin)}\u201d<br><span class="muted">${esc(a.bron)}, artikel ${esc(a.titel)}, tekst onder CC BY-SA</span>
+        <br><a class="linkbtn" href="${esc(a.url)}" target="_blank" rel="noopener noreferrer">Lees het artikel</a></p>`; })()}
     <div class="eyebrow mb8 mt14">Hoe we dit weten</div>
     <p class="small">De kelderregels van CellarMentor rekenen zo: per soort fles een rijpingsduur, vermenigvuldigd met wat de jaargang in die streek deed. Beide staan open in de app en veranderen niet achter je rug om. Er worden geen punten van critici gebruikt: die hangen aan één fles, zijn eigendom van de uitgever, en een taalmodel verzint ze overtuigend. Een jaargang wél: dat is openbare, breed gedragen kennis.</p>
     <p class="small">Een vraagteken achter het jaargangwoord betekent dat dat jaar in die streek nog niet is nagetrokken: het is dan onze eigen schatting. Zonder vraagteken is het jaar tegen minstens twee onafhankelijke gepubliceerde bronnen gelegd, met de vindplaats erbij in JAARGANGEN.md in de broncode. Die twee door elkaar halen zou de app zelfverzekerder laten klinken dan hij is.</p>

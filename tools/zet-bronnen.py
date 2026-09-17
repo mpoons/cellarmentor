@@ -184,9 +184,19 @@ def bouw():
     for streek, jaren in rijp.items():
         codes = {c for _, _, c in jaren.values()}
         rijpbron[streek] = ' en '.join(n for c, n in (('B', 'Berry Bros & Rudd'), ('D', 'Decanter')) if c in codes)
+    # Eén zin per plek uit Wikipedia. Geen oordeel en geen jaargang: dit gaat over de grond, de
+    # helling en de geschiedenis, en dat verandert niet per oogst.
+    achterpad = WORTEL / 'bronnen' / 'achtergrond-wikipedia.json'
+    achter = {}
+    if achterpad.exists():
+        rauw = json.loads(achterpad.read_text(encoding='utf-8'))
+        for kw, e in rauw.get('per_trefwoord', {}).items():
+            if e and e.get('zin') and e.get('titel'):
+                achter[kw] = {'s': e['streek'], 'z': e['zin'], 't': e['titel'], 'n': int(e.get('breedte') or 0)}
+
     prodpad = WORTEL / 'bronnen' / 'producenten.json'
     prod = json.loads(prodpad.read_text(encoding='utf-8')) if prodpad.exists() else {'per_streek': {}, 'urls': {}}
-    return citaat, uitgevers, rijp, rijpbron, prod
+    return citaat, uitgevers, rijp, rijpbron, prod, achter
 
 
 def js(v):
@@ -194,7 +204,7 @@ def js(v):
 
 
 def main():
-    citaat, uitgevers, rijp, rijpbron, prod = bouw()
+    citaat, uitgevers, rijp, rijpbron, prod, achter = bouw()
     tekst = BRON.read_text(encoding='utf-8')
 
     rij_regels = ',\n'.join(
@@ -219,6 +229,9 @@ def main():
         ('PRODUCENT', ',\n'.join(
             f'  {k}: {{' + ', '.join(f'{j}:{js(namen)}' for j, namen in sorted(v.items(), key=lambda t: int(t[0]))) + '}'
             for k, v in sorted(prod['per_streek'].items()))),
+        ('ACHTERGROND', ',\n'.join(
+            f'  {js(kw)}: {{s:{js(v["s"])},z:{js(v["z"])},t:{js(v["t"])},n:{v["n"]}}}'
+            for kw, v in sorted(achter.items()))),
         ('PROD_JAAR', ',\n'.join(
             f'  {k}: {{' + ', '.join(f'{j}:{y}' for j, y in sorted(v.items(), key=lambda t: int(t[0]))) + '}'
             for k, v in sorted(prod.get('peiljaar', {}).items()))),
@@ -238,6 +251,7 @@ def main():
     vermeld = sum(len(x) for v in prod['per_streek'].values() for x in v.values())
     print(f'producenten: {vermeld} vermeldingen over {len(prod["per_streek"])} streken en '
           f'{sum(len(v) for v in prod["per_streek"].values())} jaargangen')
+    print(f'achtergrond: {len(achter)} plekken met een zin uit Wikipedia')
     print(f'rijpheid: {sum(len(v) for v in rijp.values())} jaren over {len(rijp)} streken')
     for k in sorted(rijp):
         print(f'  {k}: {len(rijp[k])} jaren, {rijpbron[k]}')

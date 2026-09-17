@@ -43,7 +43,7 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, tabelMigratie, TABEL_VERSIE, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, rijpheidVan, rijpheidReikt, rijpheidZin, citaatVan, RIJPHEID, CITAAT, CITAAT_STIL, PRODUCENT, genoemdDoor, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, waardeSub, jaargangKloof, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, tabelMigratie, TABEL_VERSIE, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, rijpheidVan, rijpheidReikt, rijpheidZin, citaatVan, RIJPHEID, CITAAT, CITAAT_STIL, PRODUCENT, genoemdDoor, ACHTERGROND, achtergrondVan, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, waardeSub, jaargangKloof, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
@@ -451,6 +451,35 @@ test('streekVan leest afkortingen zoals ze op etiketten staan', () => {
      drinkadvies, dus daar houdt de uitzondering het tegen. */
   const zwitsers = C.streekVan(pak('Ermitage', { type: 'wit', region: 'Valais', country: 'Zwitserland' }));
   assert.ok(!zwitsers || zwitsers.k !== 'rhone_n', 'een Valais-Ermitage is geen noordelijke Rhône');
+});
+test('een zin over de plek hoort bij de meest specifieke plek, niet bij de langste naam', () => {
+  /* De app wist wat een jaargang in een streek deed en niets over de grond eronder. Nu staat er
+     per plek één zin uit Wikipedia over de bodem, de helling of de geschiedenis. */
+  const cnp = { id: 'a1', type: 'rood', vintage: 2015, region: 'Rhône',
+    appellation: 'Châteauneuf-du-Pape', name: 'Châteauneuf-du-Pape', qty: 1 };
+  const a = C.achtergrondVan(cnp);
+  assert.ok(a && a.zin, 'Châteauneuf-du-Pape heeft een zin');
+  assert.ok(a.url.startsWith('https://en.wikipedia.org/wiki/'), 'met een link naar het artikel');
+  assert.equal(a.bron, 'Wikipedia');
+  /* 'bordeaux' is een langer woord dan 'margaux' en raakt veel meer flessen. Zonder de maat voor
+     specificiteit kreeg elke Margaux de algemene zin over de grond van Bordeaux. */
+  if (C.ACHTERGROND['margaux'] && C.ACHTERGROND['bordeaux']) {
+    const marg = C.achtergrondVan({ id: 'a2', type: 'rood', vintage: 2015, region: 'Bordeaux',
+      appellation: 'Margaux', name: 'Château Margaux', qty: 1 });
+    assert.equal(marg.plek, 'margaux', 'de specifieke plek wint: ' + (marg && marg.plek));
+  }
+  /* buiten een bekende streek zegt de app niets */
+  assert.equal(C.achtergrondVan({ id: 'a3', type: 'rood', vintage: 2015, region: 'Kosovo', name: 'x', qty: 1 }), null);
+  /* elke regel is compleet en verwijst naar een streek die bestaat */
+  const sleutels = new Set(C.STREKEN.map(s => s.k));
+  for (const kw of Object.keys(C.ACHTERGROND)) {
+    const e = C.ACHTERGROND[kw];
+    assert.ok(sleutels.has(e.s), kw + ': onbekende streek ' + e.s);
+    assert.ok(e.z && e.z.length >= 40, kw + ': te korte zin');
+    assert.ok(e.t && e.t.length > 1, kw + ': geen artikeltitel');
+    assert.ok(Number.isInteger(e.n) && e.n >= 0, kw + ': geen maat voor specificiteit');
+    assert.ok(!/&[a-z]+;|&#\d+;|==/.test(e.z), kw + ': rommel in de zin \u2014 ' + e.z);
+  }
 });
 test('een nieuwe jaargangtabel werkt door in bestaande kelders, maar niet over jouw eigen venster heen', () => {
   /* Wie de app een jaar geleden heeft gevuld, loopt anders achter op alles wat er sindsdien is
