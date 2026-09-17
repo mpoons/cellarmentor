@@ -1,0 +1,1617 @@
+{
+ "per_streek": {
+  "bordeaux": {
+   "1961": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1962": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1963": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1964": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1965": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1966": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1967": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1968": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1969": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1970": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1971": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1972": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1973": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1974": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1975": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1976": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1977": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1978": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1979": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1980": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1981": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1982": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1983": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1984": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1985": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1986": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1987": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1988": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1989": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "1990": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "1991": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1992": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1993": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "1994": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "1995": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "1996": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "1997": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1998": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "1999": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2000": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "2001": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "2002": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2003": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2004": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2005": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2006": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "2007": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2008": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2009": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2010": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2011": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2012": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2013": {
+    "peiljaar": 2019,
+    "stand": 4
+   }
+  },
+  "bourgogne_r": {
+   "1961": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1962": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1963": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1964": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1965": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1968": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1969": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1970": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1972": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1973": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1974": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1975": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1976": {
+    "peiljaar": 2024,
+    "stand": 4
+   },
+   "1977": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1978": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1979": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1980": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1981": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1982": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1983": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1984": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1985": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1986": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1987": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1988": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1989": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1990": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "1991": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "1992": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1993": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "1994": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "1995": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "1996": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "1997": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "1998": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "1999": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "2000": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "2001": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "2002": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "2003": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "2004": {
+    "peiljaar": 2023,
+    "stand": 0
+   }
+  },
+  "bourgogne_w": {
+   "1961": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1962": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1963": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1964": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1965": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1966": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1967": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1968": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1969": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1970": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1971": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1972": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1973": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1974": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1975": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1976": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1977": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1978": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1979": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1980": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1981": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1982": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1983": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1984": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1985": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1986": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1987": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1988": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1989": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1990": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1991": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1992": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "1993": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "1994": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "1995": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "1996": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "1997": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1998": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "1999": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "2000": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "2001": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "2002": {
+    "peiljaar": 2023,
+    "stand": 4
+   },
+   "2003": {
+    "peiljaar": 2023,
+    "stand": 3
+   },
+   "2004": {
+    "peiljaar": 2023,
+    "stand": 3
+   }
+  },
+  "douro_port": {
+   "1960": {
+    "peiljaar": 2025,
+    "stand": 4
+   },
+   "1963": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "1966": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "1967": {
+    "peiljaar": 2025,
+    "stand": 4
+   },
+   "1970": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "1977": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "1980": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "1982": {
+    "peiljaar": 2025,
+    "stand": 4
+   },
+   "1983": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "1985": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "1987": {
+    "peiljaar": 2025,
+    "stand": 4
+   },
+   "1991": {
+    "peiljaar": 2025,
+    "stand": 4
+   },
+   "1992": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "1994": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "1995": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "1996": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "1997": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "1998": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "1999": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "2000": {
+    "peiljaar": 2025,
+    "stand": 1
+   },
+   "2001": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "2002": {
+    "peiljaar": 2025,
+    "stand": 4
+   },
+   "2003": {
+    "peiljaar": 2025,
+    "stand": 0
+   },
+   "2004": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "2005": {
+    "peiljaar": 2025,
+    "stand": 1
+   },
+   "2006": {
+    "peiljaar": 2025,
+    "stand": 4
+   },
+   "2007": {
+    "peiljaar": 2025,
+    "stand": 1
+   },
+   "2008": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "2009": {
+    "peiljaar": 2025,
+    "stand": 1
+   },
+   "2010": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "2011": {
+    "peiljaar": 2025,
+    "stand": 1
+   },
+   "2012": {
+    "peiljaar": 2025,
+    "stand": 1
+   },
+   "2013": {
+    "peiljaar": 2025,
+    "stand": 1
+   },
+   "2014": {
+    "peiljaar": 2025,
+    "stand": 3
+   },
+   "2015": {
+    "peiljaar": 2025,
+    "stand": 1
+   },
+   "2016": {
+    "peiljaar": 2025,
+    "stand": 1
+   },
+   "2017": {
+    "peiljaar": 2025,
+    "stand": 1
+   },
+   "2018": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "2019": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "2020": {
+    "peiljaar": 2023,
+    "stand": 0
+   },
+   "2021": {
+    "peiljaar": 2023,
+    "stand": 0
+   }
+  },
+  "duitsland": {
+   "1970": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1971": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1972": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1973": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1974": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1975": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1976": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1977": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1978": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1979": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1980": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1981": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1982": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1983": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1984": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1985": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1986": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1987": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1988": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1989": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1990": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1991": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1992": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1993": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1994": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1995": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1996": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1997": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1998": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1999": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "2000": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "2001": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2002": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2003": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2004": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2005": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2006": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "2007": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2008": {
+    "peiljaar": 2015,
+    "stand": 0
+   }
+  },
+  "piemonte": {
+   "1970": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1971": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1972": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1973": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1974": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1975": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1976": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1977": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1978": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1979": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1980": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1981": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1982": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1983": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1984": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1985": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1986": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1987": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1988": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1989": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1990": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "1991": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1992": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1993": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1994": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1995": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1996": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1997": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1998": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "1999": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2000": {
+    "peiljaar": 2017,
+    "stand": 0
+   },
+   "2001": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2002": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "2003": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2004": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2005": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2006": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2007": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2008": {
+    "peiljaar": 2017,
+    "stand": 0
+   }
+  },
+  "rioja": {
+   "2005": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2006": {
+    "peiljaar": 2015,
+    "stand": 4
+   }
+  },
+  "sauternes": {
+   "1961": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1962": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1963": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1964": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1965": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1966": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1967": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1968": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1969": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1970": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1971": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1972": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1973": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1974": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1975": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1976": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1977": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1978": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1979": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1980": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1981": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1982": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1983": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1984": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1985": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1986": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1987": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "1988": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1989": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "1990": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "1991": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1992": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1993": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1994": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "1995": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "1996": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "1997": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "1998": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "1999": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2000": {
+    "peiljaar": 2019,
+    "stand": 4
+   },
+   "2001": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2002": {
+    "peiljaar": 2019,
+    "stand": 3
+   },
+   "2003": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2004": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2005": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2006": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2007": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2008": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2009": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2010": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2011": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2012": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "2013": {
+    "peiljaar": 2019,
+    "stand": 0
+   }
+  },
+  "toscane": {
+   "1970": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1971": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1972": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1973": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1974": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1975": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1976": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1977": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1978": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1979": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1980": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1981": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1982": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1983": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1984": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1985": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1986": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1987": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1988": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1989": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1990": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1991": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1992": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1993": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1994": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1995": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "1996": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "1997": {
+    "peiljaar": 2017,
+    "stand": 0
+   },
+   "1998": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1999": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2000": {
+    "peiljaar": 2018,
+    "stand": 0
+   },
+   "2001": {
+    "peiljaar": 2018,
+    "stand": 0
+   },
+   "2002": {
+    "peiljaar": 2018,
+    "stand": 4
+   },
+   "2003": {
+    "peiljaar": 2018,
+    "stand": 0
+   },
+   "2004": {
+    "peiljaar": 2018,
+    "stand": 0
+   },
+   "2005": {
+    "peiljaar": 2018,
+    "stand": 0
+   },
+   "2006": {
+    "peiljaar": 2018,
+    "stand": 0
+   },
+   "2007": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2008": {
+    "peiljaar": 2018,
+    "stand": 4
+   }
+  },
+  "washington": {
+   "1985": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1986": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1987": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1988": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1989": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1990": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1991": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1992": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1993": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1994": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1995": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1996": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1997": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1998": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1999": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2000": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2001": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "2002": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2003": {
+    "peiljaar": 2019,
+    "stand": 0
+   },
+   "2004": {
+    "peiljaar": 2016,
+    "stand": 4
+   },
+   "2005": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "2006": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2007": {
+    "peiljaar": 2016,
+    "stand": 0
+   },
+   "2008": {
+    "peiljaar": 2016,
+    "stand": 0
+   }
+  },
+  "zuidafrika": {
+   "1990": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1991": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1992": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1993": {
+    "peiljaar": 2015,
+    "stand": 3
+   },
+   "1994": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1995": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1996": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "1997": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "1998": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "1999": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2000": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2001": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2002": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2003": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "2004": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "2005": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2006": {
+    "peiljaar": 2015,
+    "stand": 4
+   },
+   "2007": {
+    "peiljaar": 2015,
+    "stand": 0
+   },
+   "2008": {
+    "peiljaar": 2015,
+    "stand": 0
+   }
+  }
+ },
+ "toelichting": "Rijpheid per streek en jaargang uit de jaargangsgidsen van Decanter. peiljaar is article:modified_time van de gids: het jaar waarin de uitspraak voor het laatst is herzien. De publicatiedatum is onbruikbaar, die is teruggezet naar de jaargang zelf. stand: 0 nog niet toe, 1 jong maar open, 2 op z’n best, 3 rijp, 4 drink op.",
+ "uitgever": "Decanter",
+ "urls": {
+  "bordeaux": "https://www.decanter.com/learn/vintage-guides/2009-vintage-guide-for-bordeaux-260665/",
+  "bourgogne_r": "https://www.decanter.com/learn/vintage-guides/1962-vintage-guide-for-red-burgundy-118021/",
+  "bourgogne_w": "https://www.decanter.com/learn/vintage-guides/burgundy-vintage-guide/1961-vintage-guide-for-white-burgundy-118050/",
+  "douro_port": "https://www.decanter.com/learn/vintage-guides/port-vintage-guide-2000-2022-493922/",
+  "duitsland": "https://www.decanter.com/learn/vintage-guides/germany/1970-vintage-guide-for-germany-117754/",
+  "piemonte": "https://www.decanter.com/learn/vintage-guides/piedmont-vintage-guide/1970-vintage-guide-for-italy-piedmont-117772/",
+  "rioja": "https://www.decanter.com/learn/vintage-guides/spain-rioja/2005-rioja/2005-vintage-guide-for-spain-rioja-115073/",
+  "sauternes": "https://www.decanter.com/learn/vintage-guides/2009-vintage-guide-for-bordeaux-260665/",
+  "toscane": "https://www.decanter.com/learn/vintage-guides/2008-vintage-guide-for-italy-tuscany-114821/",
+  "washington": "https://www.decanter.com/learn/vintage-guides/washington-vintage-guide/1985-vintage-guide-for-washington-state-cabernet-sauvignon-116905/",
+  "zuidafrika": "https://www.decanter.com/learn/vintage-guides/south-africa-vintage-guide/1990-vintage-guide-for-red-south-africa-116461/"
+ }
+}

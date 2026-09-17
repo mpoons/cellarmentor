@@ -1,5 +1,5 @@
 // CellarMentor herinnering: hoogstens één mail per week aan wie dat in Instellingen aanzette,
-// en alleen als er iets te melden is (op dronk gekomen, drink binnenkort, over de piek).
+// en alleen als er iets te melden is (op dronk gekomen, drink binnenkort, op z'n rijpst, over de piek).
 // Uitrollen: supabase functions deploy herinnering --project-ref dbzgrkipcoebglacsqwe
 // Vereist secrets: CRON_SECRET (zelfde waarde als in supabase/sql/herinnering.sql),
 //   RESEND_API_KEY (resend.com, met geverifieerd afzenderdomein), MAIL_FROM (bv. "CellarMentor <kelder@voorbeeld.nl>").
@@ -14,17 +14,26 @@ const APP_URL = Deno.env.get('CAVEAU_APP_URL') || 'https://cellarmentor.com/'
 const WACHT_DAGEN = 6.5   // niet vaker dan dit, ook als de cron vaker zou lopen
 
 type Wijn = { name?: string; producer?: string; vintage?: number | null; qty?: number; drinkFrom?: number | null; drinkTo?: number | null; location?: string }
-type Stand = 'onb' | 'jong' | 'over' | 'nu' | 'op'
+type Stand = 'onb' | 'jong' | 'over' | 'rijp' | 'nu' | 'op'
 
 // Zelfde regels als windowStatus() in cellarmentor.html; hier apart, zodat de mail nooit iets anders zegt dan de app.
+// Eén bewust verschil: de app rekt de uitloop na het venster ook op met wat estimateWindow() van
+// de fles denkt (jaargang, streek, soort), en die hele tabel staat hier niet. De mail houdt het
+// op de uitloop naar spanwijdte. Voor een kelder die door vensterMigratie() is gegaan komt dat op
+// hetzelfde uit, want die vensters kloppen dan al; alleen bij een heel kort venster uit een
+// CSV-bestand is de mail iets strenger dan de app. Bij het herzien van windowStatus() dit
+// meenemen, anders zegt de mail iets anders dan het scherm.
 function stand(w: Wijn, y: number): Stand {
   const f = Number(w.drinkFrom) || 0, t = Number(w.drinkTo) || 0
   if (!f && !t) return 'onb'
   if (f && y < f) return 'jong'
-  if (t && y > t) return 'over'
+  if (t && y > t) {
+    const span = Math.max(1, t - (f || t))
+    return y <= t + Math.max(1, Math.round(span * 0.35)) ? 'rijp' : 'over'
+  }
   if (t) {
     const span = Math.max(1, t - (f || t)), rem = t - y
-    if (rem <= Math.max(1, Math.round(span * 0.18))) return 'nu'
+    if (rem <= Math.min(3, Math.max(1, Math.round(span * 0.18)))) return 'nu'
   }
   return 'op'
 }
@@ -93,22 +102,24 @@ Deno.serve(async (req) => {
     if (!email) continue
     const { data: cel } = await supa.from('cellars').select('data').eq('user_id', p.user_id).maybeSingle()
     const wijnen: Wijn[] = Array.isArray(cel?.data?.wines) ? cel.data.wines : []
-    const nu: Wijn[] = [], op: Wijn[] = [], over: Wijn[] = []
+    const nu: Wijn[] = [], op: Wijn[] = [], rijp: Wijn[] = [], over: Wijn[] = []
     for (const w of wijnen) {
       if (!(Number(w.qty) > 0)) continue
       const s = stand(w, jaar)
       if (s === 'nu') nu.push(w)
+      else if (s === 'rijp') rijp.push(w)
       else if (s === 'over') over.push(w)
       else if (s === 'op' && Number(w.drinkFrom) === jaar) op.push(w)   // dit jaar het venster in gekomen
     }
-    if (!nu.length && !op.length && !over.length) { stil++; continue }
+    if (!nu.length && !op.length && !rijp.length && !over.length) { stil++; continue }
     const sorteer = (a: Wijn, b: Wijn) => (Number(a.drinkTo) || 9999) - (Number(b.drinkTo) || 9999)
     const { text, html } = mail([
       { titel: 'Drink binnenkort', uitleg: 'Het venster van deze flessen loopt op zijn eind. Eerst deze.', wijnen: nu.sort(sorteer) },
       { titel: 'Op dronk gekomen', uitleg: `Sinds ${jaar} klaar om open te gaan.`, wijnen: op.sort(sorteer) },
-      { titel: 'Over de piek?', uitleg: 'Het venster is voorbij. Grote bewaarwijnen trekken zich daar weinig van aan; een eenvoudige fles wel.', wijnen: over.sort(sorteer) },
+      { titel: 'Op z\u2019n rijpst', uitleg: 'Voorbij het venster, en dat is hier geen alarm: deze flessen staan op hun rijpst. Niet langer wachten.', wijnen: rijp.sort(sorteer) },
+      { titel: 'Over de piek?', uitleg: 'Ver voorbij het venster. Grote bewaarwijnen trekken zich daar weinig van aan; een eenvoudige fles wel.', wijnen: over.sort(sorteer) },
     ], jaar)
-    const n = nu.length + op.length + over.length
+    const n = nu.length + op.length + rijp.length + over.length
     const subject = nu.length ? `${nu.length === 1 ? 'Eén fles' : nu.length + ' flessen'} om binnenkort te drinken` : `${n === 1 ? 'Eén fles' : n + ' flessen'} in je kelder vragen om aandacht`
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST', headers: { authorization: `Bearer ${resendKey}`, 'content-type': 'application/json' },
