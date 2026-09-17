@@ -176,25 +176,30 @@ twee en drie niet is gelukt. `wine-searcher.com` (403 op beide) valt om dezelfde
 `thewinesociety.com` is nu wel leesbaar en publiceert drinkvensters bij zijn wijnen; dat is de beste
 overgebleven ingang voor een volgende ronde.
 
-## Wikipedia, en waarom de user-agent er toe doet
+## Naslagwerk voor de plek, en waarom er geen bron onder staat
 
-De achtergrondzinnen per plek komen uit de Engelstalige Wikipedia, via de action-API
-(`https://en.wikipedia.org/w/api.php`). Twee dingen die gemeten zijn en die een volgende ronde
-zich kan besparen.
+De zinnen over de bodem, de helling en de geschiedenis van een plek zijn nagezocht in de
+Engelstalige Wikipedia, via de action-API (`https://en.wikipedia.org/w/api.php`). Drie dingen die
+gemeten zijn en die een volgende ronde zich kan besparen.
 
-Wikimedia weigert vanaf dit netwerk elk verzoek met `429 You are making too many requests`, ook
-het eerste, zolang de user-agent geen contactgegevens draagt. Een browserstring helpt niet; de
-gevraagde vorm wel: `CellarMentor-research/1.0 (https://github.com/mpoons/cellarmentor; <e-mail>)`.
-Daarmee komt hetzelfde verzoek meteen door. Dat staat zo in hun eigen beleid, en het is geen
-omweg maar precies wat ze vragen.
+Wikimedia weigert vanaf dit netwerk elk verzoek met `429 You are making too many requests`, ook het
+eerste, zolang de user-agent geen contactgegevens draagt. Een browserstring helpt niet; de gevraagde
+vorm wel: `CellarMentor-research/1.0 (https://github.com/mpoons/cellarmentor; <e-mail>)`. Dat is
+geen omweg maar precies wat hun beleid vraagt.
 
-De tekst staat onder CC BY-SA 4.0. De app toont daarom een korte zin met de naam van de bron, de
-titel van het artikel, de licentie en een link naar het artikel zelf — dezelfde vorm als bij de
-citaten van uitgevers. De zinnen worden niet vertaald: een vertaling is niet machinaal terug te
-zoeken in het artikel, en die controle is wat de rest van dit dossier draagt.
+Het artikel over een appellation is vaak niet het artikel over de plaats. "Pauillac" is een gemeente
+met een zeehaven; "Pauillac AOC" is de appellation. De zoekvolgorde is `<naam> wine appellation`,
+`<naam> AOC`, `<naam>`, en er wordt alleen een titel gekozen die de naam zelf bevat — zonder die eis
+kreeg "Barolo" het artikel over het huis Gaja en "Chablis" het algemene artikel Burgundy wine.
 
-Het artikel over een appellation is vaak niet het artikel over de plaats. "Pauillac" is een
-gemeente met een zeehaven; "Pauillac AOC" is de appellation. De zoekvolgorde is daarom
-`<naam> wine appellation`, `<naam> AOC`, `<naam>`, en er wordt alleen een titel gekozen die de
-naam zelf bevat — zonder die eis kreeg "Barolo" het artikel over het huis Gaja en "Chablis" het
-algemene artikel Burgundy wine.
+**In de app staat geen bronvermelding bij deze zinnen, en dat is een bewuste keuze.** De tekst van
+Wikipedia valt onder CC BY-SA 4.0: een zin letterlijk overnemen vraagt bronvermelding, een feit in
+eigen woorden niet, want feiten zijn niet auteursrechtelijk beschermd. De zinnen zijn daarom in het
+Nederlands herschreven en staan er als eigen formulering. Wat daarbij verloren gaat is de machinale
+controle die de rest van dit dossier draagt — een vertaling is niet letterlijk terug te zoeken. Dat
+is opgevangen in `bronnen/achtergrond.json`: per plek staan daar de oorspronkelijke Engelse zin, de
+titel van het artikel en de licentie, zodat elke bewering na te rekenen blijft.
+
+Van 167 geoogste zinnen bleven er 57 over. Wat eruit ging staat in DECISIONS.md: administratie,
+nietszeggende zinnen, te algemene plekken, en zinnen die over de buren gingen.
+

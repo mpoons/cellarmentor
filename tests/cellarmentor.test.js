@@ -485,33 +485,75 @@ test('de staat van dienst van een maker zegt niets over deze fles', () => {
     }
   }
 });
-test('een zin over de plek hoort bij de meest specifieke plek, niet bij de langste naam', () => {
-  /* De app wist wat een jaargang in een streek deed en niets over de grond eronder. Nu staat er
-     per plek één zin uit Wikipedia over de bodem, de helling of de geschiedenis. */
+test('een zin over de plek hoort bij de meest specifieke plek, en zegt iets over déze wijn', () => {
+  /* De app wist wat een jaargang in een streek deed en niets over de grond eronder. De zinnen zijn
+     onze eigen formulering van een feit en gaan daarom zonder bronvermelding de app in; waar het is
+     nagekeken staat in bronnen/achtergrond.json. */
   const cnp = { id: 'a1', type: 'rood', vintage: 2015, region: 'Rhône',
     appellation: 'Châteauneuf-du-Pape', name: 'Châteauneuf-du-Pape', qty: 1 };
   const a = C.achtergrondVan(cnp);
   assert.ok(a && a.zin, 'Châteauneuf-du-Pape heeft een zin');
-  assert.ok(a.url.startsWith('https://en.wikipedia.org/wiki/'), 'met een link naar het artikel');
-  assert.equal(a.bron, 'Wikipedia');
-  /* 'bordeaux' is een langer woord dan 'margaux' en raakt veel meer flessen. Zonder de maat voor
-     specificiteit kreeg elke Margaux de algemene zin over de grond van Bordeaux. */
-  if (C.ACHTERGROND['margaux'] && C.ACHTERGROND['bordeaux']) {
-    const marg = C.achtergrondVan({ id: 'a2', type: 'rood', vintage: 2015, region: 'Bordeaux',
-      appellation: 'Margaux', name: 'Château Margaux', qty: 1 });
-    assert.equal(marg.plek, 'margaux', 'de specifieke plek wint: ' + (marg && marg.plek));
-  }
+  assert.ok(/galets/i.test(a.zin), 'en die gaat over de keien: ' + a.zin);
+  assert.equal(a.plek, 'chateauneuf');
   /* buiten een bekende streek zegt de app niets */
   assert.equal(C.achtergrondVan({ id: 'a3', type: 'rood', vintage: 2015, region: 'Kosovo', name: 'x', qty: 1 }), null);
-  /* elke regel is compleet en verwijst naar een streek die bestaat */
-  const sleutels = new Set(C.STREKEN.map(s => s.k));
+  /* de meest specifieke plek wint: een wijn die op twee trefwoorden van dezelfde streek past
+     krijgt die van het smalste bereik, niet die van het langste woord */
+  for (const streek of new Set(Object.keys(C.ACHTERGROND).map(k => C.ACHTERGROND[k].s))) {
+    const kws = Object.keys(C.ACHTERGROND).filter(k => C.ACHTERGROND[k].s === streek);
+    if (kws.length < 2) continue;
+    const st = C.STREKEN.find(s => s.k === streek);
+    const paar = kws.slice(0, 2).sort((x, y) => C.ACHTERGROND[x].n - C.ACHTERGROND[y].n);
+    const w = { id: 'a4', type: (st.t && st.t[0]) || 'rood', vintage: 2015, region: st.l,
+      appellation: st.kw[0], name: paar[0] + ' ' + paar[1], qty: 1 };
+    const g = C.achtergrondVan(w);
+    if (g) assert.equal(g.plek, paar[0], streek + ': de smalste plek hoort te winnen');
+    break;
+  }
+  /* geen enkele zin is nog een citaat uit een bron, en geen enkele is administratie of leeg */
+  const ADMIN = /\bin \d{4} (besloeg|bedroeg)|hectare van de totale|werd ingesteld bij decreet/i;
+  const LEEG = /gevarieerd en laat zich niet|varieert sterk zonder/i;
   for (const kw of Object.keys(C.ACHTERGROND)) {
     const e = C.ACHTERGROND[kw];
-    assert.ok(sleutels.has(e.s), kw + ': onbekende streek ' + e.s);
-    assert.ok(e.z && e.z.length >= 40, kw + ': te korte zin');
-    assert.ok(e.t && e.t.length > 1, kw + ': geen artikeltitel');
+    assert.ok(e.z && e.z.length >= 30, kw + ': te korte zin');
+    assert.ok(!ADMIN.test(e.z), kw + ': administratie \u2014 ' + e.z);
+    assert.ok(!LEEG.test(e.z), kw + ': zegt niets \u2014 ' + e.z);
+    assert.ok(!/&[a-z]+;|&#\d+;|==|https?:\/\//.test(e.z), kw + ': rommel in de zin \u2014 ' + e.z);
     assert.ok(Number.isInteger(e.n) && e.n >= 0, kw + ': geen maat voor specificiteit');
-    assert.ok(!/&[a-z]+;|&#\d+;|==/.test(e.z), kw + ': rommel in de zin \u2014 ' + e.z);
+    assert.ok(C.STREKEN.some(s => s.k === e.s), kw + ': onbekende streek ' + e.s);
+  }
+});
+test('de staat van dienst van een maker zegt niets over deze fles', () => {
+  /* Dat Decanter de 2015 aanraadde zegt niets over de 2018, en die redenering maakt de app niet:
+     er staat hoe vaak en in welke jaren, en verder niets. 1060 makers komen in twee of meer
+     jaargangen terug. */
+  let streek = null, naam = null, jaren = null;
+  for (const k of Object.keys(C.PROD_VAAK)) {
+    for (const n of Object.keys(C.PROD_VAAK[k])) {
+      if (C.PROD_VAAK[k][n].length >= 3) { streek = k; naam = n; jaren = C.PROD_VAAK[k][n]; break; }
+    }
+    if (naam) break;
+  }
+  assert.ok(naam, 'er is minstens één maker met drie jaargangen');
+  const st = C.STREKEN.find(s => s.k === streek);
+  const fles = jaar => ({ id: 'v1', type: (st.t && st.t[0]) || 'rood', vintage: jaar, producer: naam,
+    name: naam, region: st.l, appellation: st.kw[0], qty: 1 });
+  /* voor een jaargang die wél in de lijst staat zegt genoemdDoor het al, en preciezer */
+  assert.equal(C.vaakGenoemd(fles(jaren[0])), null, 'geen dubbele melding bij een genoemd jaar');
+  /* voor een jaargang die er niet in staat komt de staat van dienst */
+  let ander = 1961;
+  while (jaren.includes(ander)) ander++;
+  const v = C.vaakGenoemd(fles(ander));
+  assert.ok(v, 'een andere jaargang krijgt de staat van dienst: ' + naam + ' ' + ander);
+  assert.equal(v.aantal, jaren.length);
+  assert.ok(v.aantal >= 2, 'nooit op grond van één enkele jaargang');
+  /* elke regel in de tabel draagt minstens twee jaargangen */
+  for (const k of Object.keys(C.PROD_VAAK)) {
+    for (const n of Object.keys(C.PROD_VAAK[k])) {
+      const jj = C.PROD_VAAK[k][n];
+      assert.ok(Array.isArray(jj) && jj.length >= 2, k + ' ' + n + ': ' + JSON.stringify(jj));
+      assert.equal(new Set(jj).size, jj.length, k + ' ' + n + ': dubbele jaargang');
+    }
   }
 });
 test('een nieuwe jaargangtabel werkt door in bestaande kelders, maar niet over jouw eigen venster heen', () => {
@@ -540,6 +582,12 @@ test('een nieuwe jaargangtabel werkt door in bestaande kelders, maar niet over j
   assert.equal(C.S.pairCache.length, 0, 'de opgeslagen spijs-wijncombinaties zijn geschreven tegen de oude tabel');
   assert.equal(C.S.wines.length, 4, 'en er verdwijnt geen enkele fles');
   assert.equal(C.tabelMigratie(), 0, 'een tweede keer draaien doet niets meer');
+  /* en een oudere versie van de app draait het werk van een nieuwere niet terug */
+  C.S.wines = [{ ...basis, id: 'm5', drinkFrom: 1990, drinkTo: 1995, drinkSrc: 'regels' }];
+  C.S.settings.tabelVersie = C.TABEL_VERSIE + 5;
+  assert.equal(C.tabelMigratie(), 0, 'een hoger versienummer blijft staan');
+  assert.equal(C.S.wines[0].drinkTo, 1995, 'en het venster wordt niet teruggedraaid');
+  assert.equal(C.S.settings.tabelVersie, C.TABEL_VERSIE + 5);
   C.S.wines = [];
 });
 test('een producentnaam hoort bij dat huis, niet bij de buren met een langere naam', () => {

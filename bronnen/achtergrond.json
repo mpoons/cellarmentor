@@ -1,0 +1,633 @@
+{
+ "per_trefwoord": {
+  "barbaresco": {
+   "breedte": 208,
+   "nagekeken_bij": {
+    "artikel": "Barbaresco",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The soils of the Barbaresco zone are composed primarily of calcareous marl dating from the Tortonian epoch."
+   },
+   "streek": "piemonte",
+   "zin": "De bodem van Barbaresco bestaat vooral uit kalkhoudende mergel uit het Tortonien."
+  },
+  "barolo": {
+   "breedte": 748,
+   "nagekeken_bij": {
+    "artikel": "Barolo",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The Central Valley to the west includes the communes of Barolo and La Morra with soils higher in clay, manganese and magnesium oxide."
+   },
+   "streek": "piemonte",
+   "zin": "Rond het dorp Barolo en La Morra zit er meer klei, mangaan en magnesium in de bodem dan elders in de streek."
+  },
+  "batard montrachet": {
+   "breedte": 143,
+   "nagekeken_bij": {
+    "artikel": "Bâtard-Montrachet",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "In terms of the Côte d'Or hillside, Bâtard-Montrachet is located below Montrachet, with the Route des Grands Crus running between the two vineyards."
+   },
+   "streek": "bourgogne_w",
+   "zin": "Bâtard-Montrachet ligt onder Montrachet op de helling, met de Route des Grands Crus tussen de twee wijngaarden in."
+  },
+  "bonnes mares": {
+   "breedte": 142,
+   "nagekeken_bij": {
+    "artikel": "Bonnes Mares",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Bonnes Mares is located a little to the north of the Chambolle-Musigny village, and borders the Route des Grands Crus in the east and the Grand Cru vineyard Clos de Tart in the north."
+   },
+   "streek": "bourgogne_r",
+   "zin": "Bonnes-Mares ligt net ten noorden van het dorp Chambolle-Musigny en grenst in het noorden aan Clos de Tart."
+  },
+  "brunello": {
+   "breedte": 339,
+   "nagekeken_bij": {
+    "artikel": "Brunello di Montalcino",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Vineyards in Montalcino are planted in varied soils—including limestone, clay, schist, volcanic soil and a crumbly marl known as galestro—at altitudes ranging from 149 m to 500 m."
+   },
+   "streek": "toscane",
+   "zin": "De wijngaarden van Montalcino liggen op uiteenlopende bodems — kalksteen, klei, schist, vulkanisch gesteente en de kruimelige mergel die galestro heet — op 150 tot 500 meter hoogte."
+  },
+  "cadillac": {
+   "breedte": 0,
+   "nagekeken_bij": {
+    "artikel": "Cadillac AOC",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The grape-pickers are ordered to pick only those clusters or part-clusters which are either fully ripe or have heightened sugar content brought about by noble rot."
+   },
+   "streek": "bordeaux",
+   "zin": "In Cadillac wordt alleen geplukt wat volrijp is of door edelrot is ingedroogd."
+  },
+  "central otago": {
+   "breedte": 66,
+   "nagekeken_bij": {
+    "artikel": "Central Otago wine region",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "At around 300 metres (980 ft) elevation, Central Otago's vineyards are protected from New Zealand's characteristic maritime climate by high mountains up to 3,700 metres (12,100 ft) high."
+   },
+   "streek": "nieuwzeeland",
+   "zin": "De wijngaarden van Central Otago liggen rond 300 meter hoogte, afgeschermd van het Nieuw-Zeelandse zeeklimaat door bergen tot 3.700 meter."
+  },
+  "chalone": {
+   "breedte": 3,
+   "nagekeken_bij": {
+    "artikel": "Chalone AVA",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The soils of the Chalone area has limestone and decomposed granite soil and significantly differ from soils of surrounding areas."
+   },
+   "streek": "ca_kust",
+   "zin": "Chalone ligt op kalksteen en verweerd graniet, duidelijk anders dan de bodems eromheen."
+  },
+  "chateauneuf": {
+   "breedte": 384,
+   "nagekeken_bij": {
+    "artikel": "Châteauneuf-du-Pape AOC",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The characteristic terroir of Châteauneuf-du-Pape comes from a layer of stones called Galets roulés (\"pebbles\")."
+   },
+   "streek": "rhone_z",
+   "zin": "Het terroir van Châteauneuf-du-Pape dankt zijn karakter aan een laag ronde keien, de galets roulés."
+  },
+  "chevalier montrachet": {
+   "breedte": 47,
+   "nagekeken_bij": {
+    "artikel": "Chevalier-Montrachet",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "In terms of the Côte d'Or hillside, Chevalier-Montrachet is located above Montrachet and is located highest of the five \"Montrachet\" vineyards."
+   },
+   "streek": "bourgogne_w",
+   "zin": "Chevalier-Montrachet ligt boven Montrachet, het hoogst van de vijf Montrachet-wijngaarden."
+  },
+  "chianti": {
+   "breedte": 59,
+   "nagekeken_bij": {
+    "artikel": "Chianti",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The vineyard soils of the area are predominantly marl and chalk."
+   },
+   "streek": "toscane",
+   "zin": "De wijngaarden van de Chianti liggen overwegend op mergel en kalk."
+  },
+  "chinon": {
+   "breedte": 29,
+   "nagekeken_bij": {
+    "artikel": "Chinon AOC",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The vineyards of the Chinon AOC cover the relatively steep banks of the Vienne as well as the less steep slopes running northward from the hills above Chinon to the Loire."
+   },
+   "streek": "loire",
+   "zin": "De wijngaarden van Chinon liggen op de steile oevers van de Vienne en op de flauwere hellingen die noordwaarts naar de Loire aflopen."
+  },
+  "clos de la roche": {
+   "breedte": 144,
+   "nagekeken_bij": {
+    "artikel": "Clos de la Roche",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The largest landholder in Clos de la Roche is Domaine Ponsot, who own 3 of the original 4 hectares of the vineyard, which has since been expanded to the current 13.41 hectares."
+   },
+   "streek": "bourgogne_r",
+   "zin": "Domaine Ponsot is de grootste eigenaar in Clos de la Roche, met drie van de oorspronkelijke vier hectare."
+  },
+  "clos de tart": {
+   "breedte": 16,
+   "nagekeken_bij": {
+    "artikel": "Clos de Tart",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Clos de Tart is a monopole, owned in its entirety by the French holding company Groupe Artemis since its 2017 purchase from the Mommessin family."
+   },
+   "streek": "bourgogne_r",
+   "zin": "Clos de Tart is een monopole: de hele wijngaard heeft één eigenaar."
+  },
+  "clos de vougeot": {
+   "breedte": 174,
+   "nagekeken_bij": {
+    "artikel": "Clos de Vougeot",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The soils of the middle part of the vineyard consist of softer limestone with clay and some gravel, and moderate drainage."
+   },
+   "streek": "bourgogne_r",
+   "zin": "Het middenstuk van Clos de Vougeot ligt op zachtere kalksteen met klei en wat grind, en watert matig af."
+  },
+  "clos des lambrays": {
+   "breedte": 18,
+   "nagekeken_bij": {
+    "artikel": "Clos des Lambrays",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Clos de Lambrays totals 8.84 hectares (21.8 acres) and most of it (8.66 hectares (21.4 acres)) is owned by the winery Domaine des Lambrays."
+   },
+   "streek": "bourgogne_r",
+   "zin": "Clos des Lambrays meet 8,84 hectare en is op een fractie na in handen van één domein."
+  },
+  "clos saint denis": {
+   "breedte": 85,
+   "nagekeken_bij": {
+    "artikel": "Clos Saint-Denis",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Clos Saint-Denis was originally a church-owned vineyard, belonging to the Collégiale de St-Denis de Vergy, named after Saint Denis."
+   },
+   "streek": "bourgogne_r",
+   "zin": "Clos Saint-Denis was oorspronkelijk kerkbezit, van de Collégiale de Saint-Denis de Vergy, waar de wijngaard zijn naam aan dankt."
+  },
+  "colares": {
+   "breedte": 2,
+   "nagekeken_bij": {
+    "artikel": "Colares DOC",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Because grapevines there are grown directly in the sand, and phylloxera aphids cannot live on sand, Colares vineyards are some of the only European vines that are not grafted upon American rootstocks."
+   },
+   "streek": "alentejo",
+   "zin": "De stokken van Colares staan rechtstreeks in het zand, waar druifluis niet kan leven; het zijn een van de weinige Europese wijngaarden die niet op Amerikaanse onderstam zijn geënt."
+  },
+  "coombsville": {
+   "breedte": 8,
+   "nagekeken_bij": {
+    "artikel": "Coombsville AVA",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Coombsville lies upon wide alluvial deposits created by the weathering of the hillsides and its soils contain abundant rock, gravel and, in some areas, layered with volcanic ash deposits from Mount George."
+   },
+   "streek": "napa",
+   "zin": "Coombsville ligt op brede puinwaaiers vol steen en grind, plaatselijk met lagen vulkanische as van Mount George."
+  },
+  "coonawarra": {
+   "breedte": 16,
+   "nagekeken_bij": {
+    "artikel": "Coonawarra wine region",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Coonawarra's terra rossa soil is one of the notable terroirs of the New World, covering an area of just 15 km x 2 km north of Penola."
+   },
+   "streek": "australie_za",
+   "zin": "De terra rossa van Coonawarra is een van de bekendste terroirs van de Nieuwe Wereld: een strook van amper vijftien bij twee kilometer."
+  },
+  "costieres": {
+   "breedte": 0,
+   "nagekeken_bij": {
+    "artikel": "Costières de Nîmes AOC",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The soil depth from 3 to 15 metres is largely responsible for the variations of style within this AOC."
+   },
+   "streek": "rhone_z",
+   "zin": "In Costières bepaalt de diepte van de bodem, drie tot vijftien meter, grotendeels het verschil in stijl."
+  },
+  "cote rotie": {
+   "breedte": 216,
+   "nagekeken_bij": {
+    "artikel": "Côte-Rôtie AOC",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The Côte-Rôtie is subdivided into two main sections of varying soil compositions - the Côte Brune (\"brown slope\") in the north on dark, iron-rich schist and the Côte Blonde with its pale granite and schist soil."
+   },
+   "streek": "rhone_n",
+   "zin": "De Côte-Rôtie valt uiteen in twee hellingen: de Côte Brune in het noorden op donkere, ijzerrijke schist, en de Côte Blonde op bleker graniet en schist."
+  },
+  "echezeaux": {
+   "breedte": 233,
+   "nagekeken_bij": {
+    "artikel": "Échezeaux",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Échezeaux, which in the early 2000s had 80 vineyard owners, has a reputation for being somewhat variable in quality, which is a reputation it shares with its likewise much sub-divided neighbour Clos de Vougeot."
+   },
+   "streek": "bourgogne_r",
+   "zin": "Échézeaux had begin deze eeuw tachtig eigenaren en staat, net als het eveneens sterk versnipperde Clos de Vougeot, bekend als wisselvallig."
+  },
+  "edna valley": {
+   "breedte": 1,
+   "nagekeken_bij": {
+    "artikel": "Edna Valley AVA",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "With moderate sunshine, cool maritime fog, and rich oceanic and volcanic soils, the Edna Valley appellation has California's longest growing season."
+   },
+   "streek": "ca_kust",
+   "zin": "Met milde zon, koele zeemist en rijke oceanische en vulkanische bodems heeft Edna Valley het langste groeiseizoen van Californië."
+  },
+  "faugeres": {
+   "breedte": 0,
+   "nagekeken_bij": {
+    "artikel": "Faugères AOC",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The appellation area covers 1800 hectares, and consists mainly of primary, schist soils."
+   },
+   "streek": "languedoc",
+   "zin": "Faugères beslaat 1.800 hectare op overwegend schist."
+  },
+  "grands echezeaux": {
+   "breedte": 40,
+   "nagekeken_bij": {
+    "artikel": "Grands Échezeaux",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Grands Échezeaux borders on Clos de Vougeot and its wall in the east and north, and on Échezeaux in the west and south."
+   },
+   "streek": "bourgogne_r",
+   "zin": "Grands Échézeaux grenst in het oosten en noorden aan de muur van Clos de Vougeot en in het westen en zuiden aan Échézeaux."
+  },
+  "hermitage": {
+   "breedte": 181,
+   "nagekeken_bij": {
+    "artikel": "Hermitage AOC",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "With 345 acres (140 ha) of vines, in soil composed greatly of granite and gravels, Hermitage produces 730,000 bottles of mostly red wines, annually."
+   },
+   "streek": "rhone_n",
+   "zin": "Hermitage telt 140 hectare wijngaard, op een bodem van vooral graniet en grind."
+  },
+  "howell mountain": {
+   "breedte": 11,
+   "nagekeken_bij": {
+    "artikel": "Howell Mountain AVA",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The soil in the appellation is volcanic with excellent drainage."
+   },
+   "streek": "napa",
+   "zin": "De bodem van Howell Mountain is vulkanisch en watert uitstekend af."
+  },
+  "irouleguy": {
+   "breedte": 0,
+   "nagekeken_bij": {
+    "artikel": "Irouléguy AOC",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The vineyards are often located on extremely steep slopes with inclines of up to 60°."
+   },
+   "streek": "sudwest",
+   "zin": "De wijngaarden van Irouléguy liggen vaak op zeer steile hellingen, tot zestig graden."
+  },
+  "ischia": {
+   "breedte": 0,
+   "nagekeken_bij": {
+    "artikel": "Ischia",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Vineyards planted within the 179 hectares (440 acres) boundaries of the DOC tend to be on volcanic soils with high pumice, phosphorus and potassium content."
+   },
+   "streek": "campanie",
+   "zin": "De wijngaarden van Ischia liggen op vulkanische bodems met veel puimsteen, fosfor en kalium."
+  },
+  "julienas": {
+   "breedte": 0,
+   "nagekeken_bij": {
+    "artikel": "Juliénas AOC",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The area of Juliénas has one of the most varied soil types in the region and includes schist, diorite, sandstone and some clay."
+   },
+   "streek": "beaujolais",
+   "zin": "Juliénas heeft een van de meest gemengde bodems van de Beaujolais: schist, dioriet, zandsteen en wat klei."
+  },
+  "la clape": {
+   "breedte": 0,
+   "nagekeken_bij": {
+    "artikel": "Massif de la Clape",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The Cers blows through this corridor towards the Mediterranean, striking the topography of the Massif de la Clape, sometimes with enough force to uproot large trees on the massif's steep slopes with flat soils."
+   },
+   "streek": "languedoc",
+   "zin": "De Cers waait hier naar de Middellandse Zee en slaat met zoveel kracht tegen het massief van La Clape dat er bomen door ontwortelen."
+  },
+  "la grande rue": {
+   "breedte": 15,
+   "nagekeken_bij": {
+    "artikel": "La Grande Rue",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The grand cru appellation occupies an area of 1.6525 hectares, 1.4207 in the historic lieu-dit Grande Rue, and parcels of .2096h and .0222h in \"les Gaudichots\"."
+   },
+   "streek": "bourgogne_r",
+   "zin": "La Grande Rue is met 1,65 hectare een van de kleinste grand crus van de Bourgogne."
+  },
+  "la mancha": {
+   "breedte": 0,
+   "nagekeken_bij": {
+    "artikel": "La Mancha",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The La Mancha DO, which spans parts of Albacete and Cuenca, is the world's largest wine DO, covering 190,980 hectares (471,900 acres) and 182 municipalities."
+   },
+   "streek": "spanje_midden",
+   "zin": "La Mancha is met bijna 191.000 hectare over 182 gemeenten de grootste wijnstreek met herkomstbenaming ter wereld."
+  },
+  "lalande de pomerol": {
+   "breedte": 1,
+   "nagekeken_bij": {
+    "artikel": "Lalande-de-Pomerol AOC",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The estates of Néac feature clay and gravelly soil more commonly seen in neighboring Pomerol, while the estates of Lalande lie on sandier soil."
+   },
+   "streek": "bordeaux",
+   "zin": "In Néac ligt de klei- en grindbodem die je ook in Pomerol vindt; rond Lalande is de grond zandiger."
+  },
+  "lirac": {
+   "breedte": 7,
+   "nagekeken_bij": {
+    "artikel": "Lirac AOC",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The terroir in Lirac is somewhat similar to Châteauneuf-du-Pape both in variety and hours of sun (2700)."
+   },
+   "streek": "rhone_z",
+   "zin": "Lirac lijkt in druiven en zonuren — zo’n 2.700 per jaar — op Châteauneuf-du-Pape."
+  },
+  "marcillac": {
+   "breedte": 0,
+   "nagekeken_bij": {
+    "artikel": "Marcillac AOC",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The vines are planted in red clay soils rich in iron oxide that are known locally as rougiers."
+   },
+   "streek": "sudwest",
+   "zin": "De stokken van Marcillac staan in rode, ijzerrijke kleigrond die hier rougier heet."
+  },
+  "monbazillac": {
+   "breedte": 0,
+   "nagekeken_bij": {
+    "artikel": "Monbazillac AOC",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Only wine made from grapes grown in Monbazillac that are affected by the \"noble rot\" (Botrytis cinerea) can be sold under the Monbazillac designation."
+   },
+   "streek": "sauternes",
+   "zin": "Alleen wijn van druiven uit Monbazillac die door edelrot zijn aangetast mag die naam dragen."
+  },
+  "moriles": {
+   "breedte": 5,
+   "nagekeken_bij": {
+    "artikel": "Montilla-Moriles",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The white soil of Montilla-Moriles is rich in calcium carbonate; the soil and subsoil are formed by soft loams, poor in natural organic material, and are not very fertile."
+   },
+   "streek": "jerez",
+   "zin": "De witte bodem van Montilla-Moriles is rijk aan kalk, met zachte leem die weinig organisch materiaal bevat."
+  },
+  "mount veeder": {
+   "breedte": 6,
+   "nagekeken_bij": {
+    "artikel": "Mount Veeder AVA",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The soils have developed from sandstones and shales which are absent on the southwest slopes of the Mayacamas Mountains in Sonoma County."
+   },
+   "streek": "napa",
+   "zin": "De bodems van Mount Veeder zijn ontstaan uit zandsteen en schalie, die aan de andere kant van het gebergte ontbreken."
+  },
+  "muscadet": {
+   "breedte": 1,
+   "nagekeken_bij": {
+    "artikel": "Muscadet",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The soil in this area is rich in magnesium and potassium, made up of clay, gravel and sand above subsoils of gneiss, schist, granite and volcanic rock."
+   },
+   "streek": "loire",
+   "zin": "De bodem rond Muscadet is rijk aan magnesium en kalium: klei, grind en zand op een ondergrond van gneis, schist, graniet en vulkanisch gesteente."
+  },
+  "pouilly fuisse": {
+   "breedte": 55,
+   "nagekeken_bij": {
+    "artikel": "Pouilly-Fuissé",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "West of Mâcon the land rises up to form Mont de Pouilly and other limestone hills, covered in the alkaline clay that best suits Chardonnay."
+   },
+   "streek": "bourgogne_w",
+   "zin": "Ten westen van Mâcon rijst het land op tot de Mont de Pouilly en andere kalkheuvels, bedekt met de alkalische klei waar chardonnay het beste op staat."
+  },
+  "priorat": {
+   "breedte": 61,
+   "nagekeken_bij": {
+    "artikel": "Priorat DOQ",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The area is characterised by its unique terroir of black slate and quartz soil known as llicorella."
+   },
+   "streek": "priorat",
+   "zin": "Priorat dankt zijn karakter aan llicorella, een bodem van zwarte leisteen en kwarts."
+  },
+  "ribeira sacra": {
+   "breedte": 2,
+   "nagekeken_bij": {
+    "artikel": "Ribeira Sacra (DO)",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Most of the vineyards in Ribeira Sacra are planted along the Miño, Sil, Cabe and Bibei river canyons, with slopes that can reach nearly 100% gradient in some points."
+   },
+   "streek": "spanje_wit",
+   "zin": "De wijngaarden van Ribeira Sacra liggen langs de canyons van de Miño, Sil, Cabe en Bibei, op hellingen die plaatselijk bijna honderd procent halen."
+  },
+  "ribeiro": {
+   "breedte": 0,
+   "nagekeken_bij": {
+    "artikel": "Ribeiro (DO)",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Most of Ribeiro's soils are granitic, with sandy loam textures."
+   },
+   "streek": "spanje_wit",
+   "zin": "De bodems van Ribeiro zijn overwegend granitisch, met zandige leem."
+  },
+  "romanee conti": {
+   "breedte": 41,
+   "nagekeken_bij": {
+    "artikel": "Romanée-Conti",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "In the 1750s, the price of de Croonembourg's La Romanée wine was six to seven times as high as Clos de Vougeot wine, and it was sold in feuillettes, half-size 114 litre barrels."
+   },
+   "streek": "bourgogne_r",
+   "zin": "In de jaren 1750 kostte de wijn van La Romanée zes tot zeven keer zoveel als die van Clos de Vougeot."
+  },
+  "romanee saint vivant": {
+   "breedte": 9,
+   "nagekeken_bij": {
+    "artikel": "Romanée-Saint-Vivant",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "In 1966, the last member of the Marey-Monge family leased the remaining 5.28 hectares (13.0 acres) to Domaine de la Romanée-Conti, and also gave them an option to be first buyers if the vineyard would come up for sale."
+   },
+   "streek": "bourgogne_r",
+   "zin": "In 1966 verpachtte het laatste familielid Marey-Monge de resterende 5,28 hectare aan Domaine de la Romanée-Conti, met het eerste recht van koop erbij."
+  },
+  "saint aubin": {
+   "breedte": 2,
+   "nagekeken_bij": {
+    "artikel": "Saint-Aubin wine",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Another group is situated on an east-facing slope in the side valley, forming a band immediately above the village of Saint-Aubin itself."
+   },
+   "streek": "bourgogne_w",
+   "zin": "Een deel van Saint-Aubin ligt op een oostelijke helling in het zijdal, in een band direct boven het dorp."
+  },
+  "sancerre": {
+   "breedte": 71,
+   "nagekeken_bij": {
+    "artikel": "Sancerre (wine)",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Heading closer to the city of Sancerre the soil picks up more gravel mixed with the limestone and tends to produce more light bodied wines with delicate aroma."
+   },
+   "streek": "loire",
+   "zin": "Richting de stad Sancerre komt er meer grind bij de kalk, en worden de wijnen lichter en fijner van geur."
+  },
+  "santorini": {
+   "breedte": 3,
+   "nagekeken_bij": {
+    "artikel": "Santorini",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Because of its unique ecology and climate – and especially its volcanic ash soil – Santorini is home to unique and prized produce such as the Santorini cherry tomato."
+   },
+   "streek": "santorini",
+   "zin": "Santorini dankt zijn eigen karakter aan de vulkanische as waarop alles er groeit."
+  },
+  "sauternes": {
+   "breedte": 94,
+   "nagekeken_bij": {
+    "artikel": "Sauternes (wine)",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Sauternes wine is made from Sémillon, sauvignon blanc, and muscadelle grapes that have been affected by Botrytis cinerea, also known as noble rot."
+   },
+   "streek": "sauternes",
+   "zin": "Sauternes wordt gemaakt van sémillon, sauvignon blanc en muscadelle die door Botrytis cinerea zijn aangetast — edelrot."
+  },
+  "sherry": {
+   "breedte": 12,
+   "nagekeken_bij": {
+    "artikel": "Sherry",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The albariza soil is the best for growing the Palomino grape, and by law, 40 percent of the grapes making up a sherry must come from albariza soil."
+   },
+   "streek": "jerez",
+   "zin": "De albariza-bodem is de beste voor palomino, en de wet eist dat veertig procent van de druiven voor sherry daarvandaan komt."
+  },
+  "soave": {
+   "breedte": 5,
+   "nagekeken_bij": {
+    "artikel": "Soave (wine)",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The classico zone was first delineated by Veneto authorities in 1927 and originally encompassed 2,720 acres (1,100 ha) of hillside vineyards within the Soave zone."
+   },
+   "streek": "veneto",
+   "zin": "De classico-zone van Soave werd in 1927 afgebakend en besloeg toen 1.100 hectare heuvelwijngaard."
+  },
+  "tokaji": {
+   "breedte": 34,
+   "nagekeken_bij": {
+    "artikel": "Tokaji",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The soil is of volcanic origin, with high concentrations of iron and lime."
+   },
+   "streek": "tokaj",
+   "zin": "De bodem van Tokaj is van vulkanische oorsprong, met veel ijzer en kalk."
+  },
+  "vouvray": {
+   "breedte": 28,
+   "nagekeken_bij": {
+    "artikel": "Vouvray (wine)",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Vineyards are usually planted on the plateau above the river bank in soils composed of gravel and clay on top of tuffeau."
+   },
+   "streek": "loire",
+   "zin": "De wijngaarden van Vouvray liggen meestal op het plateau boven de rivieroever, op grind en klei bovenop tufkrijt."
+  },
+  "walla walla": {
+   "breedte": 40,
+   "nagekeken_bij": {
+    "artikel": "Walla Walla Valley AVA",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "The soils of the Walla Walla Valley consist largely of wind-deposited loess, which provides good drainage for vines."
+   },
+   "streek": "washington",
+   "zin": "De bodem van Walla Walla bestaat grotendeels uit löss, door de wind aangevoerd, dat goed afwatert."
+  },
+  "yamhill": {
+   "breedte": 13,
+   "nagekeken_bij": {
+    "artikel": "Yamhill-Carlton AVA",
+    "licentie": "CC BY-SA 4.0",
+    "werk": "Wikipedia (Engelstalig)",
+    "zin": "Hyndman, the soils of the Yamhill-Carlton, formed in the Eocene era, are derived from marine sediments and ocean floor volcanic basalt that have a high water-holding capacity with moderate to high erosion levels."
+   },
+   "streek": "oregon",
+   "zin": "De bodems van Yamhill-Carlton stammen uit het Eoceen en zijn gevormd uit zeesediment en basalt van de oceaanbodem; ze houden veel water vast."
+  }
+ },
+ "selectie": "Streng geselecteerd uit 167 geoogste zinnen. Eruit gingen: administratie (\"in 2007 besloeg X hectare\"), nietszeggende zinnen (\"the soil across Provence is varied, lacking uniformity\"), te algemene plekken waar de zin niets over déze wijn zegt (\"the soil of Bordeaux is composed of gravel, sandy stone, and clay\"), en zinnen die feitelijk over de buren gaan — bij Mosel stond een zin over Luxemburg. Wat overblijft noemt iets wat déze plek eigen is.",
+ "toelichting": "Eén zin per plek over de bodem, de helling, het klimaat of de geschiedenis. De zinnen staan in het Nederlands en zijn onze eigen formulering van een feit; ze worden in de app zonder bron getoond, omdat een feit geen citaat is. Onder nagekeken_bij staat waar het feit is nagezocht, met de oorspronkelijke zin erbij, zodat elke bewering hier na te rekenen blijft."
+}
