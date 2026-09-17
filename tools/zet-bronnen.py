@@ -74,12 +74,46 @@ SCORE = re.compile(r'\d+(?:[.,]\d+)?\s*/\s*(?:5|10|20|100)\b|\b\d{2,3}\s*(?:poin
 VERWIJST = re.compile(r'^(it |its |this |that |these |those |they |their |he |she |there |such )', re.I)
 
 
+# Woorden waarmee een schrijver een ánder jaar aanhaalt om mee te vergelijken. "The best on par
+# with 1963" hoort onder 1966 thuis en zegt daar juist iets; "The top-scoring wine hails from the
+# stellar 2015 vintage" hoort niet onder 1990, en dat stond er wel.
+VERGELIJKT = re.compile(r'\b(than|since|versus|vs\.?|compared (?:to|with)|on par with|'
+                        r'after|before|following|preceding|succeeding|unlike|rivall?ing|'
+                        r'reminiscent of|in a row|repeat of|echo of|match for)\b', re.I)
+# Alleen woorden die echt vergelijken. "from" en "to" stonden er eerst bij en lieten precies de
+# fout door die dit moest vangen: "The top-scoring wine hails from the stellar 2015 vintage",
+# gevonden onder Alsace 1990.
+
+
 def hoort_bij_jaar(zin, jaar):
-    kop = zin[:20]
-    for m in re.finditer(r'\b(19\d\d|20\d\d)\b', kop):
-        if int(m.group(1)) != jaar:
+    """Gaat dit citaat over déze jaargang?
+
+    Een ander jaartal mag, maar alleen als vergelijking. Zonder die eis stond onder een Bardolino
+    2018 "2019, a promising vintage that combines richness and freshness" en onder een Alsace 1990
+    "The top-scoring wine hails from the stellar 2015 vintage". Allebei waar, allebei over een
+    andere fles."""
+    if str(jaar) in zin:
+        return True
+    for m in re.finditer(r'\b(19\d\d|20\d\d)\b', zin):
+        if int(m.group(1)) == jaar:
+            continue
+        # het vergelijkingswoord hoeft niet pal voor het jaartal te staan: "compared to the
+        # fabulous 1969" hoort erbij te blijven
+        if not VERGELIJKT.search(zin[max(0, m.start() - 45):m.start()]):
             return False
     return True
+
+
+# Een citaat is een zin, geen brokstuk. "as one might expect from an exceptional, slow-ripening
+# year" is waar en leest onder een fles als een half afgemaakte gedachte. Een hoofdletter voorop is
+# de goedkoopste en meest betrouwbare toets daarop; een bijzin voorop ("Although quality is high,
+# ...") is hetzelfde probleem in nettere vorm.
+BIJZIN = re.compile(r'^(although|though|while|whilst|yet|whereas|since|because|if|unless|when)\b', re.I)
+
+
+def staat_op_zichzelf(zin):
+    z = zin.strip()
+    return bool(z) and z[:1].isupper() and not BIJZIN.match(z)
 
 
 def zegt_iets(zin):
@@ -117,7 +151,8 @@ def kies_citaat(bevinding):
         return None
     kand = [b for b in kand if zegt_iets(b['citaat'])
             and hoort_bij_jaar(b['citaat'], bevinding['jaar'])
-            and not VERWIJST.match(b['citaat'])]
+            and not VERWIJST.match(b['citaat'])
+            and staat_op_zichzelf(b['citaat'])]
     if not kand:
         return None
     laagA = [b for b in kand if b['laag'] == 'A'] or kand
@@ -174,7 +209,10 @@ def bouw():
             for jaar, e in jaren.items():
                 if int(jaar) in citaat.get(streek, {}):
                     continue
-                if not zegt_iets(e['zin']):
+                # dezelfde eisen als aan de vindplaatsen uit het dossier: een hele zin, over
+                # deze jaargang, en niet beginnend met een verwijswoord
+                if not (zegt_iets(e['zin']) and staat_op_zichzelf(e['zin'])
+                        and hoort_bij_jaar(e['zin'], int(jaar)) and not VERWIJST.match(e['zin'])):
                     continue
                 u = zin['uitgever']
                 uitgevers.setdefault(u, basis(e['url']))

@@ -290,3 +290,14 @@ Ernstiger: `genoemdDoor` en `vaakGenoemd` zochten in verschillende lijsten, dus 
 
 ## 17 sep 2026 · Drie keer sneller door één keer normaliseren in plaats van bij elke fles
 Een bugsweep op een kelder van 1500 flessen liet zien dat `vaakGenoemd` 103 microseconden per fles kostte, tegen 3 voor `streekVan`. De oorzaak was niet het zoeken maar het voorbereiden: `norm()` liep bij élke fles over alle honderden namen in de lijst, en de lijst werd bij elke aanroep opnieuw gesorteerd. De tabellen veranderen niet tijdens het draaien, dus de genormaliseerde en gesorteerde kopie wordt nu één keer gemaakt en bewaard. Een hele kelder opbouwen ging van 228 naar 71 milliseconden; na de correctie hierboven, die een bredere lijst doorzoekt, staat het op ongeveer 106. De uitkomsten zijn tot op de fles identiek gebleven.
+
+## 17 sep 2026 · Nog drie soorten citaten die onder een fles niet thuishoren
+De Bardolino-melding bleek de kop van een grotere stapel. Een bredere controle over alle 674 citaten vond er nog drie soorten.
+
+**Een citaat over een andere jaargang, verderop in de zin.** De eerste reparatie keek alleen naar de eerste twintig tekens. Onder Alsace 1990 stond daardoor nog steeds "The top-scoring wine hails from the stellar 2015 vintage, held by many to be the best in Alsace". Een ander jaartal mag nu alleen nog als er kort ervoor een vergelijkingswoord staat — than, since, compared to, on par with, in a row. Die woorden zijn met zorg gekozen: "from" en "to" stonden er eerst bij en lieten precies deze zin door.
+
+**Brokstukken.** 53 citaten begonnen met een kleine letter: "as one might expect from an exceptional, slow-ripening year". Waar, en onder een fles een half afgemaakte gedachte. Een hoofdletter voorop is daar de goedkoopste betrouwbare toets op. Zeven andere begonnen met een bijzin ("Although quality is considered high across the board, ...") en gaan om dezelfde reden weg.
+
+**Verwijswoorden.** "It is the first Monfortino since the 2015 vintage" staat niet op zichzelf en gaat bovendien over een wijn en niet over de jaargang.
+
+Samen kostte dit 133 van de 674 citaten. De gidsenzinnen van Decanter liepen via een eigen pad de tabel in en ontsnapten eerst aan alle drie; die krijgen nu dezelfde eisen. Een test telt fragmenten en jaartallen en houdt het aantal op nul.

@@ -1,6 +1,6 @@
 /* CellarMentor service worker — netwerk eerst voor de app zelf (updates), cache als offline-vangnet.
    Verhoog het versienummer bij elke wijziging aan de app. */
-const CACHE = 'cellarmentor-v95';
+const CACHE = 'cellarmentor-v96';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png',
   './fonts/cormorantsc-600-latin-ext.woff2', './fonts/cormorantsc-600-latin.woff2', './fonts/playfair-500-latin-ext.woff2', './fonts/playfair-500-latin.woff2', './fonts/playfair-500i-latin-ext.woff2', './fonts/playfair-500i-latin.woff2', './fonts/playfair-600-latin-ext.woff2', './fonts/playfair-600-latin.woff2', './fonts/playfair-600i-latin-ext.woff2', './fonts/playfair-600i-latin.woff2'];
 
