@@ -485,6 +485,29 @@ test('de staat van dienst van een maker zegt niets over deze fles', () => {
     }
   }
 });
+test('een citaat gaat over déze jaargang en is een hele zin', () => {
+  /* Twee fouten die onder een fles stonden. Bij een Bardolino 2018: "2019, a promising vintage
+     that combines richness and freshness". Bij een Alsace 1990: "The top-scoring wine hails from
+     the stellar 2015 vintage". Allebei waar, allebei over een andere fles. En 53 citaten begonnen
+     met een kleine letter, wat onder een fles leest als een half afgemaakte gedachte. */
+  const VERGELIJKT = /\b(than|since|versus|vs\.?|compared (to|with)|on par with|after|before|following|preceding|succeeding|unlike|rivall?ing|reminiscent of|in a row|repeat of|echo of|match for)\b/i;
+  let fragment = 0, misJaar = 0;
+  for (const k of Object.keys(C.CITAAT)) {
+    for (const j of Object.keys(C.CITAAT[k])) {
+      const zin = C.CITAAT[k][j].t;
+      if (!/^[A-Z\u00c0-\u00dc"\u201c]/.test(zin.trim())) { fragment++; console.error('fragment', k, j, zin); }
+      if (zin.includes(j)) continue;
+      for (const m of zin.matchAll(/\b(19\d\d|20\d\d)\b/g)) {
+        if (m[1] === j) continue;
+        if (!VERGELIJKT.test(zin.slice(Math.max(0, m.index - 45), m.index))) {
+          misJaar++; console.error('ander jaar', k, j, '->', m[1], zin);
+        }
+      }
+    }
+  }
+  assert.equal(fragment, 0, fragment + ' citaten beginnen met een kleine letter');
+  assert.equal(misJaar, 0, misJaar + ' citaten gaan over een andere jaargang');
+});
 test('een zin over de plek hoort bij de meest specifieke plek, en zegt iets over déze wijn', () => {
   /* De app wist wat een jaargang in een streek deed en niets over de grond eronder. De zinnen zijn
      onze eigen formulering van een feit en gaan daarom zonder bronvermelding de app in; waar het is
@@ -683,11 +706,13 @@ test('een citaat is een zin die iets beweert, geen puntenscore en geen wijnnaam'
   }
 });
 test('citaten: de juiste bron bij de juiste fles, en niet citeren wie dat niet wil', () => {
-  const saut = { id: 'c1', type: 'zoet', vintage: 2023, region: 'Bordeaux', appellation: 'Sauternes', name: 'Sauternes', qty: 1 };
+  const sautJaar = Object.keys(C.CITAAT.sauternes || {}).map(Number).sort((a, b) => b - a)[0];
+  assert.ok(sautJaar, 'Sauternes heeft minstens één vindplaats');
+  const saut = { id: 'c1', type: 'zoet', vintage: sautJaar, region: 'Bordeaux', appellation: 'Sauternes', name: 'Sauternes', qty: 1 };
   const c = C.citaatVan(saut);
-  assert.ok(c && c.uitgever, 'Sauternes 2023 heeft een vindplaats');
+  assert.ok(c && c.uitgever, 'Sauternes ' + sautJaar + ' heeft een vindplaats');
   assert.ok(c.url.startsWith('https://'), 'en een volledige link');
-  assert.equal(c.jaar, 2023);
+  assert.equal(c.jaar, sautJaar);
   /* Vinous zet onder elk artikel dat er niets uit gekopieerd mag worden. We noemen ze wel, we
      citeren ze niet: de lezer krijgt de vindplaats en een link naar het stuk zelf. */
   let stilJaar = null;
