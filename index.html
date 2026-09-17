@@ -1889,6 +1889,34 @@ function vensterMigratie(){
   return n;
 }
 
+/* De jaargangtabel verandert bij elke onderzoeksronde: een jaar krijgt een niveau, een bron gaat
+   iets anders zeggen, een appellation komt eindelijk in de goede streek terecht. Een venster dat
+   de app zelf heeft gezet hoort dan mee te bewegen, anders loopt de kelder van iemand die de app
+   een jaar geleden heeft gevuld achter op wat we sindsdien hebben uitgezocht.
+
+   Wat níet meebeweegt: een venster dat jij zelf hebt gezet, dat van een etiketscan komt of dat uit
+   een geïmporteerd bestand kwam. Alleen drinkSrc === 'regels' wordt herrekend, en dat veld wordt
+   alleen gezet wanneer de app het getal zelf heeft bedacht. Een fles zonder dat veld blijft ook
+   staan: van die vensters weten we de herkomst niet, en gokken is erger dan niets doen.
+
+   TABEL_VERSIE gaat omhoog zodra STREKEN, RIJP_TABEL of de kelderregels wijzigen. */
+const TABEL_VERSIE = 93;
+function tabelMigratie(){
+  if(!S || !S.settings) return 0;
+  if(S.settings.tabelVersie === TABEL_VERSIE) return 0;
+  let n = 0;
+  for(const w of (S.wines || [])){
+    if(w.drinkSrc !== 'regels') continue;
+    const nieuw = estimateWindow(w);
+    if(w.drinkFrom === nieuw.from && w.drinkTo === nieuw.to) continue;
+    w.drinkFrom = nieuw.from; w.drinkTo = nieuw.to;
+    n++;
+  }
+  S.settings.tabelVersie = TABEL_VERSIE;
+  save(true);
+  return n;
+}
+
 /* De oude formule, bevroren. Alleen nog in gebruik om te herkennen dat een venster in een
    bestaande kelder door de oude regels is gezet en dus veilig herrekend mag worden
    (vensterMigratie). Nooit ergens anders aanroepen. */
@@ -5420,7 +5448,7 @@ ACT.restoreBackup = el => {
     S.wines = d.wines; S.history = d.history; S.wishlist = d.wishlist;
     S.locations = d.locations; S.pairCache = d.pairCache; S.recipeCache = d.recipeCache;
     if(d.cellarName) S.settings.cellarName = d.cellarName;
-    vensterMigratie();
+    vensterMigratie(); tabelMigratie();
     save(); render(); toast('Reservekopie teruggezet');
   });
 };
@@ -5947,7 +5975,7 @@ async function doImport(text){
       wensen.forEach(x => { if(!ww.has(x.id)) S.wishlist.push(x); });
     }
     if(d.photos && typeof d.photos === 'object') for(const [id, p] of Object.entries(d.photos)) if(ID_OK.test(id) && typeof p === 'string' && p.startsWith('data:image/')) await pSet(id, p);
-    vensterMigratie();
+    vensterMigratie(); tabelMigratie();
     save(); closeSheet(true); render(); toast('Back-up ingelezen');
   };
   document.getElementById('impReplace').onclick = () => apply(true);
@@ -6054,6 +6082,7 @@ document.getElementById('fCsv').addEventListener('change', e => {
   r.onload = () => csvKoppel(String(r.result)); r.readAsText(f);
 });
 vensterMigratie();
+tabelMigratie();
 render();
 /* herinnering: staat er nog iets van gisteren op tafel? */
 setTimeout(() => {
@@ -6181,7 +6210,7 @@ function adoptDoc(d){
   S.pairCache = n.pairCache; S.recipeCache = n.recipeCache; S.tonight = n.tonight;
   if(n.cellarName) S.settings.cellarName = n.cellarName;
   S.rev = n.rev;
-  vensterMigratie();
+  vensterMigratie(); tabelMigratie();
   save(true);
 }
 async function pushDoc(){

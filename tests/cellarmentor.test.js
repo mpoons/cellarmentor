@@ -43,7 +43,7 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, rijpheidVan, rijpheidReikt, rijpheidZin, citaatVan, RIJPHEID, CITAAT, CITAAT_STIL, PRODUCENT, genoemdDoor, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, waardeSub, jaargangKloof, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, tabelMigratie, TABEL_VERSIE, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, rijpheidVan, rijpheidReikt, rijpheidZin, citaatVan, RIJPHEID, CITAAT, CITAAT_STIL, PRODUCENT, genoemdDoor, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, waardeSub, jaargangKloof, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
@@ -451,6 +451,31 @@ test('streekVan leest afkortingen zoals ze op etiketten staan', () => {
      drinkadvies, dus daar houdt de uitzondering het tegen. */
   const zwitsers = C.streekVan(pak('Ermitage', { type: 'wit', region: 'Valais', country: 'Zwitserland' }));
   assert.ok(!zwitsers || zwitsers.k !== 'rhone_n', 'een Valais-Ermitage is geen noordelijke Rhône');
+});
+test('een nieuwe jaargangtabel werkt door in bestaande kelders, maar niet over jouw eigen venster heen', () => {
+  /* Wie de app een jaar geleden heeft gevuld, loopt anders achter op alles wat er sindsdien is
+     uitgezocht. Alleen een venster dat de app zelf heeft gezet (drinkSrc 'regels') wordt herrekend. */
+  const basis = { type: 'rood', vintage: 2005, grapes: ['cabernet sauvignon'],
+    region: 'Bordeaux', appellation: 'Pauillac', name: 'Pauillac', qty: 1 };
+  C.S.wines = [
+    { ...basis, id: 'm1', drinkFrom: 1990, drinkTo: 1995, drinkSrc: 'regels' },
+    { ...basis, id: 'm2', drinkFrom: 1990, drinkTo: 1995, drinkSrc: 'eigen' },
+    { ...basis, id: 'm3', drinkFrom: 1990, drinkTo: 1995, drinkSrc: 'ai' },
+    { ...basis, id: 'm4', drinkFrom: 1990, drinkTo: 1995 },
+  ];
+  C.S.settings.tabelVersie = 1;
+  const n = C.tabelMigratie();
+  assert.equal(n, 1, 'precies één fles herrekend');
+  const [a, b, c, d] = C.S.wines;
+  const r = C.estimateWindow(basis);
+  assert.equal(a.drinkTo, r.to, 'het venster van de regels volgt de nieuwe tabel');
+  assert.equal(a.drinkSrc, 'regels', 'en blijft van de regels');
+  assert.equal(b.drinkTo, 1995, 'jouw eigen venster blijft staan');
+  assert.equal(c.drinkTo, 1995, 'een venster uit de etiketscan blijft staan');
+  assert.equal(d.drinkTo, 1995, 'zonder bekende herkomst blijft het staan');
+  assert.equal(C.S.settings.tabelVersie, C.TABEL_VERSIE);
+  assert.equal(C.tabelMigratie(), 0, 'een tweede keer draaien doet niets meer');
+  C.S.wines = [];
 });
 test('een producentnaam hoort bij dat huis, niet bij de buren met een langere naam', () => {
   /* In Pomerol staan P\u00e9trus en La Fleur-P\u00e9trus naast elkaar, in Saint-\u00c9milion Pavie,
