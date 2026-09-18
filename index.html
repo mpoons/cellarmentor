@@ -7,8 +7,8 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; connect-src 'self' https://dbzgrkipcoebglacsqwe.supabase.co https://api.anthropic.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>CellarMentor, je wijnkelder</title>
 <meta name="description" content="CellarMentor is je wijnkelder in je zak: scan een etiket, weet altijd welke fles nú open moet, en laat de sommelier in het restaurant de wijnkaart lezen.">
-<meta name="theme-color" content="#F4EFE6" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#2B2229" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F6F2EA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1B1418" media="(prefers-color-scheme: dark)">
 <!-- hoe de link eruitziet als iemand hem deelt in WhatsApp, iMessage of Slack -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="CellarMentor">
@@ -31,146 +31,130 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F4EFE6">
 <style>
-/* ============ Huisstijl: 'Maison' bij licht (ivoor, lijnen, Playfair cursief, Cormorant SC),
-   'Étiquette' bij donker (donkere grond, kaarten als ivoren etiketten). Letters zijn zelf
-   gehost in fonts/, zodat ze offline werken en er geen verkeer naar Google loopt. ============ */
-@font-face{font-family:'Cormorant SC';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/cormorantsc-600-latin-ext.woff2) format('woff2');unicode-range:U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB}
-@font-face{font-family:'Cormorant SC';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/cormorantsc-600-latin.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
-@font-face{font-family:'Playfair Display';font-style:italic;font-weight:500;font-display:swap;src:url(fonts/playfair-500i-latin-ext.woff2) format('woff2');unicode-range:U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB}
-@font-face{font-family:'Playfair Display';font-style:italic;font-weight:500;font-display:swap;src:url(fonts/playfair-500i-latin.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
-@font-face{font-family:'Playfair Display';font-style:italic;font-weight:600;font-display:swap;src:url(fonts/playfair-600i-latin-ext.woff2) format('woff2');unicode-range:U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB}
-@font-face{font-family:'Playfair Display';font-style:italic;font-weight:600;font-display:swap;src:url(fonts/playfair-600i-latin.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
-@font-face{font-family:'Playfair Display';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/playfair-500-latin-ext.woff2) format('woff2');unicode-range:U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB}
-@font-face{font-family:'Playfair Display';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/playfair-500-latin.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
-@font-face{font-family:'Playfair Display';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/playfair-600-latin-ext.woff2) format('woff2');unicode-range:U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB}
-@font-face{font-family:'Playfair Display';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/playfair-600-latin.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+/* ============ Huisstijl 'Maison': ivoor, haarlijnen, twee letters met elk een eigen rol zoals op
+   een etiket (Playfair voor de naam, EB Garamond in kleinkapitaal voor huis, appellation en kopjes),
+   de systeemletter voor alles wat je leest en invult. Donker is dezelfde app op een warme donkere
+   grond met goud als accent. De letters zijn variabel en zelf gehost in fonts/, zodat ze offline
+   werken en er geen verkeer naar Google loopt. ============ */
+@font-face{font-family:'EB Garamond';font-style:italic;font-weight:400 800;font-display:swap;src:url(fonts/ebgaramond-italic-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'EB Garamond';font-style:italic;font-weight:400 800;font-display:swap;src:url(fonts/ebgaramond-italic-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'EB Garamond';font-style:normal;font-weight:400 800;font-display:swap;src:url(fonts/ebgaramond-normal-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'EB Garamond';font-style:normal;font-weight:400 800;font-display:swap;src:url(fonts/ebgaramond-normal-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Playfair Display';font-style:italic;font-weight:400 900;font-display:swap;src:url(fonts/playfair-italic-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'Playfair Display';font-style:italic;font-weight:400 900;font-display:swap;src:url(fonts/playfair-italic-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Playfair Display';font-style:normal;font-weight:400 900;font-display:swap;src:url(fonts/playfair-normal-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'Playfair Display';font-style:normal;font-weight:400 900;font-display:swap;src:url(fonts/playfair-normal-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
 
 :root{
-  --bg:#F4EFE6; --card:#FBF8F2; --card2:#EEE6D8; --sheet:#FBF8F2;
-  --ink:#2A1F24; --ink2:#6A5A62; --ink3:#9A8C92;
-  --line:#DCCFBB; --line2:#E8DECD;
-  --acc:#6E1F33; --acc-deep:#4F1524; --acc-soft:#F1E2E4; --acc-ink:#6E1F33;
-  --gold:#B08A47; --gold-ink:#8A6930;
+  --bg:#F6F2EA; --card:#FFFDF8; --card2:#EFE7D8; --sheet:#FBF8F2;
+  --ink:#241B1F; --ink2:#6B5A60; --ink3:#9C8D92;
+  --line:#E3D9C7; --line2:#EAE1D1;
+  --acc:#6E1F33; --acc-deep:#4F1524; --acc-soft:#F5E8EA; --acc-ink:#6E1F33;
+  --gold:#A8813D; --gold-ink:#8A6930; --rule:#C8A96A;
   --btn-bg:#6E1F33; --btn-ink:#FBF3EC; --fab1:#6E1F33; --fab2:#4F1524;
-  --ok:#3E7C4F; --ok-bg:#E6EFE4; --warn:#A26E10; --warn-bg:#F6EBD2;
-  --bad:#A63D2F; --bad-bg:#F6E2DD; --info:#56718C; --info-bg:#E6EBF1;
-  --neut:#8A7E71; --neut-bg:#EEE8DB;
+  --ok:#3E6B46; --ok-bg:#E4EEE3; --warn:#96591B; --warn-bg:#F6EBD2;
+  --bad:#9A4234; --bad-bg:#F6E2DD; --info:#4E6878; --info-bg:#E6EBF1;
+  --neut:#8A7E71; --neut-bg:#EEE8DB; --rijp:#8A6930; --rijp-bg:#F3EAD6;
+  --r-jong:#5F7A8A; --r-op:#4A7A52; --r-rijp:#A8813D; --r-nu:#B5722A; --r-over:#9A4234; --r-onb:#B5A99B;
   --t-rood:#8E3347; --t-wit:#A5851B; --t-rose:#C96A7C;
   --t-mous:#2E7B40; --t-zoet:#CE8330; --t-vers:#83420F; --t-oranje:#C8722B;
-  --bar:#6E1F33; --bar-track:#EADFCB;
+  --f-rood:#6E1F33; --f-wit:#E3CF7C; --f-rose:#E8A0AC; --f-mous:#EADFA8; --f-zoet:#D9A24A; --f-vers:#83420F; --f-oranje:#D98A3A;
+  --bar:#6E1F33; --bar-track:#E6DCCB; --papier:#FFFDF8;
   --shadow:none;
   --shadow-lg:0 -8px 40px rgba(42,31,36,.16);
   --serif:'Playfair Display','Iowan Old Style','Palatino Nova',Palatino,Georgia,serif;
-  --sc:'Cormorant SC','Cormorant Garamond','Iowan Old Style',Palatino,Georgia,serif;
+  --sc:'EB Garamond','Cormorant Garamond','Iowan Old Style',Palatino,Georgia,serif;
   --sans:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-  --bg:#2B2229; --card:#F6EFE2; --card2:#3A2E36; --sheet:#F6EFE2;
-  --ink:#F1E6D6; --ink2:#C9B9AE; --ink3:#9C8C94;
-  --line:#5A4A52; --line2:#4A3C43;
-  --acc:#C9A25A; --acc-deep:#E0BE7A; --acc-soft:#3F3038; --acc-ink:#D6B072;
-  --gold:#C9A25A; --gold-ink:#D6B072;
-  --btn-bg:#C9A25A; --btn-ink:#2B2229; --fab1:#C9A25A; --fab2:#A98240;
-  --ok:#8FC49A; --ok-bg:#243527; --warn:#E3B45B; --warn-bg:#3B3020;
-  --bad:#D97A6B; --bad-bg:#42261F; --info:#9FB4C9; --info-bg:#27313B;
-  --neut:#A79A8C; --neut-bg:#342A2E;
-  --t-rood:#C87083; --t-wit:#C9A83A; --t-rose:#D06880;
+  --bg:#1B1418; --card:#271D23; --card2:#31262C; --sheet:#241B20;
+  --ink:#E4D9C9; --ink2:#AE9E94; --ink3:#8A767E;
+  --line:#3D2F36; --line2:#2E232A;
+  --acc:#C9A25A; --acc-deep:#E0BE7A; --acc-soft:#3A2E24; --acc-ink:#D9B56E;
+  --gold:#C9A25A; --gold-ink:#D9B56E; --rule:#6E552C;
+  --btn-bg:#C9A25A; --btn-ink:#1B1418; --fab1:#C9A25A; --fab2:#A98240;
+  --ok:#7FB48C; --ok-bg:#243527; --warn:#DFA05C; --warn-bg:#3B3020;
+  --bad:#D98070; --bad-bg:#42261F; --info:#8FA8B8; --info-bg:#27313B;
+  --neut:#A79A8C; --neut-bg:#342A2E; --rijp:#D9B56E; --rijp-bg:#3A3020;
+  --r-jong:#8FA8B8; --r-op:#7FB48C; --r-rijp:#D9B56E; --r-nu:#DFA05C; --r-over:#D98070; --r-onb:#6A5A60;
+  --t-rood:#C06B7E; --t-wit:#C9A83A; --t-rose:#D06880;
   --t-mous:#5FA870; --t-zoet:#D9923A; --t-vers:#B56A4C; --t-oranje:#E0955A;
-  --bar:#C9A25A; --bar-track:#3A2E36;
+  --f-rood:#8E3347; --f-wit:#E3CF7C; --f-rose:#E8A0AC; --f-mous:#EADFA8; --f-zoet:#D9A24A; --f-vers:#9A4E1C; --f-oranje:#D98A3A;
+  --bar:#C9A25A; --bar-track:#382B31; --papier:#F3EBDD;
   --shadow:0 6px 18px rgba(0,0,0,.35);
   --shadow-lg:0 -14px 50px rgba(0,0,0,.5);
   }
-
-:root:not([data-theme="light"]) .wcard,:root:not([data-theme="light"]) .sheet,:root:not([data-theme="light"]) .panel,:root:not([data-theme="light"]) .match,:root:not([data-theme="light"]) .dishcard,:root:not([data-theme="light"]) .tile,:root:not([data-theme="light"]) .menu{--ink:#241A20;--ink2:#5C4F55;--ink3:#8B7D83;--line:#D7C8A8;--line2:#E4D8C2;--card:#F6EFE2;--card2:#EADFCB;--sheet:#F6EFE2;
-  --acc:#7A2C3C;--acc-deep:#5E1F2E;--acc-soft:#EFDDE0;--acc-ink:#7A2C3C;--gold:#B99C5E;--gold-ink:#8A6930;--btn-bg:#7A2C3C;--btn-ink:#FFF7F0;
-  --ok:#3E7C4F;--ok-bg:#E3ECE0;--warn:#A26E10;--warn-bg:#F4E8CF;--bad:#A63D2F;--bad-bg:#F6E2DD;--info:#56718C;--info-bg:#E4E9EE;--neut:#8A7E71;--neut-bg:#EEE8DB;
-  --t-rood:#8E3347;--t-wit:#A5851B;--t-rose:#C96A7C;--t-mous:#2E7B40;--t-zoet:#CE8330;--t-vers:#83420F; --t-oranje:#C8722B;--bar:#8E3347;--bar-track:#E4D8C2;--shadow:none;color:var(--ink)}
-:root:not([data-theme="light"]) .wcard,:root:not([data-theme="light"]) .match,:root:not([data-theme="light"]) .panel,:root:not([data-theme="light"]) .dishcard,:root:not([data-theme="light"]) .tile,:root:not([data-theme="light"]) .menu{position:relative;border:1px solid #B99C5E;outline:1px solid #B99C5E;outline-offset:-4px;border-radius:3px;background:linear-gradient(180deg,#F8F2E6,#F1E8D6)}
-:root:not([data-theme="light"]) .wcard{padding:13px 11px 11px}
-:root:not([data-theme="light"]) .wcard::before,:root:not([data-theme="light"]) .match::before{content:"";position:absolute;left:12px;right:12px;top:0;height:2px;background:#7A2C3C;border-radius:0 0 1px 1px}
-:root:not([data-theme="light"]) .sheet{border:1px solid #B99C5E;border-top:1px solid #B99C5E;outline:1px solid #B99C5E;outline-offset:-5px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#F8F2E6,#F3EADA)}
-:root:not([data-theme="light"]) .sheet .grip,:root:not([data-theme="light"]) .sheet-grip{background:#B99C5E}
-:root:not([data-theme="light"]) .search,:root:not([data-theme="light"]) .inp{background:#3A2E36;border-color:#5A4A52;color:#F1E6D6}
-:root:not([data-theme="light"]) .sheet .inp,:root:not([data-theme="light"]) .panel .inp,:root:not([data-theme="light"]) .match .inp,:root:not([data-theme="light"]) .menu .inp{background:#FFFCF6;border-color:#D7C8A8;color:#241A20}
-:root:not([data-theme="light"]) .chip{background:transparent;color:#E6DAC8;border-color:#5A4A52}
-:root:not([data-theme="light"]) .chip.on{background:#C9A25A;border-color:#C9A25A;color:#2B2229}
-:root:not([data-theme="light"]) .nav{background:color-mix(in srgb,#221A1F 94%,transparent);border-top-color:#3D3037}
-:root:not([data-theme="light"]) .pairtoggle button.on,:root:not([data-theme="light"]) .seg button.on{color:#241A20}
-:root:not([data-theme="light"]) .sheet .seg button.on{color:#241A20}
-:root:not([data-theme="light"]) .toast{background:#F6EFE2;color:#241A20}
-:root:not([data-theme="light"]) .toast button{color:#7A2C3C}
-:root:not([data-theme="light"]) .brand{color:#F3E9D8}
-:root:not([data-theme="light"]) .brand .dot{color:#C9A25A}
-:root:not([data-theme="light"]) .hdr{border-bottom-color:#4A3C43}
-:root:not([data-theme="light"]) .b-top{color:#8A6930;border-color:#B99C5E}
-:root:not([data-theme="light"]) .dcell{border-top-color:#D7C8A8}
-:root:not([data-theme="light"]) .qty{background:#EADFCB;color:#241A20}
-:root:not([data-theme="light"]) .dbtn{color:#7A2C3C}
-:root:not([data-theme="light"]) .rowline .t{color:#241A20}
+  :root:not([data-theme="light"]) .nav{background:color-mix(in srgb,#221A1E 94%,transparent)}
+  :root:not([data-theme="light"]) .toast{background:#E4D9C9;color:#1B1418}
+  :root:not([data-theme="light"]) .toast button{color:#6E1F33}
+  :root:not([data-theme="light"]) .fles path[stroke]{stroke:#F0E7DA}
 }
 :root[data-theme="light"]{
-  --bg:#F4EFE6; --card:#FBF8F2; --card2:#EEE6D8; --sheet:#FBF8F2;
-  --ink:#2A1F24; --ink2:#6A5A62; --ink3:#9A8C92;
-  --line:#DCCFBB; --line2:#E8DECD;
-  --acc:#6E1F33; --acc-deep:#4F1524; --acc-soft:#F1E2E4; --acc-ink:#6E1F33;
-  --gold:#B08A47; --gold-ink:#8A6930;
+  --bg:#F6F2EA; --card:#FFFDF8; --card2:#EFE7D8; --sheet:#FBF8F2;
+  --ink:#241B1F; --ink2:#6B5A60; --ink3:#9C8D92;
+  --line:#E3D9C7; --line2:#EAE1D1;
+  --acc:#6E1F33; --acc-deep:#4F1524; --acc-soft:#F5E8EA; --acc-ink:#6E1F33;
+  --gold:#A8813D; --gold-ink:#8A6930; --rule:#C8A96A;
   --btn-bg:#6E1F33; --btn-ink:#FBF3EC; --fab1:#6E1F33; --fab2:#4F1524;
-  --ok:#3E7C4F; --ok-bg:#E6EFE4; --warn:#A26E10; --warn-bg:#F6EBD2;
-  --bad:#A63D2F; --bad-bg:#F6E2DD; --info:#56718C; --info-bg:#E6EBF1;
-  --neut:#8A7E71; --neut-bg:#EEE8DB;
+  --ok:#3E6B46; --ok-bg:#E4EEE3; --warn:#96591B; --warn-bg:#F6EBD2;
+  --bad:#9A4234; --bad-bg:#F6E2DD; --info:#4E6878; --info-bg:#E6EBF1;
+  --neut:#8A7E71; --neut-bg:#EEE8DB; --rijp:#8A6930; --rijp-bg:#F3EAD6;
+  --r-jong:#5F7A8A; --r-op:#4A7A52; --r-rijp:#A8813D; --r-nu:#B5722A; --r-over:#9A4234; --r-onb:#B5A99B;
   --t-rood:#8E3347; --t-wit:#A5851B; --t-rose:#C96A7C;
   --t-mous:#2E7B40; --t-zoet:#CE8330; --t-vers:#83420F; --t-oranje:#C8722B;
-  --bar:#6E1F33; --bar-track:#EADFCB;
+  --f-rood:#6E1F33; --f-wit:#E3CF7C; --f-rose:#E8A0AC; --f-mous:#EADFA8; --f-zoet:#D9A24A; --f-vers:#83420F; --f-oranje:#D98A3A;
+  --bar:#6E1F33; --bar-track:#E6DCCB; --papier:#FFFDF8;
   --shadow:none;
   --shadow-lg:0 -8px 40px rgba(42,31,36,.16);
   --serif:'Playfair Display','Iowan Old Style','Palatino Nova',Palatino,Georgia,serif;
-  --sc:'Cormorant SC','Cormorant Garamond','Iowan Old Style',Palatino,Georgia,serif;
+  --sc:'EB Garamond','Cormorant Garamond','Iowan Old Style',Palatino,Georgia,serif;
   --sans:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
 }
 :root[data-theme="dark"]{
-  --bg:#2B2229; --card:#F6EFE2; --card2:#3A2E36; --sheet:#F6EFE2;
-  --ink:#F1E6D6; --ink2:#C9B9AE; --ink3:#9C8C94;
-  --line:#5A4A52; --line2:#4A3C43;
-  --acc:#C9A25A; --acc-deep:#E0BE7A; --acc-soft:#3F3038; --acc-ink:#D6B072;
-  --gold:#C9A25A; --gold-ink:#D6B072;
-  --btn-bg:#C9A25A; --btn-ink:#2B2229; --fab1:#C9A25A; --fab2:#A98240;
-  --ok:#8FC49A; --ok-bg:#243527; --warn:#E3B45B; --warn-bg:#3B3020;
-  --bad:#D97A6B; --bad-bg:#42261F; --info:#9FB4C9; --info-bg:#27313B;
-  --neut:#A79A8C; --neut-bg:#342A2E;
-  --t-rood:#C87083; --t-wit:#C9A83A; --t-rose:#D06880;
+  --bg:#1B1418; --card:#271D23; --card2:#31262C; --sheet:#241B20;
+  --ink:#E4D9C9; --ink2:#AE9E94; --ink3:#8A767E;
+  --line:#3D2F36; --line2:#2E232A;
+  --acc:#C9A25A; --acc-deep:#E0BE7A; --acc-soft:#3A2E24; --acc-ink:#D9B56E;
+  --gold:#C9A25A; --gold-ink:#D9B56E; --rule:#6E552C;
+  --btn-bg:#C9A25A; --btn-ink:#1B1418; --fab1:#C9A25A; --fab2:#A98240;
+  --ok:#7FB48C; --ok-bg:#243527; --warn:#DFA05C; --warn-bg:#3B3020;
+  --bad:#D98070; --bad-bg:#42261F; --info:#8FA8B8; --info-bg:#27313B;
+  --neut:#A79A8C; --neut-bg:#342A2E; --rijp:#D9B56E; --rijp-bg:#3A3020;
+  --r-jong:#8FA8B8; --r-op:#7FB48C; --r-rijp:#D9B56E; --r-nu:#DFA05C; --r-over:#D98070; --r-onb:#6A5A60;
+  --t-rood:#C06B7E; --t-wit:#C9A83A; --t-rose:#D06880;
   --t-mous:#5FA870; --t-zoet:#D9923A; --t-vers:#B56A4C; --t-oranje:#E0955A;
-  --bar:#C9A25A; --bar-track:#3A2E36;
+  --f-rood:#8E3347; --f-wit:#E3CF7C; --f-rose:#E8A0AC; --f-mous:#EADFA8; --f-zoet:#D9A24A; --f-vers:#9A4E1C; --f-oranje:#D98A3A;
+  --bar:#C9A25A; --bar-track:#382B31; --papier:#F3EBDD;
   --shadow:0 6px 18px rgba(0,0,0,.35);
   --shadow-lg:0 -14px 50px rgba(0,0,0,.5);
 }
-
-:root[data-theme="dark"] .wcard,:root[data-theme="dark"] .sheet,:root[data-theme="dark"] .panel,:root[data-theme="dark"] .match,:root[data-theme="dark"] .dishcard,:root[data-theme="dark"] .tile,:root[data-theme="dark"] .menu{--ink:#241A20;--ink2:#5C4F55;--ink3:#8B7D83;--line:#D7C8A8;--line2:#E4D8C2;--card:#F6EFE2;--card2:#EADFCB;--sheet:#F6EFE2;
-  --acc:#7A2C3C;--acc-deep:#5E1F2E;--acc-soft:#EFDDE0;--acc-ink:#7A2C3C;--gold:#B99C5E;--gold-ink:#8A6930;--btn-bg:#7A2C3C;--btn-ink:#FFF7F0;
-  --ok:#3E7C4F;--ok-bg:#E3ECE0;--warn:#A26E10;--warn-bg:#F4E8CF;--bad:#A63D2F;--bad-bg:#F6E2DD;--info:#56718C;--info-bg:#E4E9EE;--neut:#8A7E71;--neut-bg:#EEE8DB;
-  --t-rood:#8E3347;--t-wit:#A5851B;--t-rose:#C96A7C;--t-mous:#2E7B40;--t-zoet:#CE8330;--t-vers:#83420F; --t-oranje:#C8722B;--bar:#8E3347;--bar-track:#E4D8C2;--shadow:none;color:var(--ink)}
-:root[data-theme="dark"] .wcard,:root[data-theme="dark"] .match,:root[data-theme="dark"] .panel,:root[data-theme="dark"] .dishcard,:root[data-theme="dark"] .tile,:root[data-theme="dark"] .menu{position:relative;border:1px solid #B99C5E;outline:1px solid #B99C5E;outline-offset:-4px;border-radius:3px;background:linear-gradient(180deg,#F8F2E6,#F1E8D6)}
-:root[data-theme="dark"] .wcard{padding:13px 11px 11px}
-:root[data-theme="dark"] .wcard::before,:root[data-theme="dark"] .match::before{content:"";position:absolute;left:12px;right:12px;top:0;height:2px;background:#7A2C3C;border-radius:0 0 1px 1px}
-:root[data-theme="dark"] .sheet{border:1px solid #B99C5E;border-top:1px solid #B99C5E;outline:1px solid #B99C5E;outline-offset:-5px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#F8F2E6,#F3EADA)}
-:root[data-theme="dark"] .sheet .grip,:root[data-theme="dark"] .sheet-grip{background:#B99C5E}
-:root[data-theme="dark"] .search,:root[data-theme="dark"] .inp{background:#3A2E36;border-color:#5A4A52;color:#F1E6D6}
-:root[data-theme="dark"] .sheet .inp,:root[data-theme="dark"] .panel .inp,:root[data-theme="dark"] .match .inp,:root[data-theme="dark"] .menu .inp{background:#FFFCF6;border-color:#D7C8A8;color:#241A20}
-:root[data-theme="dark"] .chip{background:transparent;color:#E6DAC8;border-color:#5A4A52}
-:root[data-theme="dark"] .chip.on{background:#C9A25A;border-color:#C9A25A;color:#2B2229}
-:root[data-theme="dark"] .nav{background:color-mix(in srgb,#221A1F 94%,transparent);border-top-color:#3D3037}
-:root[data-theme="dark"] .pairtoggle button.on,:root[data-theme="dark"] .seg button.on{color:#241A20}
-:root[data-theme="dark"] .sheet .seg button.on{color:#241A20}
-:root[data-theme="dark"] .toast{background:#F6EFE2;color:#241A20}
-:root[data-theme="dark"] .toast button{color:#7A2C3C}
-:root[data-theme="dark"] .brand{color:#F3E9D8}
-:root[data-theme="dark"] .brand .dot{color:#C9A25A}
-:root[data-theme="dark"] .hdr{border-bottom-color:#4A3C43}
-:root[data-theme="dark"] .b-top{color:#8A6930;border-color:#B99C5E}
-:root[data-theme="dark"] .dcell{border-top-color:#D7C8A8}
-:root[data-theme="dark"] .qty{background:#EADFCB;color:#241A20}
-:root[data-theme="dark"] .dbtn{color:#7A2C3C}
-:root[data-theme="dark"] .rowline .t{color:#241A20}
+:root[data-theme="dark"] .nav{background:color-mix(in srgb,#221A1E 94%,transparent)}
+:root[data-theme="dark"] .toast{background:#E4D9C9;color:#1B1418}
+:root[data-theme="dark"] .toast button{color:#6E1F33}
+:root[data-theme="dark"] .fles path[stroke]{stroke:#F0E7DA}
+/* Uit eten: de wijnkaart lezen gebeurt in het restaurant, en daar is het donker. */
+body.uit-eten{
+  --bg:#1B1418; --card:#271D23; --card2:#31262C; --sheet:#241B20;
+  --ink:#E4D9C9; --ink2:#AE9E94; --ink3:#8A767E;
+  --line:#3D2F36; --line2:#2E232A;
+  --acc:#C9A25A; --acc-deep:#E0BE7A; --acc-soft:#3A2E24; --acc-ink:#D9B56E;
+  --gold:#C9A25A; --gold-ink:#D9B56E; --rule:#6E552C;
+  --btn-bg:#C9A25A; --btn-ink:#1B1418; --fab1:#C9A25A; --fab2:#A98240;
+  --ok:#7FB48C; --ok-bg:#243527; --warn:#DFA05C; --warn-bg:#3B3020;
+  --bad:#D98070; --bad-bg:#42261F; --info:#8FA8B8; --info-bg:#27313B;
+  --neut:#A79A8C; --neut-bg:#342A2E; --rijp:#D9B56E; --rijp-bg:#3A3020;
+  --r-jong:#8FA8B8; --r-op:#7FB48C; --r-rijp:#D9B56E; --r-nu:#DFA05C; --r-over:#D98070; --r-onb:#6A5A60;
+  --t-rood:#C06B7E; --t-wit:#C9A83A; --t-rose:#D06880;
+  --t-mous:#5FA870; --t-zoet:#D9923A; --t-vers:#B56A4C; --t-oranje:#E0955A;
+  --f-rood:#8E3347; --f-wit:#E3CF7C; --f-rose:#E8A0AC; --f-mous:#EADFA8; --f-zoet:#D9A24A; --f-vers:#9A4E1C; --f-oranje:#D98A3A;
+  --bar:#C9A25A; --bar-track:#382B31; --papier:#F3EBDD;
+  --shadow:0 6px 18px rgba(0,0,0,.35);
+  --shadow-lg:0 -14px 50px rgba(0,0,0,.5);
+  background:var(--bg);min-height:100dvh}
+body.uit-eten .nav{background:color-mix(in srgb,#221A1E 94%,transparent)}
+body.uit-eten .toast{background:#E4D9C9;color:#1B1418}
+body.uit-eten .fles path[stroke]{stroke:#F0E7DA}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg)}
 body{
@@ -189,11 +173,10 @@ h1,h2,h3{text-wrap:balance}
 #app{max-width:640px;margin:0 auto;padding:14px 16px calc(96px + env(safe-area-inset-bottom,0px))}
 /* ---------- header ---------- */
 .hdr{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:6px 0 14px}
-.brand{font-family:var(--serif);font-size:30px;letter-spacing:.01em;color:var(--ink)}
-.brand .dot{color:var(--acc)}
+.brand{font-family:var(--sc);font-variant:small-caps;font-size:17px;letter-spacing:.14em;font-weight:500;color:var(--ink)}
 .hdr-sub{font-size:12.5px;color:var(--ink2)}
-.eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--gold-ink);font-weight:600}
-.h2{font-family:var(--serif);font-size:21px;margin:4px 0 10px}
+.eyebrow{font-family:var(--sc);font-variant:small-caps;font-size:14px;letter-spacing:.14em;font-weight:500;color:var(--gold-ink)}
+.h2{font-family:var(--serif);font-size:24px;font-weight:500;line-height:1.15;margin:2px 0 12px}
 .sect{margin-top:22px}
 /* ---------- search & chips ---------- */
 .search{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 12px;box-shadow:var(--shadow)}
@@ -212,25 +195,44 @@ h1,h2,h3{text-wrap:balance}
 .chip .tdot{width:8px;height:8px}
 .chip.on .tdot{outline:1.5px solid rgba(255,247,242,.85);outline-offset:1px}
 /* ---------- wijnkaart ---------- */
-.wlist{display:flex;flex-direction:column;gap:10px}
-.wcard{display:flex;gap:12px;align-items:stretch;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;box-shadow:var(--shadow);text-align:left;width:100%}
-.wthumb{flex:none;width:52px;border-radius:9px;overflow:hidden;background:var(--card2);display:flex;align-items:center;justify-content:center;min-height:68px;position:relative}
+.wlist{display:flex;flex-direction:column;gap:0}
+.wcard{display:flex;gap:13px;align-items:center;background:transparent;border:0;border-bottom:1px solid var(--line2);border-radius:0;padding:10px 0;text-align:left;width:100%;animation:rij-in .32s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*18ms)}
+.wthumb{flex:none;width:52px;border-radius:2px;overflow:hidden;background:var(--card2);display:flex;align-items:center;justify-content:center;min-height:68px;position:relative}
 .wthumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
 .wthumb svg{color:var(--ink3);opacity:.8}
+/* de fles naast de naam: de etiketfoto als die er is, anders een flesje in de kleur van de wijn */
+.wfles{flex:none;width:44px;height:68px;display:flex;align-items:center;justify-content:center;position:relative}
+.wfles img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:2px;border:1px solid var(--line)}
+.wfles img:not([src]){display:none}
+.fles{display:block;flex:none}
+/* waar in het venster de fles staat: één as van koel naar warm, niet vier losse kleuren */
+.rbar{position:relative;width:60px;height:3px;border-radius:2px;background:var(--bar-track);flex:none;display:inline-block;vertical-align:middle}
+.rbar i{position:absolute;top:0;bottom:0;left:0;border-radius:2px;display:block}
+.rbar b{position:absolute;top:-3px;width:2px;height:9px;border-radius:1px;background:var(--ink);display:block}
+.r-op{background:var(--r-op)} .r-nu{background:var(--r-nu)} .r-rijp{background:var(--r-rijp)} .r-over{background:var(--r-over)} .r-jong{background:var(--r-jong)} .r-onb{background:var(--r-onb)}
+.rlab{font-size:10.5px;font-weight:600;white-space:nowrap;background:none;padding:0;border-radius:0}
+.rlab.b-op{color:var(--ok);background:none} .rlab.b-nu{color:var(--warn);background:none} .rlab.b-rijp{color:var(--rijp);background:none} .rlab.b-over{color:var(--bad);background:none} .rlab.b-jong{color:var(--info);background:none} .rlab.b-onb{color:var(--neut);background:none}
+.wcard .wmeta{gap:7px;margin-top:3px}
+@keyframes rij-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes view-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+#view.vt{animation:view-in .2s ease-out both}
 .wmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;justify-content:center}
-.wname{font-family:var(--serif);font-size:16.5px;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.wsub{font-size:12.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.wcard .wsub{display:flex;min-width:0}
+.wname{font-family:var(--serif);font-size:16.5px;font-weight:500;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.wname .wjaar{color:var(--ink3);font-weight:400;font-size:14px;white-space:nowrap}
+.wsub{font-family:var(--sc);font-variant:small-caps;letter-spacing:.07em;font-size:13.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wcard .wprod{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .wcard .wjaar{flex:none;white-space:pre}
 .wmeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px}
-.wside{flex:none;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:6px;padding:2px 0}
+.wside{flex:none;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:4px;padding:2px 0}
 .wtap{display:flex;gap:12px;flex:1;min-width:0;align-items:stretch;text-align:left}
-.dbtn{width:36px;height:36px;border-radius:50%;background:var(--acc-soft);color:var(--acc-ink);display:flex;align-items:center;justify-content:center}
+.dbtn{width:30px;height:30px;border-radius:50%;background:none;color:var(--ink3);display:flex;align-items:center;justify-content:center;margin-top:2px}
 .dbtn.leeg{opacity:.55}
 .dbtn:active{transform:scale(.92)}
-.qty{font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;color:var(--ink);background:var(--card2);border-radius:8px;padding:3px 8px}
-.wloc{font-size:11px;color:var(--ink3);max-width:104px;text-align:right;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.qty{font-family:var(--serif);font-variant-numeric:lining-nums tabular-nums;font-size:15px;color:var(--ink);background:none;border-radius:0;padding:0}
+.wloc{font-size:10px;color:var(--ink3);max-width:104px;text-align:right;line-height:1.25;display:flex;align-items:flex-start;gap:3px;justify-content:flex-end}
+.wloc .ik{width:9px;height:9px;margin:2px 0 0;flex:none}
+.wloc>span{overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.wcard .b-top{border:0;padding:0;font-size:10.5px;background:none}
 .tdot{width:9px;height:9px;border-radius:50%;flex:none;display:inline-block}
 .tlabel{font-size:12px;color:var(--ink2)}
 .t-rood{background:var(--t-rood)} .t-wit{background:var(--t-wit)} .t-rose{background:var(--t-rose)}
@@ -259,7 +261,7 @@ h1,h2,h3{text-wrap:balance}
 .schaal-as{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink3);margin:3px 0 6px;font-variant-numeric:tabular-nums}
 .b-jong{background:var(--info-bg);color:var(--info)}
 .b-over{background:var(--bad-bg);color:var(--bad)}
-.b-rijp{background:var(--warn-bg);color:var(--warn)}
+.b-rijp{background:var(--rijp-bg);color:var(--rijp)}
 .b-onb{background:var(--neut-bg);color:var(--neut)}
 /* ---------- knoppen ---------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:12px 18px;font-size:15px;font-weight:600;background:var(--btn-bg);color:var(--btn-ink);width:100%;transition:transform .06s ease,opacity .15s}
@@ -289,7 +291,7 @@ h1,h2,h3{text-wrap:balance}
 .sheet-in{overflow-y:auto;padding:8px 18px calc(24px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch}
 .sheet-grip{width:40px;height:4px;border-radius:2px;background:var(--line);margin:10px auto 2px;flex:none}
 .sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0 10px}
-.sheet-title{font-family:var(--serif);font-size:20px}
+.sheet-title{font-family:var(--serif);font-size:21px;font-weight:500;line-height:1.15}
 .xbtn{width:32px;height:32px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;color:var(--ink2);flex:none}
 @media (min-width:560px){.sheet{max-width:560px;left:50%;transform:translate(-50%,100%);}.sheet.show{transform:translate(-50%,0)}}
 /* ---------- detail ---------- */
@@ -307,9 +309,9 @@ h1,h2,h3{text-wrap:balance}
 .stepval{font-family:var(--serif);font-size:30px;min-width:56px;text-align:center;font-variant-numeric:tabular-nums}
 /* tijdlijn */
 .tl{margin:8px 0 4px}
-.tl-track{position:relative;height:10px;border-radius:5px;background:var(--bar-track);overflow:visible}
-.tl-fill{position:absolute;top:0;bottom:0;border-radius:5px;background:linear-gradient(90deg,var(--t-mous),var(--ok) 30%,var(--warn) 78%,var(--bad))}
-.tl-now{position:absolute;top:-4px;width:2.5px;height:18px;border-radius:2px;background:var(--ink);box-shadow:0 0 0 3px var(--sheet)}
+.tl-track{position:relative;height:5px;border-radius:3px;background:var(--bar-track);overflow:visible}
+.tl-fill{position:absolute;top:0;bottom:0;border-radius:3px;background:linear-gradient(90deg,var(--r-op),var(--r-op) 45%,var(--r-rijp) 72%,var(--r-nu) 88%,var(--r-over))}
+.tl-now{position:absolute;top:-5px;width:2.5px;height:15px;border-radius:2px;background:var(--ink);box-shadow:0 0 0 3px var(--sheet);transform:translateX(-50%)}
 .tl-lab{position:relative;height:15px;font-size:11.5px;color:var(--ink3);margin-top:7px;font-variant-numeric:tabular-nums}
 .tl-lab span{position:absolute;top:0;white-space:nowrap}
 .tl-lab span.now{color:var(--ink);font-weight:600}
@@ -363,8 +365,8 @@ textarea.inp{resize:vertical;min-height:64px}
 /* ---------- overzicht ---------- */
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 15px;box-shadow:var(--shadow);text-align:left}
-.tile .n{font-family:var(--serif);font-size:27px;font-variant-numeric:tabular-nums;margin-top:2px}
-.tile .k{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+.tile .n{font-family:var(--serif);font-size:23px;font-weight:500;font-variant-numeric:lining-nums tabular-nums;margin-top:2px;line-height:1.1}
+.tile .k{font-family:var(--sc);font-variant:small-caps;font-size:13px;letter-spacing:.1em;color:var(--ink3)}
 .tile .s{font-size:11.5px;color:var(--ink2);margin-top:2px}
 .brow{display:grid;grid-template-columns:minmax(86px,30%) 1fr auto;align-items:center;gap:10px;padding:5px 0}
 .brow .l{font-size:13px;color:var(--ink2);display:flex;align-items:center;gap:7px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
@@ -393,14 +395,14 @@ textarea.inp{resize:vertical;min-height:64px}
 .backrow{display:flex;align-items:center;gap:8px;margin-bottom:12px;color:var(--acc-ink);font-weight:600;font-size:14px}
 /* ---------- navigatie ---------- */
 .nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line)}
-.nav-in{max-width:640px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-around;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px))}
+.nav-in{max-width:640px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-around;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px));position:relative}
+.nav-ind{position:absolute;top:-1px;height:2px;width:30px;background:var(--acc);transition:left .28s cubic-bezier(.32,.72,.33,1);pointer-events:none}
 .nbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 2px;color:var(--ink3);font-size:10.5px;font-weight:600;letter-spacing:.02em}
 .nbtn.on{color:var(--acc-ink)}
 .nbtn svg{width:23px;height:23px}
 .nfab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:600;color:var(--ink3);margin-top:-24px}
-.nfab .fab{width:56px;height:56px;border-radius:50%;background:var(--fab1);color:var(--btn-ink);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(125,42,60,.38);border:3px solid var(--bg)}
+.nfab .fab{width:54px;height:54px;border-radius:50%;background:var(--fab1);color:var(--btn-ink);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(42,31,36,.18);border:3px solid var(--bg)}
 .nfab.on .fab{background:var(--fab2)}
-:root[data-theme="dark"] .nfab .fab{box-shadow:0 6px 18px rgba(0,0,0,.45)}
 /* ---------- toast ---------- */
 .toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:calc(104px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--ink);color:var(--bg);border-radius:12px;padding:11px 16px;font-size:13.5px;display:flex;gap:14px;align-items:center;width:max-content;text-align:left;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:calc(100vw - 40px)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
@@ -410,8 +412,7 @@ textarea.inp{resize:vertical;min-height:64px}
 .toast button{margin-left:auto}
 /* ---------- scan ---------- */
 .scanhero{text-align:center;padding:26px 18px 10px}
-.scanbig{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--fab1) 0%,var(--fab2) 90%);color:#FFF7F2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin:18px auto;box-shadow:0 14px 40px rgba(125,42,60,.35);font-weight:600;font-size:14px}
-:root[data-theme="dark"] .scanbig{box-shadow:0 14px 40px rgba(0,0,0,.5)}
+.scanbig{width:150px;height:150px;border-radius:50%;background:var(--fab1);color:var(--btn-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin:18px auto;box-shadow:none;font-weight:600;font-size:14px}
 .scanbig:active{transform:scale(.97)}
 .scanprev{border-radius:16px;overflow:hidden;max-height:300px;display:flex;align-items:center;justify-content:center;background:var(--card2);margin-bottom:14px}
 .scanprev img{object-fit:contain;max-height:300px}
@@ -474,22 +475,16 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
 .mt8{margin-top:8px}.mt14{margin-top:14px}.mb8{margin-bottom:8px}
 
 /* ---------- Maison: de lichte stand ---------- */
-.brand{font-family:var(--sc);font-size:23px;letter-spacing:.16em;text-transform:none;font-weight:600}
-.brand .dot{color:var(--gold-ink)}
-.hdr{border-bottom:1px solid var(--line);padding-bottom:9px;margin-bottom:12px}
-.h2{font-weight:500}
-.wname{font-style:italic;font-weight:500;font-size:17px}
-.sheet-title{font-style:italic;font-weight:500;font-size:21px}
-.empty .big{font-style:italic;font-weight:500}
+.hdr{border-bottom:1px solid var(--rule);padding-bottom:8px;margin-bottom:12px;align-items:center}
+.empty .big{font-weight:500;font-size:28px;line-height:1.18;margin-bottom:10px}
+.empty .leegfles{display:flex;justify-content:center;gap:14px;margin:6px 0 22px}
+.empty .leegfles .fles{width:32px;height:96px}
+.empty .leegfles .fles:first-child,.empty .leegfles .fles:last-child{width:28px;height:84px;align-self:flex-end}
 .rowline .t{font-weight:500}
 .tile .n,.stepval,.mprice,.mscore{font-variant-numeric:lining-nums tabular-nums}
-.eyebrow{font-family:var(--sc);font-size:13px;letter-spacing:.14em;text-transform:none;font-weight:600}
-.wlist{gap:0}
-.wcard{background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:none;padding:11px 2px}
 .wthumb{border-radius:2px}
-.qty{border-radius:2px}
 .chip{border-radius:2px;text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;padding:7px 10px;background:transparent}
-.chip.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chip.on{background:var(--acc);border-color:var(--acc);color:var(--btn-ink)}
 .chip.on .tdot{outline-color:rgba(255,255,255,.7)}
 .search,.inp{border-radius:3px}
 .btn{border-radius:3px;text-transform:uppercase;letter-spacing:.08em;font-size:12.5px;padding:13px 18px}
@@ -502,6 +497,40 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
 .toast{border-radius:3px}
 .nav{background:color-mix(in srgb,var(--bg) 94%,transparent)}
 .b-top{border-radius:2px}
+/* "Ik wil iets drinken": de tweede hoofdactie op het beginscherm, direct onder zoeken */
+.drinkbar{display:flex;align-items:center;gap:11px;width:100%;border:1.5px solid var(--acc);border-radius:3px;padding:10px 13px;color:var(--acc-ink);background:var(--acc-soft);margin-top:9px;text-align:left;font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.drinkbar .grow{flex:1}
+.drinkbar .ik{width:18px;height:18px;margin:0}
+.banner.slim{padding:8px 11px;align-items:center;font-size:12.5px;margin:8px 0}
+.banner.slim .btn.sm{padding:6px 10px}
+/* de fles in het detail, naast naam en herkomst */
+.dkop{display:flex;gap:16px;align-items:flex-start;margin:2px 0 12px}
+.dkop .dfles{flex:none;width:82px;display:flex;align-items:center;justify-content:center}
+.dkop .dfles img{width:82px;max-height:150px;object-fit:contain;border-radius:2px;border:1px solid var(--line);display:block}
+.dkop .dtekst{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;padding-top:4px}
+/* zin in: vier flessen, tik en de kelder staat gefilterd op wat nu op dronk is in die kleur */
+.zin{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:4px 0 6px}
+.zin button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px 10px;background:var(--card);border:1px solid var(--line);border-radius:3px}
+.zin button span{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.zin button small{font-size:10px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.zin button:active{transform:scale(.97)}
+.ofregel{display:flex;align-items:center;gap:10px;margin:14px 0 10px;font-family:var(--sc);font-style:italic;font-size:14px;color:var(--ink3)}
+.ofregel::before,.ofregel::after{content:"";flex:1;height:1px;background:var(--line)}
+/* Horizon: wanneer de kelder op dronk komt, per periode */
+.hz{display:flex;flex-direction:column;margin:0 0 6px}
+.hz-rij{display:flex;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line2);width:100%;text-align:left}
+.hz-rij:last-child{border-bottom:0}
+.hz-jaar{flex:none;width:56px;display:flex;flex-direction:column;line-height:1.1}
+.hz-jaar b{font-family:var(--serif);font-size:15px;font-weight:500;font-variant-numeric:lining-nums tabular-nums}
+.hz-jaar small{font-size:9.5px;color:var(--ink3)}
+.hz-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.hz-bar{display:block;height:5px;border-radius:3px;min-width:3px}
+.hz-note{font-size:11px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hz-n{flex:none;display:flex;flex-direction:column;align-items:flex-end;line-height:1.1}
+.hz-n b{font-family:var(--serif);font-size:15px;font-weight:500;font-variant-numeric:lining-nums tabular-nums}
+.hz-n small{font-size:9.5px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.match .wname,.dishcard .d{font-weight:500}
+.match-top .fles{margin-right:2px}
 </style>
 <div id="app">
   <main id="view" aria-live="polite"></main>
@@ -509,13 +538,14 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
 
 <nav class="nav" aria-label="Hoofdnavigatie">
   <div class="nav-in">
+    <span class="nav-ind" aria-hidden="true"></span>
     <button class="nbtn" data-act="tab" data-tab="kelder" aria-label="Kelder">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-.6 6.2a4.4 4.4 0 0 1-8.8 0L7 3Z"/><path d="M12 13.5V20"/><path d="M8.5 21h7"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9l8-6 8 6v12"/><path d="M9 21v-6h6v6"/></svg>
       <span>Kelder</span>
     </button>
-    <button class="nbtn" data-act="tab" data-tab="pairing" aria-label="Pairing">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7"/><path d="M4.5 3v4.2a2.5 2.5 0 0 0 5 0V3"/><path d="M7 13v8"/><path d="M16.5 3c-1.7 1-2.5 3-2.5 5.5 0 2 .8 3 2.5 3.5V21"/><path d="M16.5 3v9"/></svg>
-      <span>Pairing</span>
+    <button class="nbtn" data-act="tab" data-tab="pairing" aria-label="Drinken">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-.6 6.2a4.4 4.4 0 0 1-8.8 0L7 3Z"/><path d="M12 13.5V20"/><path d="M8.5 21h7"/></svg>
+      <span>Drinken</span>
     </button>
     <button class="nfab" data-act="tab" data-tab="scan" aria-label="Scan een etiket">
       <span class="fab"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1l1.4-2h6.2L16.5 6h1A2.5 2.5 0 0 1 20 8.5v7A2.5 2.5 0 0 1 17.5 18h-11A2.5 2.5 0 0 1 4 15.5v-7Z"/><circle cx="12" cy="12" r="3.4"/></svg></span>
@@ -1014,7 +1044,7 @@ async function fillPhotos(root){
   const imgs = [...(root||document).querySelectorAll('img[data-photo]')];
   await Promise.all(imgs.map(async img => {
     const src = await pGet(img.dataset.photo);
-    if(src){ img.src = src; img.closest('.wthumb,.dphoto,.scanprev')?.querySelector('svg')?.remove(); }
+    if(src){ img.src = src; img.closest('.wthumb,.wfles,.dphoto,.dfles,.scanprev')?.querySelector('svg')?.remove(); }
   }));
 }
 /* glas dat volloopt: laadbeeld voor alles waar de sommelier op zit te denken */
@@ -1024,6 +1054,42 @@ const pourSvg = `<svg class="pour" viewBox="0 0 22 30" aria-hidden="true">
   <path class="glass" d="M4.6 3h12.8l-1 8.2a5.9 5.9 0 0 1-10.8 0L4.6 3Z"/>
   <path class="glass" d="M11 17.3V25M7.4 26.4h7.2"/></svg>`;
 
+/* De fles naast de naam. Vorm volgt de soort (Bordeaux-schouders voor rood, glooiend voor wit, iets
+   slanker voor rosé, zwaar met folie en kurk voor bubbels), de kleur is de wijn; kleuren als CSS-variabelen
+   zodat de donkere stand ze kan bijstellen. Een etiketje op de buik is wat het in één oogopslag tot fles maakt. */
+const FLES_VORM = {
+  bx:'M9 1h6v19l5 4v44a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V24l5-4z',
+  bg:'M9 1h6v15c0 8 5 10 5 18v34a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V34c0-8 5-10 5-18z',
+  rs:'M9 1h6v15c0 8 4 10 4 18v34a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V34c0-8 4-10 4-18z',
+  ch:'M9 1h6v11c0 9 6 11 6 20v36a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V32c0-9 6-11 6-20z'
+};
+const FLES = {
+  rood:{d:FLES_VORM.bx, fill:'var(--f-rood)', cap:'#3A2C31', foil:5},
+  wit:{d:FLES_VORM.bg, fill:'var(--f-wit)', cap:'#3A2C31', foil:5},
+  rose:{d:FLES_VORM.rs, fill:'var(--f-rose)', cap:'#3A2C31', foil:5},
+  mousserend:{d:FLES_VORM.ch, fill:'var(--f-mous)', cap:'var(--gold)', foil:16, cork:'M7 5V2.5a5 2.5 0 0 1 10 0V5z'},
+  zoet:{d:FLES_VORM.bg, fill:'var(--f-zoet)', cap:'#3A2C31', foil:5},
+  versterkt:{d:FLES_VORM.bx, fill:'var(--f-vers)', cap:'#3A2C31', foil:5},
+  oranje:{d:FLES_VORM.bg, fill:'var(--f-oranje)', cap:'#3A2C31', foil:5}
+};
+function flesIcon(type, w, h){
+  const F = FLES[type] || FLES.rood;
+  return `<svg class="fles" width="${w||24}" height="${h||68}" viewBox="0 0 24 72" aria-hidden="true"><path d="${F.d}" fill="${F.fill}" fill-opacity=".92"/><path d="${F.d}" fill="none" stroke="#3A2C31" stroke-opacity=".22" stroke-width=".8"/><rect x="8.5" y="0" width="7" height="${F.foil}" rx="1" fill="${F.cap}"/>${F.cork?`<path d="${F.cork}" fill="${F.cap}"/>`:''}<rect x="7" y="44" width="10" height="15" fill="var(--papier)" stroke="#3A2C31" stroke-opacity=".25" stroke-width=".6"/><rect x="7" y="46.5" width="10" height="1.8" fill="${F.fill}" fill-opacity=".75"/><path d="M7 30v36" stroke="#fff" stroke-opacity=".25" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+}
+/* Foto als die er is, anders het flesje; in Instellingen kun je altijd het flesje kiezen voor een rustige lijst. */
+const toonFoto = w => !!w.photo && S.settings.flesIcoon !== 'icoon';
+const flesVak = w => `<span class="wfles">${flesIcon(w.type)}${toonFoto(w)?`<img data-photo="${w.id}" alt="">`:''}</span>`;
+/* Waar in het venster de fles staat: een balkje met een streepje voor nu, en de stand als woord. */
+function rijpHtml(w){
+  const st = windowStatus(w), y = YR(), f = w.drinkFrom || null, t = w.drinkTo || null;
+  let p = 50;
+  if(st.k === 'jong') p = 4; else if(st.k === 'over') p = 100; else if(st.k === 'onb') p = 0;
+  else if(f && t && t > f) p = Math.max(6, Math.min(96, Math.round((y - f) / (t - f) * 100)));
+  else if(t) p = Math.max(6, Math.min(96, Math.round((1 - Math.min(10, t - y) / 10) * 100)));
+  return `<span class="rbar"><i class="r-${st.k}" style="width:${p}%"></i><b style="left:${p}%"></b></span><span class="rlab ${st.cls}">${st.label}</span>`;
+}
+/* een korte trilling op de momenten die tellen: fles afgeboekt, etiket herkend */
+const tik = ms => { try{ if(navigator.vibrate) navigator.vibrate(ms || 30); }catch(e){} };
 const bottleSvg = `<svg width="22" height="34" viewBox="0 0 22 34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 2h4v6.5c2.2 1.2 3.5 3 3.5 5.8V29a3 3 0 0 1-3 3h-5a3 3 0 0 1-3-3V14.3c0-2.8 1.3-4.6 3.5-5.8V2Z"/></svg>`;
 
 /* Noodscherm: wat er nog kan als een view gooit (een kapot record, een fout in een nieuwe versie):
@@ -2819,6 +2885,9 @@ ACT.tab = el => { if(typeof closeLiveScan === 'function') closeLiveScan(); UI.ta
 
 function navSync(){
   document.querySelectorAll('.nbtn,.nfab').forEach(b => b.classList.toggle('on', b.dataset.tab === UI.tab));
+  /* de streep boven de balk schuift mee naar het gekozen tabblad */
+  const ind = document.querySelector('.nav-ind'), aan = document.querySelector('.nbtn.on,.nfab.on');
+  if(ind && aan){ const r = aan.getBoundingClientRect(), p = aan.parentNode.getBoundingClientRect(); ind.style.left = (r.left - p.left + r.width / 2 - 15) + 'px'; ind.style.opacity = aan.classList.contains('nfab') ? '0' : '1'; }
 }
 /* ---- lijn-iconen in plaats van emoji's: één stijl, één lijndikte, kleur van de tekst ---- */
 const IK = {
@@ -2845,13 +2914,15 @@ const IK = {
   info:'<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><circle cx="12" cy="7.6" r=".4" fill="currentColor"/>',
   waarschuwing:'<path d="M12 4 2.5 20h19L12 4Z"/><path d="M12 10v4"/><circle cx="12" cy="17" r=".4" fill="currentColor"/>',
   speld:'<path d="M12 21.5s-6.5-5.6-6.5-11.3a6.5 6.5 0 0 1 13 0C18.5 15.9 12 21.5 12 21.5Z"/><circle cx="12" cy="10" r="2.3"/>',
+  chev:'<path d="m10 6 6 6-6 6"/>',
+  chevdown:'<path d="m6 10 6 6 6-6"/>',
   prullenbak:'<path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l.8 12.2A1.5 1.5 0 0 0 8.8 20.6h6.4a1.5 1.5 0 0 0 1.5-1.4L17.5 7M10 10.5v6.5M14 10.5v6.5"/>',
   druif:'<circle cx="9" cy="11" r="2.2"/><circle cx="15" cy="11" r="2.2"/><circle cx="12" cy="15.5" r="2.2"/><circle cx="12" cy="8" r="2.2"/><path d="M12 5.8V3M12 3c1.5 0 2.5-.5 3.5-1.5"/>',
 };
 const ik = (n, size) => `<svg class="ik" width="${size||15}" height="${size||15}" viewBox="0 0 24 24" aria-hidden="true">${IK[n]||''}</svg>`;
 
 function brandRow(sub){
-  return `<div class="hdr"><div><div class="brand">CellarMentor<span class="dot">.</span></div></div><div class="hdr-sub tnum">${sub||''}</div></div>`;
+  return `<div class="hdr"><div class="brand">CellarMentor</div><div class="hdr-sub tnum">${sub||''}</div></div>`;
 }
 const bottleCount = () => S.wines.reduce((n,w) => n + (w.qty||0), 0);
 const cellarValue = () => S.wines.reduce((n,w) => n + (w.qty||0) * bronWaarde(w), 0);
@@ -2895,20 +2966,22 @@ const SORTS = {recent:'Recent toegevoegd', naam:'Naam', jaar:'Jaargang', venster
 /* eerste getal uit "92 Parker" of "8,5 Hamersma"; zonder score achteraan */
 const scoreNum = w => { const m = String(w.score||'').replace(',', '.').match(/\d+(?:\.\d+)?/); return m ? parseFloat(m[0]) : -1; };
 
-function wineCardHtml(w){
-  const st = windowStatus(w);
-  return `<div class="wcard">
+function wineCardHtml(w, i){
+  /* De fles naast de naam, de naam met het jaartal licht erachter, het huis en de appellation in
+     kleinkapitaal zoals op een etiket, en het balkje dat zegt waar in het venster de fles staat.
+     Rechts het aantal met eenheid en de plek met een speld. De rijen komen getrapt binnen (--i). */
+  return `<div class="wcard" style="--i:${Math.min(Number(i)||0, 14)}">
     <button class="wtap" data-act="detail" data-id="${w.id}">
-      <span class="wthumb">${bottleSvg}${w.photo?`<img data-photo="${w.id}" alt="">`:''}</span>
+      ${flesVak(w)}
       <span class="wmain">
-        <span class="wname">${esc(w.name)}</span>
-        <span class="wsub"><span class="wprod">${esc(w.producer||'')}</span><span class="wjaar">${w.producer?' · ':''}${esc(w.vintage||'NV')}</span></span>
-        <span class="wmeta">${dotHtml(w.type)}<span class="tlabel">${TYPES[w.type]?TYPES[w.type].l:''}</span><span class="badge ${st.cls}">${st.label}</span>${topKort(w)}${onTable(w.id)?'<span class="badge b-nu">'+ik('glas')+' op tafel</span>':''}</span>
+        <span class="wname">${esc(w.name)} <span class="wjaar">${esc(w.vintage||'NV')}</span></span>
+        <span class="wsub">${esc([w.producer, w.appellation || w.region].filter(Boolean).join(' · '))}</span>
+        <span class="wmeta">${rijpHtml(w)}${topKort(w)}${onTable(w.id)?'<span class="badge b-nu">'+ik('glas')+' op tafel</span>':''}</span>
       </span>
     </button>
     <span class="wside">
       <span class="qty tnum" ${!w.qty?'style="color:var(--ink3)"':''}>×${w.qty||0}</span>
-      ${w.location?`<span class="wloc">${esc(w.location)}${(()=>{ const vk = rekVakken(w.location, w.id); return vk.length ? ' · ' + vakKort(vk, 3) : ''; })()}</span>`:''}
+      ${w.location?`<span class="wloc">${ik('speld')}<span>${esc(w.location)}${(()=>{ const vk = rekVakken(w.location, w.id); return vk.length ? ' · ' + vakKort(vk, 3) : ''; })()}</span></span>`:''}
       <button class="dbtn${w.qty?'':' leeg'}" data-act="drinkOpen" data-id="${w.id}" aria-label="${w.qty?'Drink een fles':'Achteraf vastleggen:'} ${esc(w.name)}" title="${w.qty?'Drink een fles':'Achteraf vastleggen'}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-.6 6.2a4.4 4.4 0 0 1-8.8 0L7 3Z"/><path d="M12 13.5V20"/><path d="M8.5 21h7"/></svg></button>
     </span>
   </div>`;
@@ -2920,7 +2993,7 @@ function viewKelder(){
   /* Volgorde: Locatie altijd vooraan, de rest op een vaste plek (verspringen bleek storender
      dan scrollen). Elk item: [aan, html]; 'aan' blijft staan voor wie de volgorde ooit wil wegen. */
   const rij = [
-    [!!UI.floc, locs.length ? `<button class="chip ${UI.floc?'on':''}" data-act="chipLoc">${UI.floc?(UI.floc==='::none'?'Zonder locatie':esc(UI.floc)):'Locatie'} ▾</button>` : ''],
+    [!!UI.floc, locs.length ? `<button class="chip ${UI.floc?'on':''}" data-act="chipLoc">${UI.floc?(UI.floc==='::none'?'Zonder locatie':esc(UI.floc)):'Locatie'} ${ik('chevdown', 11)}</button>` : ''],
     [!UI.ftype, `<button class="chip ${!UI.ftype?'on':''}" data-act="chipType" data-t="">Alle</button>`],
     [UI.fstatus, `<button class="chip ${UI.fstatus?'on':''}" data-act="chipStatus">Op dronk</button>`],
     [UI.fovertijd, `<button class="chip ${UI.fovertijd?'on':''}" data-act="chipOver">${ik('zandloper')} Over tijd</button>`],
@@ -2936,12 +3009,16 @@ function viewKelder(){
   const leegRij = (nLeeg && !UI.qGerecht) ? `<div class="small" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 10px"><span>${nLeeg} ${plur(nLeeg,'wijn','wijnen')} zonder voorraad</span><button class="linkbtn" data-act="opruimOpen" style="font-size:13px">Opruimen ›</button></div>` : '';
   let body;
   if(!S.wines.length){
-    body = `<div class="empty"><div class="big">Je kelder is nog leeg</div>
-      <p>Scan het etiket van een fles om te beginnen, of vul hem handmatig in.</p>
-      <button class="btn" data-act="tab" data-tab="scan" style="max-width:260px">Scan je eerste fles</button>
+    /* Eerste start: geen zoekbalk en geen filters voor nul flessen, wel beeld en één hoofdactie. */
+    return `${brandRow('')}${verhuisBanner()}${opslagBanner()}
+      <div class="empty" style="padding-top:34px"><div class="leegfles">${flesIcon('mousserend')}${flesIcon('wit')}${flesIcon('rood')}</div>
+      <div class="big">Je kelder, in je zak</div>
+      <p>Scan een etiket. CellarMentor weet wat het is, wanneer je hem moet openen en wat erbij past.</p>
+      <button class="btn" data-act="tab" data-tab="scan" style="max-width:260px">${ik('camera')} Scan je eerste fles</button>
       <div class="mt14"><button class="linkbtn" data-act="wineNew">Handmatig toevoegen</button> &nbsp;·&nbsp; <button class="linkbtn" data-act="goImport">Lijst of doos inlezen</button></div>
       <div class="mt8"><button class="linkbtn" data-act="demoLoad">Bekijk met voorbeeldflessen</button></div>
-      <p class="small mt14" style="max-width:330px;margin-left:auto;margin-right:auto">Log in bij <button class="linkbtn" data-act="goAccount">Meer → Account</button> en je kelder synchroniseert tussen je apparaten; je krijgt dan ook ${FREE_CREDITS} gratis credits per maand om etiketten en wijnkaarten te laten lezen.</p></div>`;
+      <p class="small mt14" style="max-width:330px;margin-left:auto;margin-right:auto">Alles werkt zonder account, op dit apparaat. Log in bij <button class="linkbtn" data-act="goAccount">Meer → Account</button> en je kelder reist mee tussen je apparaten, met ${FREE_CREDITS} gratis credits per maand om etiketten en wijnkaarten te laten lezen.</p></div>
+      ${installBanner()}`;
   } else if(!list.length){
     body = `<div class="empty"><div class="big">Niets gevonden</div><p>Geen flessen die aan deze filters voldoen.</p></div>`;
   } else if(UI.qGerecht){
@@ -2960,13 +3037,18 @@ function viewKelder(){
   }
   return `${brandRow(`${bc} ${plur(bc,'fles','flessen')}${val?` · ${money(val)}`:''}`)}
     <div class="search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
-      <input type="search" placeholder="Zoek op naam, druif, regio, of typ een gerecht…" value="${esc(UI.q)}" data-in="q" aria-label="Zoeken">
+      <input type="search" placeholder="Naam, druif, streek, of een gerecht" value="${esc(UI.q)}" data-in="q" aria-label="Zoeken">
       <button class="sortbtn" data-act="chipSort" aria-label="Sorteren: ${esc(SORTS[UI.sort])}" title="Sorteren"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20V5m0 0L4 8m3-3 3 3"/><path d="M17 4v15m0 0 3-3m-3 3-3-3"/></svg></button></div>
+    <button class="drinkbar" data-act="drinkenGo">${ik('glas')}<span class="grow">Ik wil iets drinken</span>${ik('chev')}</button>
     <div class="chiprow">${chips}</div>${verhuisBanner()}${opslagBanner()}${tonightBanner()}${installBanner()}${locBanner}${leegRij}${body}`;
 }
 INP.q = el => { UI.q = el.value; refreshList(); };
 function refreshList(){ if(UI.tab==='kelder') { render(true); } }
 ACT.chipType = el => { UI.ftype = el.dataset.t || null; render(); };
+/* "Ik wil iets drinken" op het beginscherm: naar Drinken, bij het eten */
+ACT.drinkenGo = () => { UI.tab = 'pairing'; UI.pairMode = 'dish'; render(); const i = document.getElementById('pairDish'); if(i) i.focus(); };
+/* zin in rood, wit, rosé of bubbels: de kelder, gefilterd op die kleur en op wat nu op dronk is */
+ACT.zinType = el => { naarLijst({ftype: el.dataset.t || null, fstatus: true}); UI.sort = 'venster'; render(); };
 ACT.chipLand = () => { UI.fland = null; render(); };
 ACT.chipJaar = () => { UI.fjaar = null; render(); };
 ACT.chipStatus = () => { UI.fstatus = !UI.fstatus; if(UI.fstatus) UI.fovertijd = false; render(); };
@@ -3285,9 +3367,11 @@ function schaalHtml(w){
   const van = (f || t), tot = (t || f);
   let start = Math.min(van, y) - 2, eind = Math.max(tot, y) + 2;
   if(eind - start > 36){ start = Math.max(start, y - 16); eind = Math.min(eind, start + 36); }
-  let h = '';
-  for(let j = start; j <= eind; j++) h += `<i class="${j === y ? 'nu' : (j >= van && j <= tot ? 'in' : '')}"></i>`;
-  return `<div class="schaal">${h}</div><div class="schaal-as"><span>${start}</span><span>nu · ${y}</span><span>${eind}</span></div>`;
+  /* één as van het begin tot het einde van het venster, met een streepje voor nu */
+  const pct = j => Math.max(0, Math.min(100, (j - start) / (eind + 1 - start) * 100));
+  const nu = pct(y + 0.5);
+  return `<div class="tl"><div class="tl-track"><div class="tl-fill" style="left:${pct(van)}%;right:${100 - pct(tot + 1)}%"></div><div class="tl-now" style="left:${nu}%"></div></div>
+    <div class="tl-lab"><span style="left:0">${start}</span><span class="now" style="left:${nu}%;transform:translateX(${nu < 12 ? '0' : nu > 88 ? '-100%' : '-50%'})">nu · ${y}</span><span style="right:0">${eind}</span></div></div>`;
 }
 /* De waarde als het grootste getal op het scherm, met bron en datum eronder. */
 function waardeBlok(w){
@@ -3588,11 +3672,15 @@ function openDetail(id){
   const w = findWine(id); if(!w) return;
   const st = windowStatus(w);
   const sh = openSheet(`${sheetHead(esc(w.name))}
-    ${w.photo?`<div class="dphoto">${bottleSvg}<img data-photo="${w.id}" alt="Etiket van ${esc(w.name)}"></div>`:''}
-    <div class="wsub" style="font-size:14px">${esc([w.producer, w.vintage||'NV'].filter(Boolean).join(' · '))}</div>
-    <div class="small mt8">${esc([w.appellation, w.region, w.country].filter(Boolean).join(' · '))}</div>
-    <div class="wmeta mt8">${typeHtml(w.type)}<span class="badge ${st.cls}">${st.label}${st.sub?' · '+st.sub:''}</span></div>
-    ${(w.grapes&&w.grapes.length)?`<div class="grapes">${w.grapes.map(g=>`<span class="grape">${esc(g)}</span>`).join('')}</div>`:''}
+    <div class="dkop">
+      <div class="dfles">${toonFoto(w) ? `${flesIcon(w.type, 50, 150)}<img data-photo="${w.id}" alt="Etiket van ${esc(w.name)}">` : flesIcon(w.type, 50, 150)}</div>
+      <div class="dtekst">
+        <div class="wsub" style="white-space:normal">${esc([w.producer, w.vintage||'NV'].filter(Boolean).join(' · '))}</div>
+        <div class="small">${esc([w.appellation, w.region, w.country].filter(Boolean).join(' · '))}</div>
+        <div class="wmeta">${typeHtml(w.type)}<span class="badge ${st.cls}">${st.label}${st.sub?' · '+st.sub:''}</span></div>
+        ${(w.grapes&&w.grapes.length)?`<div class="grapes" style="margin-top:2px">${w.grapes.map(g=>`<span class="grape">${esc(g)}</span>`).join('')}</div>`:''}
+      </div>
+    </div>
     ${schaalHtml(w)}
     ${vensterHtml(w)}
     <div class="drow"><span class="k">Voorraad</span>
@@ -3610,7 +3698,7 @@ function openDetail(id){
     ${(()=>{ const recs=(S.recipeCache||[]).filter(r=>r.wineId===w.id); return recs.length?`<div class="eyebrow mb8">Opgeslagen recepten</div><div class="panel" style="margin-bottom:12px;padding:6px 15px">${recs.map(r=>`<button class="rowline" style="width:100%;text-align:left" data-act="recipeOpen" data-k="${esc(r.key)}"><span class="a"><div class="t">${ik('boek')} ${esc(r.recipe.title||r.dish)}</div><div class="u">${Number(r.persons)||0} personen${r.recipe.time?' · '+esc(r.recipe.time):''}</div></span><span class="z" style="color:var(--ink3)">›</span></button>`).join('')}</div>`:''; })()}
     <div class="btnrow mb8"><button class="btn soft" data-act="wineDishes" data-id="${w.id}">Wat past erbij?</button>
       <button class="btn soft" data-act="askSomm" data-id="${w.id}">${ik('chat')} Vraag</button></div>
-    <button class="btn" data-act="drinkOpen" data-id="${w.id}" style="margin-bottom:9px">${w.qty ? 'Drink een fles' : 'Achteraf vastleggen'}</button>
+    <button class="btn" data-act="drinkOpen" data-id="${w.id}" style="margin-bottom:9px">${ik('glas')} ${w.qty ? 'Fles openen' : 'Achteraf vastleggen'}</button>
     ${onTable(w.id)
       ? `<button class="btn plain" data-act="tafelAf" data-id="${w.id}" style="margin-bottom:9px">✓ Staat op tafel, haal eraf</button>`
       : `<button class="btn plain" data-act="tafelOp" data-id="${w.id}" ${!w.qty?'disabled':''} style="margin-bottom:9px">${ik('glas')} Zet op tafel voor vanavond</button>`}
@@ -4006,6 +4094,7 @@ ACT.drinkExternSave = async el => {
   toast('Proefnotitie vastgelegd. Santé!');
 };
 ACT.drinkSave = el => {
+  tik(30);
   const w = findWine(el.dataset.id); if(!w) return;
   const wegEl = document.querySelector('#drWeg button.on');
   const weg = (wegEl && WEG[wegEl.dataset.val]) ? wegEl.dataset.val : null;
@@ -4928,7 +5017,7 @@ async function handlePhoto(file){
     scan.photo = await resizeImg(file, 1400, 0.85, {lift:true, keep:true});
     scan.thumb = await resizeImg(file, 380, 0.72);
   }catch(e){ toast('Foto kon niet worden gelezen'); return; }
-  scan.stage = 'confirm'; scan.data = null; scan.err = null; scan.match = null; scanTouched = new Set();
+  scan.stage = 'confirm'; scan.data = null; scan.err = null; scan.match = null; scanTouched = new Set(); tik(40);
   scan.busy = aiReady(); vensterAuto = true;
   UI.tab = 'scan'; render(); showScanImg(); camWenkToon();
   if(scan.busy){
@@ -5005,28 +5094,33 @@ ACT.scanWish = async () => {
 let pairOut = '';
 function pairToggle(){
   return `<div class="pairtoggle">
-    <button class="${UI.pairMode==='dish'?'on':''}" data-act="pairMode" data-m="dish">Mijn gerecht</button>
+    <button class="${UI.pairMode==='dish'?'on':''}" data-act="pairMode" data-m="dish">Eten</button>
     <button class="${UI.pairMode==='wine'?'on':''}" data-act="pairMode" data-m="wine">Mijn wijn</button>
-    <button class="${UI.pairMode==='menu'?'on':''}" data-act="pairMode" data-m="menu">Wijnkaart</button></div>`;
+    <button class="${UI.pairMode==='menu'?'on':''}" data-act="pairMode" data-m="menu">Uit eten</button></div>`;
 }
 function viewPairing(){
   if(UI.pairMode === 'menu') return viewMenu();
   const toggle = pairToggle();
   if(!S.wines.filter(w=>w.qty>0).length && UI.pairMode==='dish'){
-    return `${brandRow('')}<div class="eyebrow">Spijs & wijn</div><h2 class="h2">Wat past waarbij?</h2>${toggle}
+    return `${brandRow('')}<div class="eyebrow">Drinken</div><h2 class="h2">Wat past waarbij?</h2>${toggle}
       <div class="empty"><div class="big">Nog geen flessen op voorraad</div><p>Vul je kelder, dan zoekt de sommelier de beste match bij je gerecht.</p>
       <button class="btn" data-act="tab" data-tab="scan" style="max-width:240px">Scan een fles</button></div>`;
   }
   if(UI.pairMode === 'dish'){
     const chips = ['Biefstuk','Wild','Witte vis','Schaaldieren','Sushi','Pasta met tomaat','Risotto','Kip uit de oven','Kaasplank','Thaise curry','BBQ','Chocolade']
       .map(c => `<button class="chip" data-act="pairQuick" data-d="${esc(c)}">${c}</button>`).join('');
-    return `${brandRow('')}<div class="eyebrow">Spijs & wijn</div><h2 class="h2">Wat ga je (ongeveer) eten?</h2>${toggle}
-      <p class="small mb8">Vaag mag: "iets met kip" of "Aziatisch" is genoeg. De sommelier kiest de beste flessen uit jóuw kelder, met uitleg waarom.</p>
+    /* Eerst het eten, of waar je zin in hebt: de sommelier leest allebei. Daaronder de vier kleuren als
+       snelle keuze; die filteren de kelder op wat nú op dronk is, zonder credit. */
+    const zin = ['rood','wit','rose','mousserend'].map(t => { const n = S.wines.filter(w => w.type === t && w.qty > 0 && ['op','nu','rijp'].includes(windowStatus(w).k)).reduce((a, w) => a + w.qty, 0);
+      return `<button type="button" data-act="zinType" data-t="${t}">${flesIcon(t, 18, 52)}<span>${t === 'mousserend' ? 'Bubbels' : TYPES[t].l}</span><small>${n} op dronk</small></button>`; }).join('');
+    return `${brandRow('')}<div class="eyebrow">Drinken</div><h2 class="h2">Wat eet je, of waar heb je zin in?</h2>${toggle}
+      <p class="small mb8">Vaag mag: "iets met kip", "Aziatisch" of "een frisse witte" is genoeg. De sommelier kiest de beste flessen uit jóuw kelder, met uitleg waarom.</p>
       <div class="search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
-        <input type="search" id="pairDish" placeholder="bv. 'iets met kip' of 'hertenbiefstuk'" value="${esc(UI.pairDish||'')}" aria-label="Gerecht"><button class="swis" data-act="pairWis" aria-label="Wis het gerecht"${UI.pairDish?'':' hidden'}>✕</button></div>
+        <input type="search" id="pairDish" placeholder="‘hertenbiefstuk’, of ‘een frisse witte’" value="${esc(UI.pairDish||'')}" aria-label="Gerecht"><button class="swis" data-act="pairWis" aria-label="Wis het gerecht"${UI.pairDish?'':' hidden'}>✕</button></div>
       <div class="chiprow">${chips}</div>
-      <button class="btn" data-act="pairGo">Zoek de beste fles in mijn kelder</button>
+      <button class="btn" data-act="pairGo">Zoek de beste fles</button>
       <div id="pairOut" class="mt14">${pairOut}</div>
+      ${pairOut ? '' : `<div class="ofregel">of snel kiezen</div><div class="zin">${zin}</div><p class="small">Toont wat nú op dronk is, in die kleur. Zonder credit.</p>`}
       ${(()=>{ const r = pairRecent(); return r.length ? `<div class="sect mt14"><div class="eyebrow mb8">Eerder gevraagd <span class="small" style="text-transform:none;letter-spacing:0">· tik voor hetzelfde advies, zonder credit</span></div>
         <div class="panel" style="padding:2px 13px">${r.map(c => `<button class="rowline" style="width:100%;text-align:left;padding:8px 0" data-act="pairRecent" data-d="${esc(c.dish)}" data-s="${esc(c.stuur||'')}">
           <span class="a" style="min-width:0"><span style="font-size:14px">${esc(c.dish)}</span>${c.stuur ? `<span class="small"> · ${esc(c.stuur)}</span>` : ''}</span>
@@ -5036,11 +5130,11 @@ function viewPairing(){
   const list = S.wines.slice().sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
   return `${brandRow('')}<div class="eyebrow">Spijs & wijn</div><h2 class="h2">Kies een wijn</h2>${toggle}
     <p class="small mb8">Tik een fles aan voor gerechten die erbij passen.</p>
-    <div class="wlist">${list.map(w => `<button class="wcard" data-act="wineDishes" data-id="${w.id}">
-      <span class="wthumb">${bottleSvg}${w.photo?`<img data-photo="${w.id}" alt="">`:''}</span>
-      <span class="wmain"><span class="wname">${esc(w.name)}</span>
-      <span class="wsub">${esc([w.producer,w.vintage||'NV'].filter(Boolean).join(' · '))}</span>
-      <span class="wmeta">${typeHtml(w.type)}</span></span></button>`).join('')}</div>`;
+    <div class="wlist">${list.map((w, i) => `<button class="wcard" style="--i:${Math.min(i, 14)}" data-act="wineDishes" data-id="${w.id}">
+      ${flesVak(w)}
+      <span class="wmain"><span class="wname">${esc(w.name)} <span class="wjaar">${esc(w.vintage||'NV')}</span></span>
+      <span class="wsub">${esc([w.producer, w.appellation || w.region].filter(Boolean).join(' · '))}</span>
+      <span class="wmeta">${rijpHtml(w)}</span></span></button>`).join('')}</div>`;
 }
 ACT.pairMode = el => { UI.pairMode = el.dataset.m; pairOut=''; render(); if(UI.pairMode==='wine') fillPhotos(); };
 /* Wat je eerder invulde, nieuwste eerst: één tik en het opgeslagen advies staat er weer. */
@@ -5165,7 +5259,7 @@ function viewMenu(){
     + `<button class="chip${menu.glass?' on':''}" data-act="menuGlass">${ik('flute')} ook per glas</button>`;
   if(!menuOut && S.menuLast && Date.now() - (S.menuLast.at||0) < 12*3600*1000) menuOut = menuResultHtml(S.menuLast);
   return `${brandRow('')}<div class="eyebrow">Uit eten</div><h2 class="h2">De wijnkaart lezen</h2>${pairToggle()}
-    <p class="small mb8">Fotografeer de kaart, zeg wat je eet. De sommelier kiest de beste flessen ván die kaart, met een oordeel over de prijs.</p>
+    <p class="small mb8">Fotografeer de kaart, zeg wat je eet. De sommelier kiest de beste flessen ván die kaart: bij elk gerecht één, en één voor de hele tafel.</p>
     ${aiReady() ? '' : `<div class="banner"><span>${ik('info')}</span><span><b>Hiervoor moet je ingelogd zijn</b>. Het lezen van de kaart gebeurt op de CellarMentor-server. <button class="linkbtn" data-act="goAccount">Account aanmaken</button> geeft je ${FREE_CREDITS} gratis credits per maand. Zonder account krijg je hieronder de kaartgids: waar je bij dit gerecht op de kaart naar zoekt.</span></div>`}
     <div class="panel" style="margin-bottom:12px">
       <div class="eyebrow mb8">1 · De wijnkaart</div>
@@ -5248,17 +5342,17 @@ function menuResultHtml(m){
   if(cs.length) html += `<div class="panel" style="padding:11px 13px;margin-bottom:10px">
     <div class="eyebrow mb8">Van het menu gelezen</div>
     <div style="font-size:13.5px;color:var(--ink2)">${cs.map(c => esc(c)).join(' · ')}</div></div>`;
+  /* Geen prijsoordeel per fles meer op het scherm: het model kan een winkelprijs niet met zekerheid
+     kennen, en een verhouding die er een keer naast zit is erger dan geen verhouding. Het veld blijft
+     in de data staan; zodra de prijstabel een fles met bron kent, kan "goed geprijsd" terug. */
   html += m.picks.map((p, i) => `<div class="match">
     ${p.flag?`<span class="mflag">${esc(p.flag)}</span>`:''}${p.course?`<span class="mflag" style="color:var(--ink3);margin-left:6px">${esc(p.course)}</span>`:''}
-    <div class="match-top"><div style="min-width:0">
-      <div class="wname" style="font-size:16px">${esc(p.name)}</div>
-      <div class="wsub">${esc([p.producer, p.vintage||'NV', p.region].filter(Boolean).join(' · '))}</div>
-      <div class="wmeta mt8">${typeHtml(p.type)}</div></div>
-      <div class="mprice">${p.price!=null?money(p.price):'—'}<small>per ${esc(p.unit)}</small>
-        <span class="mscore" style="font-size:16px">${p.score}<small>/10</small></span></div></div>
+    <div class="match-top">${flesIcon(mapType(p.type || '', true) || 'rood', 20, 60)}<div style="min-width:0;flex:1">
+      <div class="wname" style="font-size:16px">${esc(p.name)} <span class="wjaar">${esc(p.vintage||'NV')}</span></div>
+      <div class="wsub">${esc([p.producer, p.region].filter(Boolean).join(' · '))}</div></div>
+      <div class="mprice">${p.price!=null?money(p.price):'—'}<small>per ${esc(p.unit)}</small></div></div>
     ${smaakHit({grapes:p.grapes||[], region:p.region, type:p.type})?'<div class="mreason" style="color:var(--acc-ink)">'+ik('hart')+' Past bij je smaak</div>':''}
     <div class="mreason">${esc(p.reason)}</div>
-    ${p.value?`<div class="mreason" style="color:var(--gold-ink)">${ik('euro')} ${esc(p.value)}</div>`:''}
     <div class="mt8" style="display:flex;gap:16px;flex-wrap:wrap">
       <button class="linkbtn" data-act="menuPick" data-i="${i}">${ik('glas')} Deze bestel ik</button>
       <button class="linkbtn" data-act="menuWish" data-i="${i}">☆ Verlanglijst</button></div></div>`).join('');
@@ -5343,17 +5437,20 @@ function viewOverzicht(){
     return `${brandRow('')}<div class="eyebrow">Overzicht</div><h2 class="h2">Nog niets te zien</h2>
       <div class="empty"><p>Zodra er flessen in je kelder liggen zie je hier voorraad, waarde, drinkvensters en je historie.</p>
       <button class="btn" data-act="tab" data-tab="scan" style="max-width:240px">Scan je eerste fles</button></div>`;
+  const aandacht = S.wines.filter(w => w.qty>0 && ['nu','over'].includes(windowStatus(w).k)).reduce((n,w)=>n+w.qty,0);
+  const sterren = (() => { const r = S.history.filter(h => !h.weg && (h.date||'').slice(0,4) == YR() && Number(h.rating) > 0); return r.length ? (r.reduce((a,h)=>a+Number(h.rating),0)/r.length) : 0; })();
   return `${brandRow('')}<div class="eyebrow">Overzicht</div><h2 class="h2">${esc(S.settings.cellarName)}</h2>
     ${tonightBanner()}
+    ${horizonHtml()}
     <div class="tiles">
-      <button class="tile" data-act="tileAll"><div class="k">Flessen</div><div class="n">${bc}</div><div class="s">tik voor de lijst</div></button>
+      <button class="tile" data-act="tileAll"><div class="k">Flessen</div><div class="n">${bc}</div><div class="s">${byLoc.length ? `in ${byLoc.length} ${plur(byLoc.length,'plek','plekken')}` : ''}</div></button>
       <div class="tile"><div class="k">Kelderwaarde</div><div class="n">${val?money(val):'—'}</div>${val?`<div class="s tnum">${money(totLow)} – ${money(totHigh)}</div>`:''}${zonderPrijs()?`<div class="s">${zonderPrijs()} ${plur(zonderPrijs(),'fles','flessen')} zonder prijs</div>`:''}</div>
-      <button class="tile" data-act="tileDronk"><div class="k">Nu op dronk</div><div class="n" style="color:var(--ok)">${readyN}</div><div class="s">tik voor de lijst</div></button>
-      ${thisYear ? `<button class="tile" data-act="tileGedronken"><div class="k">Gedronken in ${YR()}</div><div class="n">${thisYear}</div><div class="s">tik voor de lijst</div></button>` : `<div class="tile"><div class="k">Gedronken in ${YR()}</div><div class="n">0</div></div>`}
+      <button class="tile" data-act="tileDronk"><div class="k">Nu op dronk</div><div class="n" style="color:var(--ok)">${readyN}</div><div class="s">${aandacht ? `${aandacht} ${aandacht === 1 ? 'vraagt' : 'vragen'} aandacht` : ''}</div></button>
+      ${thisYear ? `<button class="tile" data-act="tileGedronken"><div class="k">Gedronken in ${YR()}</div><div class="n">${thisYear}</div><div class="s">${sterren ? `gemiddeld ${sterren.toFixed(1).replace('.', ',')} sterren` : ''}</div></button>` : `<div class="tile"><div class="k">Gedronken in ${YR()}</div><div class="n">0</div></div>`}
     </div>
     ${soon.length?`<div class="sect"><div class="eyebrow mb8">Drink binnenkort</div><div class="panel">${soon.map(w=>{const st=windowStatus(w);
       return `<button class="rowline" style="width:100%;text-align:left" data-act="detail" data-id="${w.id}"><span class="a"><div class="t">${esc(w.name)} ${w.vintage||''}</div><div class="u">×${w.qty}${w.location?' · '+esc(w.location):''}</div></span><span class="z"><span class="badge ${st.cls}">${st.sub||st.label}</span></span></button>`;}).join('')}</div>${soonAlle.length > soon.length ? `<div class="center mt8"><button class="linkbtn" data-act="soonAlle">Alle ${soonAlle.length} in de lijst →</button></div>` : ''}</div>`:''}
-    ${byType.length?`<div class="sect"><div class="eyebrow mb8">Per type <span class="small" style="text-transform:none;letter-spacing:0">· tik voor de lijst</span></div><div class="panel">${barRows(byType,true,'filterType')}</div></div>`:''}
+    ${byType.length?`<div class="sect"><div class="eyebrow mb8">Per type</div><div class="panel">${barRows(byType,true,'filterType')}</div></div>`:''}
     ${byLand.length?`<div class="sect"><div class="eyebrow mb8">Per land</div><div class="panel">${ovStaven('land', byLand, false, 'filterLand')}</div></div>`:''}
     ${byJaar.length?`<div class="sect"><div class="eyebrow mb8">Per jaargang</div><div class="panel">${ovStaven('jaar', byJaar, false, 'filterJaar')}</div></div>`:''}
     ${byLoc.length?`<div class="sect"><div class="eyebrow mb8">Per locatie</div><div class="panel">${byLoc.map(p=>{
@@ -5367,6 +5464,44 @@ function viewOverzicht(){
       `<div class="rowline"><span class="a"><div class="t">${esc(h.name)} ${h.vintage||''}</div><div class="u">${h.extern?ik('bord')+' ':''}${esc(h.date)}${h.note?' · '+esc(h.note.slice(0,42)):''}</div></span><span class="z starmini">${starsText(h.rating)}</span></div>`).join('')}
       <div class="center mt8"><button class="linkbtn" data-act="goHistory">Bekijk hele historie →</button></div></div></div>`:''}`;
 }
+/* Horizon: wanneer de kelder op dronk komt. Elke fles op voorraad valt in de periode waarin hij (of
+   waarin hij al) op dronk is; de laatste band laat zien wat er níet ligt, en dat is een koopadvies. */
+function horizonHtml(){
+  const y = YR();
+  const banden = [
+    {l:'Nu', s:String(y), van:-Infinity, tot:y, act:'tileDronk'},
+    {l:String(y+1), s:'–'+(y+2), van:y+1, tot:y+2},
+    {l:String(y+3), s:'–'+(y+7), van:y+3, tot:y+7},
+    {l:String(y+8), s:'–'+(y+19), van:y+8, tot:y+19},
+    {l:String(y+20), s:'en later', van:y+20, tot:Infinity}
+  ].map(b => ({...b, n:0, val:0, namen:[]}));
+  let over = 0, alles = 0;
+  for(const w of S.wines){ if(!(w.qty > 0)) continue;
+    const k = windowStatus(w).k;
+    if(k === 'onb') continue;
+    alles += w.qty;
+    if(k === 'over'){ over += w.qty; continue; }
+    /* Wat binnenkort op moet staat bij Nu. De rest valt in het jaar waarin de fles op z'n mooist is:
+       niet het begin van het venster (dan zou een Bordeaux met dertig jaar voor de boeg ook bij Nu
+       staan) maar iets voor het midden, waar de kelderregels het hoogtepunt leggen. */
+    const f = w.drinkFrom || null, t = w.drinkTo || null;
+    let piek = (k === 'nu' || k === 'rijp') ? y : (f && t && t > f ? Math.round(f + (t - f) * 0.45) : (f || t || y));
+    const start = Math.max(piek, y);
+    const b = banden.find(b => start >= b.van && start <= b.tot) || banden[banden.length - 1];
+    b.n += w.qty; b.val += w.qty * bronWaarde(w); if(b.namen.length < 2) b.namen.push(w.name);
+  }
+  if(!alles) return '';
+  const max = Math.max(1, ...banden.map(b => b.n));
+  const kleur = ['var(--r-nu)', 'var(--r-rijp)', 'var(--r-op)', 'var(--r-op)', 'var(--r-jong)'];
+  return `<div class="sect" style="margin-top:0"><div class="eyebrow mb8">Horizon <span class="small" style="font-family:var(--sans);font-variant:normal;letter-spacing:0">· wanneer je flessen op hun mooist zijn</span></div>
+    <div class="hz">${banden.map((b, i) => `<button class="hz-rij" data-act="${b.act || 'soonAlle'}">
+      <span class="hz-jaar"><b>${b.l}</b><small>${b.s}</small></span>
+      <span class="hz-mid"><span class="hz-bar" style="width:${Math.max(2, b.n / max * 100)}%;background:${kleur[i]}"></span>
+        <span class="hz-note">${b.n ? esc(b.namen.join(', ')) + (b.n > 2 ? ' …' : '') : 'niets, tijd voor een topfles om weg te leggen'}</span></span>
+      <span class="hz-n"><b>${b.n}</b><small>${b.val ? money(Math.round(b.val)) : ''}</small></span></button>`).join('')}
+    ${over ? `<button class="hz-rij" data-act="chipOverzicht"><span class="hz-jaar"><b style="color:var(--bad)">${over}</b><small>over de piek</small></span><span class="hz-mid"><span class="hz-note">Liever nu dan nooit: tik voor de lijst</span></span></button>` : ''}</div></div>`;
+}
+ACT.chipOverzicht = () => { naarLijst({fovertijd: true}); UI.sort = 'venster'; render(); };
 /* Wat er dit jaar open ging, in een venster binnen het overzicht; een rij opent de notitie. */
 ACT.tileGedronken = () => {
   const jaar = YR(), items = S.history.filter(h => !h.weg && (h.date||'').slice(0,4) == jaar);
@@ -5693,7 +5828,9 @@ function viewSettings(){
   return `${brandRow('')}${backRow}<div class="eyebrow">Instellingen</div><h2 class="h2" data-act="devTap">Instellingen & back-up</h2>
     <div class="field"><label>Naam van je kelder</label><input class="inp" value="${esc(S.settings.cellarName)}" data-in="setName"></div>
     <div class="field"><label>Weergave</label><div class="seg" id="themeSeg">${[['','Volgt je telefoon'],['light','Licht'],['dark','Donker']].map(([v,l]) => `<button type="button" class="${(S.settings.theme||'')===v?'on':''}" data-act="setTheme" data-v="${v}">${l}</button>`).join('')}</div>
-      <div class="small mt8">Licht is ivoor met lijnen, donker is de kelder met etiketten. Kies er een als je wilt zien hoe de andere kant eruitziet.</div></div>
+      <div class="small mt8">Licht is ivoor met lijnen, donker is dezelfde app op een warme donkere grond. Kies er een als je wilt zien hoe de andere kant eruitziet.</div></div>
+    <div class="field"><label>Naast de naam</label><div class="seg" id="flesSeg">${[['','Foto als die er is'],['icoon','Altijd het flesje']].map(([v,l]) => `<button type="button" class="${(S.settings.flesIcoon||'')===v?'on':''}" data-act="setFles" data-v="${v}">${l}</button>`).join('')}</div>
+      <div class="small mt8">In de lijst staat de etiketfoto naast de naam. Liever een rustige lijst? Dan altijd het flesje in de kleur van de wijn.</div></div>
     <div class="field"><label>Taal / Language</label><div class="seg" id="taalSeg">${[['nl','Nederlands'],['en','English']].map(([v,l]) => `<button type="button" class="${taal()===v?'on':''}" data-act="setTaal" data-v="${v}">${l}</button>`).join('')}</div></div>
     <hr class="sep"><div class="eyebrow mb8">Sommelier-AI</div>${ai}
     <hr class="sep"><div class="eyebrow mb8">Herinnering per mail</div>
@@ -5717,6 +5854,7 @@ function viewSettings(){
     <p class="small center mt14">CellarMentor v1 · ${bottleCount()} flessen · gemaakt met Claude</p>`;
 }
 ACT.setTheme = el => { S.settings.theme = el.dataset.v || ''; applyTheme(); save(true); render(); };
+ACT.setFles = el => { S.settings.flesIcoon = el.dataset.v || ''; save(true); render(); };
 /* De voorkeur staat in profiles (mail_herinnering) en wordt gezet via de SQL-functie zet_mail_herinnering,
    zodat de rest van de rij (plan, tegoed) voor de client gesloten blijft. Lokaal staat een spiegel in S.settings. */
 INP.mailMij = async el => {
@@ -5832,9 +5970,9 @@ function opslagBanner(){
 }
 function installBanner(){
   if(!toonInstallTip()) return '';
-  return `<div class="banner" style="align-items:center">
+  return `<div class="banner slim">
     <span>${ik('telefoon')}</span>
-    <span style="flex:1"><b>Zet CellarMentor eerst op je beginscherm</b>. Dan heb je hem bij de hand in de winkel en het restaurant, opent hij als een app, en werkt je kelder ook zonder bereik.</span>
+    <span style="flex:1"><b>Zet hem op je beginscherm</b>, dan is hij er ook in de winkel.</span>
     <button class="btn sm" data-act="installSheet" style="flex:none">Hoe?</button>
     <button class="xbtn" data-act="installWeg" aria-label="Niet meer tonen">✕</button></div>`;
 }
@@ -6340,9 +6478,13 @@ ACT.demoLoad = () => {
 };
 
 /* ================= render & init ================= */
+let vorigeTab = null;
 function render(keepFocus){
   navSync(); renderNaSluiten = false;
   const v = document.getElementById('view');
+  /* nieuw tabblad: het scherm komt zacht binnen; hetzelfde tabblad (typen, filteren) niet, dat zou flikkeren */
+  if(vorigeTab !== UI.tab){ v.classList.remove('vt'); void v.offsetWidth; v.classList.add('vt'); vorigeTab = UI.tab; }
+  document.body.classList.toggle('uit-eten', UI.tab === 'pairing' && UI.pairMode === 'menu');
   try{
     v.innerHTML = UI.tab==='kelder' ? viewKelder()
       : UI.tab==='pairing' ? viewPairing()
@@ -7073,7 +7215,22 @@ if(loggedIn()){ syncNow(); setTimeout(() => { prijsTabelRonde().catch(() => {});
    hier een regel bij. */
 const EN = {
   /* navigatie en koppen */
-  'Kelder':'Cellar', 'Overzicht':'Overview', 'Meer':'More', 'Scan':'Scan', 'Pairing':'Pairing', 'Hoofdnavigatie':'Main navigation',
+  'Kelder':'Cellar', 'Overzicht':'Overview', 'Meer':'More', 'Scan':'Scan', 'Pairing':'Pairing', 'Drinken':'Drink', 'Hoofdnavigatie':'Main navigation',
+  /* de nieuwe stijl (v99) */
+  'Ik wil iets drinken':'I want something to drink', 'Naam, druif, streek, of een gerecht':'Name, grape, region, or a dish',
+  'Je kelder, in je zak':'Your cellar, in your pocket', 'Scan een etiket. CellarMentor weet wat het is, wanneer je hem moet openen en wat erbij past.':'Scan a label. CellarMentor knows what it is, when to open it and what goes with it.',
+  'Alles werkt zonder account, op dit apparaat. Log in bij':'Everything works without an account, on this device. Log in under',
+  'Zet hem op je beginscherm':'Put it on your home screen', ', dan is hij er ook in de winkel.':', and it is there in the shop too.',
+  'Fles openen':'Open a bottle', 'Eten':'Food', 'Bubbels':'Bubbles', 'Wat eet je, of waar heb je zin in?':'What are you eating, or what do you feel like?',
+  '‘hertenbiefstuk’, of ‘een frisse witte’':'‘venison steak’, or ‘a crisp white’', 'Zoek de beste fles':'Find the best bottle', 'of snel kiezen':'or pick quickly',
+  'Toont wat nú op dronk is, in die kleur. Zonder credit.':'Shows what is ready now, in that colour. No credit.',
+  'Vaag mag: "iets met kip", "Aziatisch" of "een frisse witte" is genoeg. De sommelier kiest de beste flessen uit jóuw kelder, met uitleg waarom.':'Vague is fine: "something with chicken", "Asian" or "a crisp white" will do. The sommelier picks the best bottles from your own cellar and explains why.',
+  'Fotografeer de kaart, zeg wat je eet. De sommelier kiest de beste flessen ván die kaart: bij elk gerecht één, en één voor de hele tafel.':'Photograph the list, say what you are eating. The sommelier picks the best bottles from that list: one for each dish, and one for the whole table.',
+  'Horizon':'Horizon', '· wanneer je flessen op hun mooist zijn':'· when your bottles are at their best', 'Nu':'Now', 'en later':'and later', 'over de piek':'past their peak',
+  'niets, tijd voor een topfles om weg te leggen':'nothing, time to lay down a top bottle', 'Liever nu dan nooit: tik voor de lijst':'Better now than never: tap for the list',
+  'Naast de naam':'Next to the name', 'Foto als die er is':'Photo when there is one', 'Altijd het flesje':'Always the bottle',
+  'In de lijst staat de etiketfoto naast de naam. Liever een rustige lijst? Dan altijd het flesje in de kleur van de wijn.':'The list shows the label photo next to the name. Prefer a calm list? Then always the bottle in the colour of the wine.',
+  'Licht is ivoor met lijnen, donker is dezelfde app op een warme donkere grond. Kies er een als je wilt zien hoe de andere kant eruitziet.':'Light is ivory with rules, dark is the same app on a warm dark ground. Pick one to see what the other side looks like.',
   'Spijs & wijn':'Food & wine', 'Wat past waarbij?':'What goes with what?', 'Wat ga je (ongeveer) eten?':'What are you (roughly) eating?',
   'Kies een wijn':'Pick a wine', 'Mijn gerecht':'My dish', 'Mijn wijn':'My wine', 'Uit eten':'Eating out', 'Wijnkaart':'Wine list',
   'Instellingen':'Settings', 'Instellingen & back-up':'Settings & backup', 'Account':'Account', 'Account & cloud-sync':'Account & cloud sync',
@@ -7351,6 +7508,10 @@ const EN_RE = [
   [/^Voor (\d+) fles(?:sen)? zonder prijs met bron zoekt de sommelier de marktprijs op bij wijnhandels, met bron en datum\.(.*)$/, (m, n, rest) => `For ${n} ${bottles(n)} without a sourced price the sommelier looks up the market price at wine merchants, with source and date.${rest.replace(/ Kost hoogstens (\d+) credits; staat (.*)$/, ' Costs at most $1 credits; $2')}`],
   [/^(\d+) fles(?:sen)?$/, (m, n) => `${n} ${bottles(n)}`],
   [/^(\d+) fles(?:sen)? · tik voor de lijst$/, (m, n) => `${n} ${bottles(n)} · tap for the list`],
+  [/^(\d+) op dronk$/, '$1 ready'],
+  [/^in (\d+) plek(?:ken)?$/, (m, n) => `in ${n} ${n == 1 ? 'place' : 'places'}`],
+  [/^(\d+) (?:vraagt|vragen) aandacht$/, (m, n) => `${n} ${n == 1 ? 'needs' : 'need'} attention`],
+  [/^gemiddeld ([\d,]+) sterren$/, (m, x) => `average ${x.replace(',', '.')} stars`],
   [/^(\d+) fles(?:sen)? · (\d+)×(\d+) vakken, (\d+) bezet · tik voor de lijst$/, (m, n, r, k, b) => `${n} ${bottles(n)} · ${r}×${k} slots, ${b} taken · tap for the list`],
   [/^(\d+) fles(?:sen)?, nieuwste eerst\.$/, (m, n) => `${n} ${bottles(n)}, newest first.`],
   [/^(\d+) fles(?:sen)?(.*) in de kelder gelegd(, proefnotitie bewaard)?(, nog zonder plek)?$/, (m, n, x, p, z) => `${n} ${bottles(n)} put in the cellar${p ? ', tasting note saved' : ''}${z ? ', no place yet' : ''}`],

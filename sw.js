@@ -1,8 +1,8 @@
 /* CellarMentor service worker — netwerk eerst voor de app zelf (updates), cache als offline-vangnet.
    Verhoog het versienummer bij elke wijziging aan de app. */
-const CACHE = 'cellarmentor-v98';
+const CACHE = 'cellarmentor-v99';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png',
-  './fonts/cormorantsc-600-latin-ext.woff2', './fonts/cormorantsc-600-latin.woff2', './fonts/playfair-500-latin-ext.woff2', './fonts/playfair-500-latin.woff2', './fonts/playfair-500i-latin-ext.woff2', './fonts/playfair-500i-latin.woff2', './fonts/playfair-600-latin-ext.woff2', './fonts/playfair-600-latin.woff2', './fonts/playfair-600i-latin-ext.woff2', './fonts/playfair-600i-latin.woff2'];
+  './fonts/ebgaramond-italic-latin-ext.woff2', './fonts/ebgaramond-italic-latin.woff2', './fonts/ebgaramond-normal-latin-ext.woff2', './fonts/ebgaramond-normal-latin.woff2', './fonts/playfair-italic-latin-ext.woff2', './fonts/playfair-italic-latin.woff2', './fonts/playfair-normal-latin-ext.woff2', './fonts/playfair-normal-latin.woff2'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
