@@ -159,6 +159,7 @@ h1,h2,h3{text-wrap:balance}
 .search .swis{flex:none;width:28px;height:28px;margin:-4px -8px -4px 0;border-radius:50%;border:0;background:none;color:var(--ink3);font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center}
 .search .swis:active{background:var(--card2)}
 .search .swis[hidden]{display:none}
+.rowline[hidden],.sect[hidden]{display:none}
 .chiprow{display:flex;gap:7px;overflow-x:auto;padding:10px 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .chiprow::-webkit-scrollbar{display:none}
 .chip{flex:none;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:13px;color:var(--ink2);white-space:nowrap}
@@ -779,7 +780,46 @@ function schoonHist(h){
   return {...h, id: idOk(h.id) ? h.id : uid(), wineId: idOk(h.wineId) ? h.wineId : null,
     name: tekstOk(h.name, 200), producer: tekstOk(h.producer, 200), place: tekstOk(h.place, 120), note: tekstOk(h.note, 2000),
     vintage: jaarOk(h.vintage), type: eigenSleutel(TYPES, h.type) ? h.type : 'rood', rating: Number.isFinite(r) ? Math.max(0, Math.min(5, r)) : null,
-    date: /^\d{4}-\d{2}-\d{2}$/.test(String(h.date)) ? String(h.date) : vandaagISO(), grapes: lijstOk(h.grapes, 8, 60), region: tekstOk(h.region, 120), proef: !!h.proef, elders: !!h.elders, extern: !!h.extern, weg: eigenSleutel(WEG, h.weg) ? h.weg : undefined};
+    date: /^\d{4}-\d{2}-\d{2}$/.test(String(h.date)) ? String(h.date) : vandaagISO(), grapes: lijstOk(h.grapes, 8, 60), region: tekstOk(h.region, 120), proef: !!h.proef, elders: !!h.elders, extern: !!h.extern, weg: eigenSleutel(WEG, h.weg) ? h.weg : undefined,
+    fles: schoonFles(h.fles), foto: idOk(h.foto) ? h.foto : undefined};
+}
+/* Een historieregel draagt sinds v100 een momentopname van de fles: herkomst, druiven, venster en prijs zoals
+   ze waren op het moment van drinken of proeven. Een fles die op is verdwijnt vroeg of laat uit de kelder
+   (Opruimen, Verwijderen), en een wijn die je buiten de deur proefde stond er nooit in; zonder momentopname
+   bleef daarvan niets over dan naam en sterren. Alleen deze velden: geen notitie, locatie of voorraad. */
+const FLES_VELDEN = ['country','region','appellation','grapes','pairing','drinkFrom','drinkTo','drinkSrc',
+  'value','valueLow','valueHigh','valueSrc','valueAt','valueBron','valueVia','price','score','zoekProducer','zoekNaam','ean','kaartPrijs','kaartPer'];
+function flesMoment(w){
+  const f = {};
+  if(!w || typeof w !== 'object') return f;
+  for(const k of FLES_VELDEN){
+    const v = w[k];
+    if(v == null || v === '' || (Array.isArray(v) && !v.length)) continue;
+    f[k] = Array.isArray(v) ? v.slice() : (typeof v === 'object' ? {...v} : v);
+  }
+  return f;
+}
+/* wat een historieregel bij het vastleggen van een kelderfles meekrijgt; de foto blijft onder het id van de wijn */
+const histFles = w => ({fles: flesMoment(w), foto: w && w.photo ? w.id : undefined});
+/* de momentopname uit een back-up of het cloud-document: dezelfde controles als een wijn, alleen de bekende velden */
+function schoonFles(f){
+  if(!f || typeof f !== 'object' || Array.isArray(f)) return undefined;
+  const uit = flesMoment(schoonWijn(f));
+  if(uit.valueVia !== 'aankoop') delete uit.valueVia;
+  const kp = getalOk(f.kaartPrijs);
+  if(kp > 0 && kp < 100000){ uit.kaartPrijs = kp; uit.kaartPer = f.kaartPer === 'glas' ? 'glas' : 'fles'; }
+  else { delete uit.kaartPrijs; delete uit.kaartPer; }
+  return Object.keys(uit).length ? uit : undefined;
+}
+/* Een historieregel als wijn, voor alles wat een wijn verwacht (venster, jaargang, prijs opzoeken). Het id is
+   dat van de regel: zo raakt een prijs die hiervoor gezocht wordt nooit een fles in de kelder. */
+function histWijn(h){
+  const f = (h && h.fles) || {};
+  const w = {...f, id:h.id, name:h.name || '', producer:h.producer || '', vintage:h.vintage || null, type:h.type || 'rood',
+    grapes:(f.grapes && f.grapes.length) ? f.grapes : (h.grapes || []), region:f.region || h.region || '',
+    pairing:f.pairing || [], qty:0, photo:false, addedAt:Date.parse(h.date) || undefined};
+  if(!w.drinkFrom && !w.drinkTo && typeof estimateWindow === 'function'){ const e = estimateWindow(w); w.drinkFrom = e.from; w.drinkTo = e.to; w.drinkSrc = 'regels'; }
+  return w;
 }
 function schoonWens(x){
   x = (x && typeof x === 'object') ? x : {};
@@ -3367,9 +3407,10 @@ function waardeBlok(w){
     const teOud = w.valueAt && (Date.now() - new Date(w.valueAt).getTime()) > 365 * 864e5;
     regel = `marktwaarde, ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${naam}</a>` : naam}${dat ? ', gegevens van ' + dat : ''}${teOud ? ' (ouder dan een jaar)' : ''}${kloof ? '<br>' + esc(kloof) : ''}`;
   } else if(w.valueSrc === 'samen' && w.valueBron) regel = `wat ${w.valueBron.n || 2} CellarMentor-gebruikers betaalden, ${money(lo)} tot ${money(hi)}${dat ? ', ' + dat : ''}`;
-  else if(w.value != null) regel = `${w.valueVia === 'aankoop' ? 'aankoopprijs' : 'zelf ingevuld'}${dat ? ', ' + dat : ''}`;
+  /* metBron en niet "er staat een waarde": een AI-indicatie naast een aankoopprijs heette hier "zelf ingevuld" */
+  else if(metBron(w)) regel = `${w.valueVia === 'aankoop' ? 'aankoopprijs' : 'zelf ingevuld'}${dat ? ', ' + dat : ''}`;
   else regel = 'je aankoopprijs';
-  return `<div class="waarde"><b class="tnum">${money(b)}</b><span>${regel}${koop && w.valueVia !== 'aankoop' && w.value != null ? '<br>' + koop : ''}</span>${samen}</div>`;
+  return `<div class="waarde"><b class="tnum">${money(b)}</b><span>${regel}${koop && w.valueVia !== 'aankoop' && metBron(w) ? '<br>' + koop : ''}</span>${samen}</div>`;
 }
 function plekHtml(w){
   const zin = verdict(w), p = plekInKelder(w), kl = klasse(w);
@@ -3584,6 +3625,8 @@ function versPrijsvakken(){
   for(const [vak, html] of [['prijsvak', waardeBlok], ['plekvak', plekHtml]]){
     for(const el of document.querySelectorAll(`[data-${vak}]`)){ const w = findWine(el.dataset[vak]); if(w) el.innerHTML = html(w); }
   }
+  /* het historievenster (v100): de prijs van een fles die op is, of van de wijn erachter in de kelder */
+  if(typeof histPrijsHtml === 'function') for(const el of document.querySelectorAll('[data-histprijs]')){ const h = S.history.find(x => x.id === el.dataset.histprijs); if(h) el.innerHTML = histPrijsHtml(h); }
 }
 async function prijsAchteraf(w, meld, diep){
   if(prijsBezig.has(w.id)) return false;   /* loopt al */
@@ -3836,12 +3879,20 @@ ACT.qtyMinus = el => { const w = findWine(el.dataset.id); if(!w || !w.qty) retur
   /* een correctie, of toch een gedronken fles? Eén tik en hij staat alsnog in de historie, zonder de voorraad nog eens te verlagen */
   toast(`Fles eraf, voorraad ×${w.qty}`, 'Gedronken?', () => openDrink(w.id, {achteraf:true})); };
 function wijnWeg(w){
-  S.wines = S.wines.filter(x => x.id !== w.id); pDel(w.id); rekVrij(w.id, Infinity);
-  if(typeof cloudDeletePhoto === 'function') cloudDeletePhoto(w.id);
+  histNaWeg(w);
+  S.wines = S.wines.filter(x => x.id !== w.id); rekVrij(w.id, Infinity);
+  /* het etiket blijft als de historie het nog toont */
+  if(!fotoInHistorie(w.id)){ pDel(w.id); if(typeof cloudDeletePhoto === 'function') cloudDeletePhoto(w.id); }
   S.tonight = (S.tonight||[]).filter(t => t.wineId !== w.id);
 }
+/* Gaat een wijn uit de kelder, dan krijgen zijn historieregels de laatste stand van de fles mee (een prijs
+   die na het proeven is opgezocht, een venster dat is bijgesteld). Daarna is die momentopname alles wat er is. */
+function histNaWeg(w){
+  for(const h of S.history) if(h.wineId === w.id) Object.assign(h, histFles(w));
+}
+const fotoInHistorie = id => S.history.some(h => h.foto === id);
 ACT.wineDel = el => { const w = findWine(el.dataset.id); if(!w) return;
-  confirmSheet('Verwijderen?', `<b>${esc(w.name)}</b> en de bijbehorende foto verdwijnen uit je kelder. Je drink-historie blijft bewaard.`, 'Verwijder', () => {
+  confirmSheet('Verwijderen?', `<b>${esc(w.name)}</b>${w.photo && !fotoInHistorie(w.id) ? ' en de bijbehorende foto verdwijnen' : ' verdwijnt'} uit je kelder. Je drink-historie blijft bewaard.`, 'Verwijder', () => {
     wijnWeg(w); save(); closeSheet(true); render(); toast('Verwijderd uit je kelder');
   }, true); };
 
@@ -3874,11 +3925,11 @@ function openOpruim(){
 }
 ACT.opruimDrink = el => openDrink(el.dataset.id, {achteraf:true, opruim:true, na:openOpruim});
 ACT.opruimDel = el => { const w = findWine(el.dataset.id); if(!w) return;
-  confirmSheet('Verwijderen?', `<b>${esc(w.name)}</b> en de bijbehorende foto verdwijnen uit je kelder. Je drink-historie blijft bewaard.`, 'Verwijder', () => {
+  confirmSheet('Verwijderen?', `<b>${esc(w.name)}</b>${w.photo && !fotoInHistorie(w.id) ? ' en de bijbehorende foto verdwijnen' : ' verdwijnt'} uit je kelder. Je drink-historie blijft bewaard.`, 'Verwijder', () => {
     wijnWeg(w); save(); render(); openOpruim(); toast('Verwijderd uit je kelder');
   }, true); };
 ACT.opruimAlles = () => { const leeg = legeWijnen(); if(!leeg.length) return;
-  confirmSheet('Alles verwijderen?', `${leeg.length} ${plur(leeg.length,'wijn','wijnen')} zonder voorraad ${plur(leeg.length,'verdwijnt','verdwijnen')} uit je kelder, met de foto's. Je drink-historie blijft bewaard.`, 'Verwijder alles', () => {
+  confirmSheet('Alles verwijderen?', `${leeg.length} ${plur(leeg.length,'wijn','wijnen')} zonder voorraad ${plur(leeg.length,'verdwijnt','verdwijnen')} uit je kelder. Je drink-historie blijft bewaard, met de etiketten van wat je dronk.`, 'Verwijder alles', () => {
     leeg.forEach(wijnWeg); save(); render(); openOpruim(); toast(`${leeg.length} ${plur(leeg.length,'wijn','wijnen')} verwijderd`);
   }, true); };
 
@@ -3890,7 +3941,7 @@ let drinkRating = null; /* null = niet beoordeeld, 0..5 = expliciete score */
 let drinkAchteraf = false, drinkOpruim = false, drinkNa = null;
 /* Foto pas weg als de ongedaan-knop van de toast voorbij is; een wijn die terugkomt houdt zo zijn etiket.
    Een foto zonder wijn gaat nooit naar de cloud (pushPhotos kijkt alleen naar S.wines), dus dit kan rustig later. */
-function fotoWegLater(id){ setTimeout(() => { if(findWine(id)) return; pDel(id); if(typeof cloudDeletePhoto === 'function') cloudDeletePhoto(id); }, 6000); }
+function fotoWegLater(id){ setTimeout(() => { if(findWine(id) || fotoInHistorie(id)) return; pDel(id); if(typeof cloudDeletePhoto === 'function') cloudDeletePhoto(id); }, 6000); }
 ACT.drinkOpen = el => openDrink(el.dataset.id);
 /* Een fles kan de kelder ook anders verlaten dan door het glas: weggegeven, verkocht,
    gebroken of een kurk. De regel blijft in de historie staan, met de reden erbij; alleen
@@ -3932,7 +3983,7 @@ ACT.proefEldersSave = el => {
   if(drinkRating == null && !note && !place){ toast('Geef sterren of schrijf een notitie'); return; }
   S.history.unshift({ id:uid(), wineId:w.id, proef:true, elders:true, place, date: /^\d{4}-\d{2}-\d{2}$/.test(g('drDate')) ? g('drDate') : vandaagISO(),
     name:w.name, producer:w.producer||'', vintage:w.vintage||null, type:w.type,
-    grapes:(w.grapes||[]).slice(0,4), region:w.region||'', rating:drinkRating, note });
+    grapes:(w.grapes||[]).slice(0,4), region:w.region||'', rating:drinkRating, note, ...histFles(w) });
   drinkRating = null; save(); closeSheet(); toast('Proefnotitie vastgelegd'); smaakWink();
 };
 function openDrink(id, opts){
@@ -4019,22 +4070,25 @@ function proefSchrijf(w, pr){
   if(!pr || (pr.rating == null && !pr.note && !pr.place)) return false;
   S.history.unshift({ id:uid(), wineId:w.id, proef:true, place:pr.place, date:vandaagISO(),
     name:w.name, producer:w.producer||'', vintage:w.vintage||null, type:w.type,
-    grapes:(w.grapes||[]).slice(0,4), region:w.region||'', rating:pr.rating, note:pr.note });
+    grapes:(w.grapes||[]).slice(0,4), region:w.region||'', rating:pr.rating, note:pr.note, ...histFles(w) });
   proefRating = null;
   smaakWink();
   return true;
 }
 
 /* Proefnotitie buiten de kelder (restaurant, bij vrienden): telt mee in de historie, raakt de voorraad niet. */
-let drinkExternThumb = null;
+let drinkExternThumb = null, drinkExternPre = null;
+/* pre kan alles bevatten wat een scan of wijnkaart over de fles weet (herkomst, druiven, venster, indicatie,
+   kaartprijs); dat gaat als momentopname mee op de regel, zodat de fles later terug te vinden is (v100) */
 function openDrinkExtern(pre, thumb){
-  drinkRating = null; drinkExternThumb = thumb || null;
+  drinkRating = null; drinkExternThumb = thumb || null; drinkExternPre = pre || {};
   const today = new Date().toISOString().slice(0,10);
   openSheet(`${sheetHead('Proefnotitie buiten de kelder')}
     <div class="field"><label>Wijn *</label><input class="inp" id="dx_name" value="${esc(pre.name||'')}" placeholder="naam van de wijn"></div>
     <div class="frow"><div class="field"><label>Producent</label><input class="inp" id="dx_prod" value="${esc(pre.producer||'')}"></div>
     <div class="field" style="max-width:110px"><label>Jaargang</label><input class="inp tnum" id="dx_vint" inputmode="numeric" value="${pre.vintage||''}" placeholder="NV"></div></div>
-    <div class="field"><label>Waar? (optioneel)</label><input class="inp" id="dx_place" placeholder="bv. restaurant, bij vrienden"></div>
+    <div class="frow"><div class="field"><label>Waar? (optioneel)</label><input class="inp" id="dx_place" placeholder="bv. restaurant, bij vrienden"></div>
+    <div class="field" style="max-width:110px"><label>Betaald €</label><input class="inp tnum" id="dx_price" inputmode="decimal" value="${pre.price != null ? esc(pre.price) : ''}" placeholder="optioneel"></div></div>
     <div class="stars" id="drinkStars" role="radiogroup" aria-label="Beoordeling">${[1,2,3,4,5].map(n=>`<button data-star="${n}" role="radio" aria-label="${n} sterren">★</button>`).join('')}</div>
     <div class="small center" id="starLbl" style="margin:-2px 0 10px">Tik een ster (nogmaals dezelfde = 0 sterren)</div>
     <div class="field"><label>Datum</label><input type="date" class="inp" id="drDate" value="${today}"></div>
@@ -4048,18 +4102,29 @@ ACT.drinkExternSave = async el => {
   const name = g('dx_name').trim();
   if(!name){ toast('Geef de wijn een naam'); return; }
   const vint = parseInt(g('dx_vint'),10);
+  const pre = drinkExternPre || {};
+  const betaald = getalOk(g('dx_price'));
+  /* was de naam of jaargang in dit venster anders dan op de scan, dan horen venster en prijs niet meer bij deze fles */
+  const zelfde = norm(name) === norm(pre.name) && ((vint>=1900&&vint<=2100) ? vint : null) === (pre.vintage || null);
+  const moment = zelfde ? {...pre} : {country:pre.country, region:pre.region, appellation:pre.appellation, grapes:pre.grapes, kaartPrijs:pre.kaartPrijs, kaartPer:pre.kaartPer};
+  moment.price = (betaald > 0 && betaald < 100000) ? betaald : null;
+  const fles = schoonFles(moment);
   const entry = { id:uid(), wineId:null, extern:true, place:g('dx_place').trim(),
     date:g('drDate') || new Date().toISOString().slice(0,10),
     name, producer:g('dx_prod').trim(), vintage:(vint>=1900&&vint<=2100)?vint:null,
-    type:el.dataset.type||'rood', rating:drinkRating, note:g('drNote').trim() };
+    type:el.dataset.type||'rood', rating:drinkRating, note:g('drNote').trim(),
+    grapes:((fles && fles.grapes) || []).slice(0,4), region:(fles && fles.region) || '' };
+  if(fles) entry.fles = fles;
+  if(drinkExternThumb) entry.foto = entry.id;
   S.history.unshift(entry);
+  if(drinkExternThumb) await pSet(entry.id, drinkExternThumb);
   if((document.getElementById('dx_wish')||{}).checked){
     const it = { id:uid(), name, producer:entry.producer, vintage:entry.vintage, type:entry.type,
       price:null, note:['Geproefd', entry.place].filter(Boolean).join(', '), photo:!!drinkExternThumb, addedAt:Date.now() };
     S.wishlist.unshift(it);
     if(drinkExternThumb) await pSet(it.id, drinkExternThumb);
   }
-  save(); drinkExternThumb = null;
+  save(); drinkExternThumb = null; drinkExternPre = null;
   if(scan.stage === 'confirm') scanReset();
   closeSheet(true); render();
   toast('Proefnotitie vastgelegd. Santé!');
@@ -4071,13 +4136,13 @@ ACT.drinkSave = el => {
   const weg = (wegEl && WEG[wegEl.dataset.val]) ? wegEl.dataset.val : null;
   const entry = { id:uid(), wineId:w.id, date:(document.getElementById('drDate')||{}).value || new Date().toISOString().slice(0,10),
     name:w.name, producer:w.producer||'', vintage:w.vintage||null, type:w.type, grapes:(w.grapes||[]).slice(0,4), region:w.region||'',
-    rating: weg ? null : drinkRating, note:((document.getElementById('drNote')||{}).value||'').trim() };
+    rating: weg ? null : drinkRating, note:((document.getElementById('drNote')||{}).value||'').trim(), ...histFles(w) };
   if(weg) entry.weg = weg;
   if(drinkAchteraf){
     /* de fles was al weg: alleen de historie verandert; vanuit Opruimen verlaat de wijn ook de kelder */
     const na = drinkNa, opruim = drinkOpruim; drinkAchteraf = false; drinkOpruim = false; drinkNa = null;
     S.history.unshift(entry);
-    if(opruim){ S.wines = S.wines.filter(x => x.id !== w.id); rekVrij(w.id, Infinity); S.tonight = (S.tonight||[]).filter(t => t.wineId !== w.id); fotoWegLater(w.id); }
+    if(opruim){ histNaWeg(w); S.wines = S.wines.filter(x => x.id !== w.id); rekVrij(w.id, Infinity); S.tonight = (S.tonight||[]).filter(t => t.wineId !== w.id); fotoWegLater(w.id); }
     save();
     if(na){ closeSheet(); render(); na(); } else { closeSheet(true); render(); }
     toast(weg ? `${WEG[weg].l}, achteraf vastgelegd` : 'Achteraf genoteerd. Santé!', 'Ongedaan', () => {
@@ -4908,8 +4973,15 @@ function liveCapture(){
   c.toBlob(b => { closeLiveScan(); if(b) handlePhoto(b); }, 'image/jpeg', 0.88);
 }
 ACT.scanDrinkNow = () => {
-  const d = readForm();
-  openDrinkExtern({name:d.name, producer:d.producer, vintage:d.vintage, type:d.type}, scan.thumb);
+  const d = readForm(), s = scan.data || {};
+  /* alles wat de scan van de fles weet gaat mee; de waarde alleen als hij getypt is (eigen) of als indicatie */
+  const pre = {name:d.name, producer:d.producer, vintage:d.vintage, type:d.type, grapes:d.grapes, country:d.country, region:d.region, appellation:d.appellation,
+    drinkFrom:d.drinkFrom, drinkTo:d.drinkTo, price:d.price, score:d.score, pairing:lijstOk(s.pairing, 8, 120),
+    zoekProducer:tekstOk(s.zoek_producent, 200) || undefined, zoekNaam:tekstOk(s.zoek_naam, 200) || undefined, ean:eanSchoon(s.ean) || undefined};
+  if(d.value != null){ pre.value = d.value; pre.valueSrc = 'eigen'; pre.valueAt = vandaag(); }
+  else if(s.value_eur != null && !s.prijs_onzeker){ pre.value = Math.round(s.value_eur); pre.valueSrc = 'ai'; pre.valueAt = vandaag();
+    if(s.value_low != null) pre.valueLow = Math.round(s.value_low); if(s.value_high != null) pre.valueHigh = Math.round(s.value_high); }
+  openDrinkExtern(pre, scan.thumb);
 };
 INP.quickLoc = el => {
   if(el.value === '::nieuw'){
@@ -5335,7 +5407,8 @@ function menuResultHtml(m){
 }
 ACT.menuPick = el => {
   const m = S.menuLast || {}; const p = (m.picks||[])[Number(el.dataset.i)]; if(!p) return;
-  openDrinkExtern({name:p.name, producer:p.producer, vintage:p.vintage, type:p.type}, null);
+  openDrinkExtern({name:p.name, producer:p.producer, vintage:p.vintage, type:p.type, region:p.region, grapes:p.grapes,
+    kaartPrijs:p.price, kaartPer:p.unit === 'glas' ? 'glas' : 'fles'}, null);
   const pl = document.getElementById('dx_place'); if(pl && m.restaurant) pl.value = m.restaurant;
   const nt = document.getElementById('drNote'); if(nt && m.dish) nt.value = `Bij ${m.dish}.`;
 };
@@ -5605,6 +5678,10 @@ ACT.wishNewGo = () => {
   save(); closeSheet(); render(); toast('Op je verlanglijst gezet');
 };
 
+/* zoektekst per historieregel: naam, producent, jaargang, plek, notitie, herkomst en druiven */
+const histZoekTekst = h => { const f = h.fles || {};
+  return norm([h.name, h.producer, h.vintage, h.place, h.note, f.region || h.region, f.country, f.appellation, (f.grapes || h.grapes || []).join(' ')].filter(Boolean).join(' ')); };
+const histPast = (h, q) => { const t = histZoekTekst(h); return norm(q).split(' ').filter(Boolean).every(w => t.includes(w)); };
 function viewHistory(){
   if(!S.history.length) return `${brandRow('')}${backRow}<div class="eyebrow">Historie</div><h2 class="h2">Nog niets gedronken</h2>
     <div class="empty"><p>Boek je eerste fles af via een fles in je kelder, of leg een proefnotitie vast van een wijn buiten de deur.</p>
@@ -5613,10 +5690,15 @@ function viewHistory(){
   for(const h of S.history){ const k = (h.date||'').slice(0,7) || '????'; (groups[k] = groups[k]||[]).push(h); }
   const keys = Object.keys(groups).sort().reverse();
   const mName = k => { try{ return new Date(k+'-01').toLocaleDateString(LOCALE(),{month:'long',year:'numeric'}); }catch(e){ return k; } };
+  const q = UI.histQ || '';
+  /* Zoeken filtert de regels ter plekke (INP.histQ), zonder de pagina opnieuw te tekenen: dan blijft het toetsenbord open. */
   return `${brandRow('')}${backRow}<div class="eyebrow">Historie</div><h2 class="h2">Gedronken</h2>
     <div style="margin:-4px 0 6px"><button class="linkbtn" data-act="histAdd">+ Proefnotitie (buiten de kelder)</button></div>
-    ${keys.map(k => `<div class="sect"><div class="eyebrow mb8">${esc(mName(k))}</div><div class="panel">
-      ${groups[k].map(h => `<div class="rowline"><button class="a" style="text-align:left;flex:1;min-width:0" data-act="histOpen" data-id="${h.id}">
+    <div class="search" style="margin-bottom:12px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
+      <input type="search" placeholder="Zoek op naam, producent, plek of notitie" value="${esc(q)}" data-in="histQ" aria-label="Zoeken in je historie"></div>
+    <p class="small" id="histGeen" ${S.history.some(h => histPast(h, q)) ? 'hidden' : ''}>Niets gevonden in je historie.</p>
+    ${keys.map(k => `<div class="sect" data-histgroep ${groups[k].some(h => histPast(h, q)) ? '' : 'hidden'}><div class="eyebrow mb8">${esc(mName(k))}</div><div class="panel">
+      ${groups[k].map(h => `<div class="rowline" data-histrij="${esc(histZoekTekst(h))}" ${histPast(h, q) ? '' : 'hidden'}><button class="a" style="text-align:left;flex:1;min-width:0" data-act="histOpen" data-id="${h.id}">
         <div class="t">${esc(h.name)} ${h.vintage||''}</div>
         <div class="u">${esc(h.date)}${h.extern?` · ${ik('bord')} ${esc(h.place||'buiten de kelder')}`:''}${h.proef?` · ${ik('druif')} ${proefLabel(h)}`:''}${h.weg?` · ${wegLabel(h)}`:''}${h.producer?' · '+esc(h.producer):''}</div>
         ${h.note?`<div class="u" style="margin-top:2px;font-style:italic">"${esc(h.note.slice(0,60))}${h.note.length>60?'…':''}"</div>`:''}</button>
@@ -5624,24 +5706,185 @@ function viewHistory(){
         <button class="linkbtn" style="font-size:12px" data-act="histDel" data-id="${h.id}">verwijder</button></span></div>`).join('')}
     </div></div>`).join('')}`;
 }
+INP.histQ = el => {
+  UI.histQ = el.value;
+  const woorden = norm(el.value).split(' ').filter(Boolean);
+  let iets = false;
+  document.querySelectorAll('[data-histgroep]').forEach(g => {
+    let zicht = false;
+    g.querySelectorAll('[data-histrij]').forEach(r => { const ok = woorden.every(w => r.dataset.histrij.includes(w)); r.hidden = !ok; if(ok) zicht = true; });
+    g.hidden = !zicht; if(zicht) iets = true;
+  });
+  const geen = document.getElementById('histGeen'); if(geen) geen.hidden = iets;
+};
 const proefLabel = h => 'geproefd' + (h.place ? ', ' + esc(h.place) : (h.elders ? ' elders' : ' bij aankoop'));
 ACT.histAdd = () => openDrinkExtern({}, null);
-ACT.histOpen = el => {
-  const h = S.history.find(x => x.id === el.dataset.id); if(!h) return;
-  const w = h.wineId ? findWine(h.wineId) : null;
-  openSheet(`${sheetHead(esc(h.name) + (h.vintage?' '+h.vintage:''))}
-    <div class="wmeta">${typeHtml(h.type||'rood')}${h.extern?`<span class="badge b-onb">${ik('bord')} ${esc(h.place||'buiten de kelder')}</span>`:''}${h.proef?`<span class="badge b-onb">${ik('druif')} ${proefLabel(h)}</span>`:''}${h.weg?`<span class="badge b-onb">${wegLabel(h)}</span>`:''}</div>
-    <div class="small mt8">${esc(h.date)}${h.producer?' · '+esc(h.producer):''}</div>
+const histVan = id => S.history.find(x => x.id === id);
+/* De fles achter een historieregel: de wijn in de kelder als die er nog is (dan is alles actueel), anders de
+   momentopname van toen (histWijn). Een regel van vóór v100 zonder momentopname heeft alleen naam en kleur. */
+const histLive = h => (h && h.wineId) ? findWine(h.wineId) : null;
+/* Prijs van de fles in de historie: dezelfde regels als in de kelder (geen getal zonder bron), plus een knop
+   om hem op te zoeken. Een regel zonder wijn in de kelder krijgt de prijs op de regel zelf. */
+function histPrijsHtml(h){
+  const live = histLive(h), w = live || histWijn(h);
+  const bezig = prijsBezig.has(w.id);
+  const kaart = w.kaartPrijs ? `<div class="small">${money(w.kaartPrijs)} ${w.kaartPer === 'glas' ? 'per glas' : 'per fles'} op de wijnkaart</div>` : '';
+  const knop = (!aiReady() || bezig) ? (bezig && bronWaarde(w) ? `<span class="small pulse">${ik('zoek')} Zoeken bij wijnhandels…</span>` : '')
+    : `<button class="linkbtn" data-act="histPrijs" data-id="${h.id}">${ik('zoek')} ${w.valueSrc === 'zoek' ? 'Opnieuw opzoeken' : 'Prijs opzoeken'}${ownKey() ? '' : ' · ' + creditCost('prijs') + ' credit'}</button>`;
+  return `${waardeBlok(w)}${kaart}${knop ? `<div style="margin:2px 0 12px">${knop}</div>` : ''}`;
+}
+function openHist(id){
+  const h = histVan(id); if(!h) return;
+  const live = histLive(h), w = live || histWijn(h);
+  const fotoId = live ? (live.photo ? live.id : null) : (h.foto || null);
+  const herkomst = [w.appellation, w.region, w.country].filter(Boolean).join(' · ');
+  /* zonder herkomst en zonder bewaard venster is een venster alleen de kleur plus de jaargang: dat zegt niets */
+  const vensterBekend = !!(live || (h.fles && h.fles.drinkTo) || (w.vintage && (herkomst || (w.grapes || []).length)));
+  const st = vensterBekend ? windowStatus(w) : null;
+  const o = w.vintage ? jaargangOordeel(w) : null;
+  const zelfde = x => x.id !== h.id && ((h.wineId && x.wineId === h.wineId) || (norm(x.name) === norm(h.name) && norm(x.producer) === norm(h.producer)));
+  const andere = S.history.filter(zelfde).slice(0, 8);
+  const inKelder = live ? null : matchWine(h);
+  const opLijst = S.wishlist.some(x => norm(x.name) === norm(h.name) && (x.vintage || null) === (h.vintage || null));
+  const aanvullen = !live && !herkomst && aiReady();
+  const zoekterm = [h.producer && !norm(h.name).includes(norm(h.producer)) ? h.producer : '', h.name, h.vintage, taal() === 'en' ? 'wine' : 'wijn'].filter(Boolean).join(' ');
+  const sh = openSheet(`${sheetHead(esc(h.name) + (h.vintage?' '+h.vintage:''))}
+    <div class="dkop">
+      <div class="dfles">${flesIcon(h.type||'rood', 50, 150)}${fotoId ? `<img data-photo="${fotoId}" alt="Etiket van ${esc(h.name)}">` : ''}</div>
+      <div class="dtekst">
+        <div class="wsub" style="white-space:normal">${esc([h.producer, h.vintage||'NV'].filter(Boolean).join(' · '))}</div>
+        ${herkomst ? `<div class="small">${esc(herkomst)}</div>` : ''}
+        <div class="wmeta">${typeHtml(h.type||'rood')}${h.extern?`<span class="badge b-onb">${ik('bord')} ${esc(h.place||'buiten de kelder')}</span>`:''}${h.proef?`<span class="badge b-onb">${ik('druif')} ${proefLabel(h)}</span>`:''}${h.weg?`<span class="badge b-onb">${wegLabel(h)}</span>`:''}</div>
+        ${(w.grapes&&w.grapes.length)?`<div class="grapes" style="margin-top:2px">${w.grapes.map(g=>`<span class="grape">${esc(g)}</span>`).join('')}</div>`:''}
+        <div class="small">${esc(h.date)}</div>
+      </div>
+    </div>
     ${h.weg ? '' : `<div class="stars" style="pointer-events:none;margin-top:10px">${[1,2,3,4,5].map(n=>`<button class="${h.rating!=null&&h.rating>=n?'on':(h.rating===n-0.5?'half':'')}">★</button>`).join('')}</div>
     <div class="small center" style="margin:-2px 0 8px">${h.rating==null?'Geen beoordeling':h.rating===0?'0 van 5, die was niks':`${String(h.rating).replace('.',',')} van 5`}</div>`}
     ${h.note?`<div class="panel" style="margin:10px 0"><p style="font-size:14.5px;font-style:italic;line-height:1.6">"${esc(h.note)}"</p></div>`:''}
-    ${w?`<div class="eyebrow mb8" style="margin-top:6px">Deze fles</div>
-      ${(w.pairing&&w.pairing.length)?`<div class="grapes" style="margin-bottom:10px">${w.pairing.map(p=>`<span class="grape">${esc(p)}</span>`).join('')}</div>`:''}
-      <button class="btn soft" data-act="detail" data-id="${w.id}">${ik('glas')} Bekijk fles in kelder (×${w.qty})</button>`
-    : (h.wineId?`<p class="small">Deze fles ligt niet meer in je kelder.</p>`:'')}`);
+    <div class="eyebrow mb8 mt14">Prijs</div>
+    <div data-histprijs="${h.id}">${histPrijsHtml(h)}</div>
+    ${st || (o && o.woord) ? `<div class="eyebrow mb8">Nu</div><div class="wmeta" style="margin-bottom:12px">${st ? `<span class="badge ${st.cls}">${st.label}${st.sub?' · '+st.sub:''}</span>` : ''}${o && o.woord ? `<span class="grape">${esc(o.jaar + ' in ' + o.streek)} · ${esc(o.woord)}${o.bron ? '' : '?'}</span>` : ''}</div>` : ''}
+    ${(w.pairing&&w.pairing.length)?`<div class="eyebrow mb8">Lekker bij</div><div class="grapes" style="margin-bottom:12px">${w.pairing.map(p=>`<span class="grape">${esc(p)}</span>`).join('')}</div>`:''}
+    ${aanvullen ? `<div style="margin:0 0 12px"><button class="linkbtn" data-act="histAanvul" data-id="${h.id}">${ik('druif')} Herkomst, druiven en venster aanvullen${ownKey() ? '' : ' · ' + creditCost('herbereken') + ' credit'}</button>
+      <div class="small" style="margin-top:4px">Van deze fles is alleen de naam bewaard. De sommelier zoekt de rest erbij.</div></div>` : ''}
+    ${live ? `<button class="btn soft" data-act="detail" data-id="${live.id}" style="margin-bottom:9px">${ik('glas')} Bekijk fles in kelder (×${live.qty||0})</button>`
+      : inKelder ? `<button class="btn soft" data-act="detail" data-id="${inKelder.id}" style="margin-bottom:9px">${ik('glas')} Ligt ook in je kelder (×${inKelder.qty||0})</button>`
+      : `${h.wineId ? '<p class="small">Deze fles ligt niet meer in je kelder.</p>' : ''}<button class="btn soft" data-act="histKelder" data-id="${h.id}" style="margin-bottom:9px">${ik('glas')} Gekocht? In de kelder leggen</button>`}
+    <div class="center" style="margin:2px 0 10px;display:flex;gap:18px;justify-content:center;flex-wrap:wrap">
+      ${live || inKelder ? '' : opLijst ? `<span class="small">${ik('hart')} Staat op je verlanglijst</span>` : `<button type="button" class="linkbtn" data-act="histWens" data-id="${h.id}">${ik('hart')} Op de verlanglijst</button>`}
+      <a class="linkbtn" style="text-decoration:none" href="https://www.google.com/search?q=${encodeURIComponent(zoekterm)}" target="_blank" rel="noopener">${ik('zoek')} Zoek op internet</a></div>
+    ${andere.length ? `<div class="eyebrow mb8 mt14">Ook in je historie</div><div class="panel" data-histvenster style="padding:2px 13px">${andere.map(x => `<button class="rowline" style="width:100%;text-align:left" data-act="histOpen" data-id="${x.id}">
+      <span class="a"><div class="t">${esc(x.name)} ${x.vintage||''}</div><div class="u">${esc(x.date)}${x.place ? ' · ' + esc(x.place) : ''}${x.weg ? ' · ' + wegLabel(x) : ''}</div></span>
+      <span class="z"><span class="starmini">${starsText(x.rating)}</span></span></button>`).join('')}</div>` : ''}`);
+  fillPhotos(sh);
+}
+/* vanuit een ander historievenster: dat eerst dicht, anders stapelen ze */
+ACT.histOpen = el => { if(el.closest && el.closest('[data-histvenster]')) closeSheet(); openHist(el.dataset.id); };
+ACT.histPrijs = el => {
+  const h = histVan(el.dataset.id); if(!h) return;
+  if(!aiReady()){ toast('Log in (Meer → Account) om prijzen op te zoeken'); return; }
+  const live = histLive(h);
+  if(live) prijsAchteraf(live, true); else histPrijsZoek(h.id, false);
+};
+async function histPrijsZoek(id, diep){
+  const h = histVan(id); if(!h || prijsBezig.has(id)) return;
+  toast(diep ? 'Diep zoeken bij wijnhandels en veilingen…' : 'Prijs zoeken bij wijnhandels…', null, null, 20000);
+  prijsBezig.add(id); versPrijsvakken();
+  try{
+    const r = await aiPrijs(histWijn(h), diep);
+    const t = {}, h2 = histVan(id);
+    if(h2 && pasPrijsToe(t, r)){
+      h2.fles = {...(h2.fles || {}), value:t.value, valueLow:t.valueLow, valueHigh:t.valueHigh, valueSrc:'zoek', valueAt:t.valueAt, valueBron:t.valueBron};
+      save(); toast(`Prijs opgezocht: ${money(t.value)}${t.valueBron.name ? ' · ' + t.valueBron.name : ''}`, null, null, 5000);
+    } else if(!diep) toast('Geen prijs gevonden bij wijnhandels. Dieper zoeken?', ownKey() ? 'Zoek diep' : `Zoek diep · ${creditCost('prijsdiep')} credits`, () => histPrijsZoek(id, true), 9000);
+    else toast(r && r.note ? 'Geen prijs gevonden: ' + String(r.note).slice(0, 80) : 'Geen prijs gevonden', null, null, 5000);
+  }catch(e){ toast('Opzoeken mislukte: ' + String(e.message || e).slice(0, 90), null, null, 6000); }
+  finally{ prijsBezig.delete(id); versPrijsvakken(); }
+}
+/* Een regel van vóór v100, of een wijn die je met de hand intikte: alleen naam, producent en jaargang. De
+   sommelier vult herkomst, druiven, venster en een indicatie aan; nooit over iets heen dat er al staat. */
+async function aiAanvul(h){
+  const prompt = `Je bent een ervaren sommelier. Iemand proefde deze wijn en wil hem later terugvinden:
+Naam: ${h.name} | Producent: ${h.producer||'?'} | Jaargang: ${h.vintage||'NV'} | Type: ${TYPES[h.type]?TYPES[h.type].l:h.type}${h.place ? ` | Geproefd in of bij: ${h.place}` : ''}
+Vul aan wat je over deze wijn weet. Antwoord UITSLUITEND met geldig JSON:
+{"country":"land","region":"streek","appellation":"appellation of null","grapes":["druif"],"drink_from":2024,"drink_to":2032,"value_eur":28,"value_low":24,"value_high":34,"value_confidence":"hoog|middel|laag","pairing":["gerecht 1","gerecht 2","gerecht 3"],"zoek_producent":"producent","zoek_naam":"cuvée"}
+Ken je deze producent of cuvée niet, gok dan niet: zet wat je niet weet op null. De plek waar geproefd is kan iets over de herkomst zeggen (een bodega in Cafayate maakt Argentijnse wijn), maar een restaurant schenkt van overal. zoek_producent en zoek_naam zijn de kortste vorm waaronder een winkel de fles verkoopt: zonder eigenaarsfamilie, rechtsvorm of importeur, en de cuvéenaam zonder Cuvée of AOP. value_eur is de winkelprijs per fles in euro's van déze jaargang nu (${YR()}); value_confidence laag als je de prijs eigenlijk raadt. ${RIJPHEIDSREGELS} pairing in het Nederlands. ${styleNote()}`;
+  return schoonAI(parseJsonLoose(await callClaude([{type:'text', text:prompt}], 1500, 'herbereken')));
+}
+ACT.histAanvul = async el => {
+  const h = histVan(el.dataset.id); if(!h) return;
+  if(!aiReady()){ toast(hoofd(aiRedenUit()), null, null, 5000); return; }
+  const was = el.innerHTML;
+  el.innerHTML = `<span class="pulse">${ik('druif')} De sommelier zoekt de fles op…</span>`; el.style.pointerEvents = 'none';
+  try{
+    const d = await aiAanvul(h);
+    d.type = h.type; d.name = h.name; d.producer = h.producer; d.vintage = h.vintage;
+    if(d.drink_from && d.drink_to) ensureWindow(d);
+    const h2 = histVan(h.id); if(!h2) return;
+    const f = {...(h2.fles || {})};
+    let n = 0;
+    for(const k of ['country','region','appellation']) if(d[k] && !f[k]){ f[k] = d[k]; n++; }
+    if((d.grapes||[]).length && !(f.grapes||[]).length){ f.grapes = d.grapes; n++; }
+    if((d.pairing||[]).length && !(f.pairing||[]).length) f.pairing = d.pairing;
+    if(d.drink_from && d.drink_to && !f.drinkFrom && !f.drinkTo){ f.drinkFrom = d.drink_from; f.drinkTo = d.drink_to; f.drinkSrc = d.drink_src === 'regels' ? 'regels' : 'ai'; }
+    if(d.zoek_producent && !f.zoekProducer) f.zoekProducer = d.zoek_producent;
+    if(d.zoek_naam && !f.zoekNaam) f.zoekNaam = d.zoek_naam;
+    if(!metBron(f) && d.value_eur != null && d.value_confidence !== 'laag'){
+      f.value = Math.round(d.value_eur); f.valueLow = d.value_low != null ? Math.round(d.value_low) : null; f.valueHigh = d.value_high != null ? Math.round(d.value_high) : null; f.valueSrc = 'ai'; f.valueAt = vandaag(); f.valueBron = null; }
+    h2.fles = schoonFles(f);
+    /* het smaakprofiel leest druif en streek van de regel zelf */
+    if(!(h2.grapes||[]).length && f.grapes) h2.grapes = f.grapes.slice(0, 4);
+    if(!h2.region && f.region) h2.region = f.region;
+    save();
+    if(!n){ el.innerHTML = was; el.style.pointerEvents = ''; toast('De sommelier kent deze wijn niet goed genoeg om er iets bij te zetten', null, null, 6000); return; }
+    closeSheet(); openHist(h2.id);
+  }catch(e){ el.innerHTML = was; el.style.pointerEvents = ''; toast('Aanvullen mislukte: ' + leesFout(e), null, null, 6000); }
+};
+ACT.histWens = async el => {
+  const h = histVan(el.dataset.id); if(!h) return;
+  const f = h.fles || {};
+  const it = { id:uid(), name:h.name, producer:h.producer||'', vintage:h.vintage||null, type:h.type||'rood', region:f.region||h.region||'', country:f.country||'',
+    price:null, note:['Geproefd', h.place].filter(Boolean).join(', '), photo:false, addedAt:Date.now() };
+  if(h.foto){ const p = await pGet(h.foto); if(p){ await pSet(it.id, p); it.photo = true; } }
+  S.wishlist.unshift(it); save();
+  el.outerHTML = `<span class="small">${ik('hart')} Staat op je verlanglijst</span>`;
+  toast('Op je verlanglijst gezet');
+};
+/* Na een proeverij toch gekocht: de fles gaat de kelder in met alles wat de regel weet (herkomst, venster,
+   prijs met bron, etiket), en de regel wijst voortaan naar die fles. */
+ACT.histKelder = el => {
+  const h = histVan(el.dataset.id); if(!h) return;
+  formQty = 1;
+  openSheet(`${sheetHead('In de kelder leggen')}
+    <div class="wsub" style="font-size:14.5px;margin-bottom:8px">${esc(h.name)} ${h.vintage||''}</div>
+    <div class="field"><label>Aantal flessen</label>
+    <div class="stepper"><button class="stepbtn" data-act="fq" data-d="-1">−</button><span class="stepval tnum" id="fQty">1</span><button class="stepbtn" data-act="fq" data-d="1">+</button></div>
+    <div class="qquick"><button data-act="fqset" data-n="6">doos van 6</button><button data-act="fqset" data-n="12">doos van 12</button></div></div>
+    <div class="field"><label>Locatie</label><input class="inp" id="wb_loc" list="locList" value="${esc(S.settings.lastLocation||'')}" placeholder="bv. Wijnrek"><datalist id="locList">${locOptions().map(l=>`<option value="${esc(l)}">`).join('')}</datalist></div>
+    <button class="btn" data-act="histKelderGo" data-id="${h.id}">Bijschrijven</button>`);
+};
+ACT.histKelderGo = async el => {
+  const h = histVan(el.dataset.id); if(!h) return;
+  const basis = flesMoment(histWijn(h));
+  delete basis.kaartPrijs; delete basis.kaartPer;   /* een prijs op de wijnkaart zegt niets over de fles in de winkel */
+  const location = ((document.getElementById('wb_loc')||{}).value||'').trim();
+  if(location) S.settings.lastLocation = location;
+  const w = { id:uid(), name:h.name, producer:h.producer||'', vintage:h.vintage||null, type:h.type||'rood', grapes:[], country:'', region:'', appellation:'',
+    ...basis, location, note:'', qty:formQty, pairing:basis.pairing||[], photo:false, addedAt:Date.now() };
+  if(h.foto){ const p = await pGet(h.foto); if(p){ await pSet(w.id, p); w.photo = true; } }
+  S.wines.unshift(w);
+  if(!histLive(h)) h.wineId = w.id;
+  save(); closeSheet(true); render();
+  toast(`${formQty} ${plur(formQty,'fles','flessen')} bijgeschreven`, 'Bekijk', () => openDetail(w.id));
+  if(!metBron(w)) prijzenUitTabel([w]).catch(() => {});   /* gratis: staat hij al in de prijstabel? */
 };
 ACT.histDel = el => confirmSheet('Notitie verwijderen?', 'Deze regel verdwijnt uit je historie.', 'Verwijder', () => {
-  S.history = S.history.filter(h => h.id !== el.dataset.id); save(); closeSheet(); render();
+  const h = histVan(el.dataset.id);
+  S.history = S.history.filter(x => x.id !== el.dataset.id);
+  /* een etiket dat alleen deze regel nog gebruikte gaat mee */
+  if(h && h.foto && !findWine(h.foto) && !fotoInHistorie(h.foto)){ pDel(h.foto); if(typeof cloudDeletePhoto === 'function') cloudDeletePhoto(h.foto); }
+  save(); closeSheet(); render();
 }, true);
 
 function viewLocs(){
@@ -6812,6 +7055,13 @@ async function syncNow(interactive){
 }
 
 /* foto's incrementeel */
+/* alles met een foto: wijnen, verlanglijst, locaties, en de etiketten die de historie bewaart (v100) */
+function fotoDragers(){
+  const m = new Map();
+  for(const x of [...S.wines, ...S.wishlist, ...(S.locations||[])]) m.set(x.id, x);
+  for(const h of S.history) if(h.foto && !m.has(h.foto)) m.set(h.foto, {id:h.foto, photo:true});
+  return [...m.values()];
+}
 /* Foto's die op dit apparaat opnieuw zijn gezet moeten ook opnieuw omhoog; de
    cloud kent ze al onder hetzelfde id en zou anders de oude blijven bewaren. */
 let fotoOpnieuw = new Set();
@@ -6820,7 +7070,7 @@ async function pushPhotos(){
   try{
     const rows = await sbFetch('/rest/v1/photos?select=id&limit=5000', {method:'GET'});
     const have = new Set((rows||[]).map(r => r.id));
-    for(const w of [...S.wines, ...S.wishlist, ...(S.locations||[])]){
+    for(const w of fotoDragers()){
       if(!w.photo) continue;
       if(have.has(w.id) && !fotoOpnieuw.has(w.id)) continue;
       try{
@@ -6840,7 +7090,7 @@ async function pushPhotos(){
 }
 async function pullPhotos(){
   try{
-    for(const w of [...S.wines, ...S.wishlist, ...(S.locations||[])]){
+    for(const w of fotoDragers()){
       if(w.photo && !(await pGet(w.id))){
         const rows = await sbFetch('/rest/v1/photos?select=data&user_id=eq.' + encodeURIComponent(cloud().uid) + '&id=eq.' + encodeURIComponent(w.id), {method:'GET'});
         const foto = rows && rows[0] && rows[0].data;
@@ -7437,6 +7687,15 @@ const EN = {
   'Mail me even. Heb je al credits gebruikt, dan verrekenen we naar rato van wat je hebt verbruikt.':'Just email me. If you have used credits already, we settle in proportion to what you used.',
   'Bedenktijd: heb je binnen veertien dagen nog geen credits gebruikt en wil je er toch vanaf, dan krijg je je geld terug.':'Cooling-off: if you have not used any credits within fourteen days and want out after all, you get your money back.',
   'voor':'for', 'btw inbegrepen.':'VAT included.', 'worden dat er':'that becomes', 'Foto\'s van een':'Photos of a', 'Lijst met flessen':'List of bottles',
+  /* de fles achter de historie (v100) */
+  'Zoek op naam, producent, plek of notitie':'Search by name, producer, place or note', 'Zoeken in je historie':'Search your history', 'Niets gevonden in je historie.':'Nothing found in your history.',
+  'Prijs':'Price', 'Ook in je historie':'Also in your history', 'Geen beoordeling':'No rating', 'Gekocht? In de kelder leggen':'Bought it? Put it in the cellar',
+  'Staat op je verlanglijst':'On your wishlist', 'Zoek op internet':'Search the web', 'Herkomst, druiven en venster aanvullen':'Fill in origin, grapes and window',
+  'Herkomst, druiven en venster aanvullen · 1 credit':'Fill in origin, grapes and window · 1 credit',
+  'Van deze fles is alleen de naam bewaard. De sommelier zoekt de rest erbij.':'Only the name of this bottle was kept. The sommelier looks up the rest.',
+  'De sommelier zoekt de fles op…':'The sommelier is looking up the bottle…', 'De sommelier kent deze wijn niet goed genoeg om er iets bij te zetten':'The sommelier does not know this wine well enough to add anything',
+  'Betaald €':'Paid €', 'optioneel':'optional', 'verdwijnt uit je kelder. Je drink-historie blijft bewaard.':'leaves your cellar. Your drinking history is kept.',
+  'en de bijbehorende foto verdwijnen uit je kelder. Je drink-historie blijft bewaard.':'and its photo leave your cellar. Your drinking history is kept.',
   /* prijzen met bron (6 sep) */
   'Nog geen prijs met bron.':'No sourced price yet.', 'De sommelier zoekt de prijs bij wijnhandels…':'The sommelier is looking up the price at wine merchants…', 'je aankoopprijs':'your purchase price', 'Prijs opzoeken':'Look up price', 'Prijs opzoeken · 1 credit':'Look up price · 1 credit', 'Opnieuw opzoeken · 1 credit':'Look up again · 1 credit',
   'Prijs zoeken bij wijnhandels…':'Looking up the price at wine merchants…', 'Diep zoeken bij wijnhandels en veilingen…':'Searching deeper at merchants and auctions…', 'Zoeken bij wijnhandels…':'Searching wine merchants…',
@@ -7558,6 +7817,11 @@ const EN_RE = [
   [/^richting: (.+)$/, 'direction: $1'],
   [/^staat al in je kelder \(×(\d+)\)\. Flessen bijboeken, of juist één afboeken\?$/, 'is already in your cellar (×$1). Add bottles, or remove one?'],
   [/^Bekijk fles in kelder \(×(\d+)\)$/, 'View bottle in cellar (×$1)'],
+  [/^Ligt ook in je kelder \(×(\d+)\)$/, 'Also in your cellar (×$1)'],
+  [/^(€\s?[\d.,]+) per (fles|glas) op de wijnkaart$/, (m, p, u) => `${p} per ${u === 'glas' ? 'glass' : 'bottle'} on the wine list`],
+  [/^Aanvullen mislukte: (.+)$/, 'Filling in failed: $1'],
+  [/^Etiket van (.+)$/, 'Label of $1'],
+  [/^(\d+) wijn(?:en)? zonder voorraad (?:verdwijnt|verdwijnen) uit je kelder\. Je drink-historie blijft bewaard, met de etiketten van wat je dronk\.$/, (m, n) => `${n} ${wines(n)} without stock will leave your cellar. Your drinking history is kept, with the labels of what you drank.`],
   [/^(.+) \(niet meer in je kelder\)$/, '$1 (no longer in your cellar)'],
   [/^Opgeslagen · (.+)$/, 'Saved · $1'],
   [/^Sommelier-AI · (.+)$/, 'Sommelier AI · $1'],

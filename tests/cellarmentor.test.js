@@ -43,7 +43,7 @@ ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 for (const i of [0, 1, 2, 4]) vm.runInContext(blokken[i], ctx, { filename: `cellarmentor.html blok ${i + 1}` });
 // const/let op topniveau zijn geen eigenschappen van de context; zo halen we ze op
-const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, tabelMigratie, TABEL_VERSIE, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, rijpheidVan, rijpheidReikt, rijpheidZin, citaatVan, RIJPHEID, CITAAT, CITAAT_STIL, PRODUCENT, genoemdDoor, ACHTERGROND, achtergrondVan, PROD_VAAK, vaakGenoemd, HUISZIN, huisZin, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, waardeSub, jaargangKloof, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
+const C = vm.runInContext('({ S, schoonWijn, schoonHist, schoonFles, flesMoment, histFles, histWijn, schoonLoc, schoonDoc, eigenSleutel, matchWine, foodCats, windowStatus, vensterUitloop, estimateWindow, oudVenster, vensterMigratie, tabelMigratie, TABEL_VERSIE, jaargangOordeel, streekVan, STREKEN, JAARTABEL, JAARBRON, rijpheidVan, rijpheidReikt, rijpheidZin, citaatVan, RIJPHEID, CITAAT, CITAAT_STIL, PRODUCENT, genoemdDoor, ACHTERGROND, achtergrondVan, PROD_VAAK, vaakGenoemd, HUISZIN, huisZin, prijsSleutel, creditCost, krimpErgens, syncBesluit, schrijfState, tabelPrijsPast, datumOf, waardeBlok, waardeSub, jaargangKloof, plekHtml, prijsBezig, versPrijsvakken, eanGeldig, eanUitRuns, eanRunsUitRij, EAN_L, EAN_G, EAN_PARITEIT, DB_KEY, YR, uid })', ctx);
 
 /* de servertegenhangers, uit de TypeScript-bron geplukt zodat drift tussen client en server opvalt */
 const serverBron = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'functions', 'ai', 'index.ts'), 'utf8');
@@ -121,6 +121,50 @@ test('schoonHist: alleen bekende redenen om af te boeken, sterren tussen 0 en 5'
   assert.equal(C.schoonHist({ weg: 'cadeau', rating: 9 }).weg, 'cadeau');
   assert.equal(C.schoonHist({ rating: 9 }).rating, 5);
   assert.equal(C.schoonHist({ rating: -3 }).rating, 0);
+});
+test('historie: een regel bewaart een momentopname van de fles, zonder voorraad, locatie of notitie', () => {
+  const w = C.schoonWijn({ id: 'w1', name: 'Barolo', producer: 'Vietti', vintage: 2016, type: 'rood', qty: 3, location: 'Kast', note: 'privé',
+    country: 'Italië', region: 'Piemonte', grapes: ['Nebbiolo'], drinkFrom: 2024, drinkTo: 2040, value: 80, valueSrc: 'zoek', valueBron: { name: 'Gall', url: 'https://gall.nl/x' }, photo: true });
+  const m = C.histFles(w);
+  assert.equal(m.foto, 'w1', 'de foto blijft onder het id van de wijn');
+  assert.equal(m.fles.region, 'Piemonte');
+  assert.equal(m.fles.value, 80);
+  assert.equal(m.fles.valueBron.name, 'Gall');
+  for (const k of ['qty', 'location', 'note', 'name', 'id']) assert.equal(k in m.fles, false, `${k} hoort niet in de momentopname`);
+  m.fles.grapes.push('Barbera');
+  assert.deepEqual([...w.grapes], ['Nebbiolo'], 'de momentopname is een kopie, geen verwijzing naar de wijn');
+  assert.equal(C.histFles({ id: 'w2', photo: false }).foto, undefined);
+});
+test('historie: schoonFles laat alleen bekende velden door en toetst ze zoals bij een wijn', () => {
+  const f = C.schoonFles({ region: 'Rioja', grapes: 'geen lijst', value: 'abc', valueSrc: 'gestolen', valueBron: { url: 'javascript:alert(1)' }, kaartPrijs: 48, kaartPer: 'raar', valueVia: 'iets', geheim: 'x', qty: 9 });
+  assert.equal(f.region, 'Rioja');
+  assert.equal('grapes' in f, false);
+  assert.equal('value' in f, false);
+  assert.equal(f.valueBron.url, '');
+  assert.equal(f.kaartPrijs, 48);
+  assert.equal(f.kaartPer, 'fles');
+  assert.equal('valueVia' in f, false);
+  assert.equal('geheim' in f, false);
+  assert.equal('qty' in f, false);
+  assert.equal(C.schoonFles(null), undefined);
+  assert.equal(C.schoonFles([]), undefined);
+  assert.equal(C.schoonFles({}), undefined, 'een lege momentopname wordt weggelaten');
+  const h = C.schoonHist({ id: 'h1', name: 'X', fles: { country: 'Argentinië', kaartPrijs: -5 }, foto: '../../etc' });
+  assert.deepEqual({ ...h.fles }, { country: 'Argentinië' });
+  assert.equal(h.foto, undefined, 'een foto-id moet een geldig id zijn');
+  assert.equal(C.schoonHist({ id: 'h2', name: 'X', foto: 'h2' }).foto, 'h2');
+});
+test('historie: histWijn maakt van een regel een wijn met venster, onder het id van de regel', () => {
+  const w = C.histWijn({ id: 'h1', name: 'Alto Los Cuises', producer: 'Uvas del Valle', vintage: 2022, type: 'rood', date: '2026-10-13',
+    grapes: ['Malbec'], region: '', fles: { country: 'Argentinië', region: 'Salta' } });
+  assert.equal(w.id, 'h1', 'een prijs voor deze regel raakt nooit een fles in de kelder');
+  assert.equal(w.region, 'Salta', 'de momentopname gaat voor de oude velden');
+  assert.deepEqual([...w.grapes], ['Malbec'], 'zonder druiven in de momentopname de druiven van de regel');
+  assert.equal(w.qty, 0);
+  assert.ok(w.drinkFrom && w.drinkTo && w.drinkFrom <= w.drinkTo, 'zonder venster rekent de kelderregel er een uit');
+  assert.equal(w.drinkSrc, 'regels');
+  const eigen = C.histWijn({ id: 'h2', name: 'Y', vintage: 2010, fles: { drinkFrom: 2015, drinkTo: 2020, drinkSrc: 'eigen' } });
+  assert.equal(eigen.drinkTo, 2020, 'een bewaard venster blijft staan');
 });
 test('schoonLoc: een rek houdt alleen geldige vakken binnen het raster', () => {
   const l = C.schoonLoc({ name: 'Rek', rek: { rijen: 2, kolommen: 3, vakken: { A1: 'abc', Z9: 'abc', B4: 'abc', A2: '../x' } } });
