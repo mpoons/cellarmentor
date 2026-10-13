@@ -7576,6 +7576,20 @@ const EN = {
   'Bedenktijd: heb je binnen veertien dagen nog geen credits gebruikt en wil je er toch vanaf, dan krijg je je geld terug.':'Cooling-off: if you have not used any credits within fourteen days and want out after all, you get your money back.',
   'voor':'for', 'btw inbegrepen.':'VAT included.',
   /* v100: aanmelden op de camera en de betaalmuur */
+  'Schenk kleine glazen: koel en zoet werkt het best in kleine hoeveelheden.':'Pour small glasses: cool and sweet works best in small amounts.',
+  'Fino en manzanilla drink je koud en jong. Een geopende fles blijft maar een paar dagen goed.':'Fino and manzanilla are best cold and young. An opened bottle keeps only a few days.',
+  'Een geopende fles port of oloroso houdt zich weken; koel bewaren na openen.':'An opened bottle of port or oloroso keeps for weeks; store it cool once open.',
+  'Kelderkoud is beter dan kamertemperatuur. Een half uur in de koelkast doet wonderen.':'Cellar-cool beats room temperature. Half an hour in the fridge works wonders.',
+  'Decanteren: voorzichtig overschenken zodat het bezinksel in de fles blijft, en pas kort van tevoren, want oude wijn kan snel omvallen.':'Decant: pour gently so the sediment stays in the bottle, and only just before serving, as old wine can fade quickly.',
+  'Geef hem wat lucht in een karaf, een uur of twee. Jong en stevig, hij heeft het nodig.':'Give it some air in a carafe, an hour or two. Young and firm, it needs it.',
+  'Een half uur in een karaf is genoeg.':'Half an hour in a carafe is enough.',
+  'Nog aan de jonge kant. Wat extra tijd in de karaf helpt.':'Still on the young side. A little extra time in the carafe helps.',
+  'Voorbij zijn venster en op z’n rijpst: schenk voorzichtig, en beoordeel hem in het glas voordat je bijschenkt.':'Past its window and at its ripest: pour carefully, and judge it in the glass before pouring more.',
+  'Ver over zijn venster: open hem voorzichtig en drink hem dezelfde avond op.':'Well past its window: open it carefully and finish it the same evening.',
+  'een bourgogneglas (bolle kelk)':'a Burgundy glass (wide bowl)',
+  'een klein glas':'a small glass',
+  'een ruim bordeauxglas':'a large Bordeaux glass',
+  'een tulpvormig wijnglas':'a tulip-shaped wine glass',
   'Waar komt dit venster vandaan?':'Where does this window come from?',
   'Laat de sommelier lezen':'Let the sommelier read it', 'Kies een wachtwoord':'Choose a password',
   'Gratis account aanmaken':'Create a free account', 'Ik heb al een account, inloggen':'I already have an account, log in',
@@ -7618,6 +7632,7 @@ const wines = n => Number(n) === 1 ? 'wine' : 'wines';
 /* druivenlijsten als "cabernet sauvignon en merlot" in Engelse redenen */
 const enEn = x => String(x).replace(/ en /g, ' and ');
 const EN_RE = [
+  [/^(\d+) (fles|flessen)( · (.+))?$/, (m, n, f, x, v) => `${n} ${n === '1' ? 'bottle' : 'bottles'}${v ? ' · ' + v : ''}`],
   [/^(\d{4}) in (.+) · (uitzonderlijk|sterk|klassiek|wisselend|moeilijk)(\?)?$/, (m, j, st, w, q) => `${j} in ${st} · ${({uitzonderlijk:'exceptional', sterk:'strong', klassiek:'classic', wisselend:'mixed', moeilijk:'difficult'})[w]}${q || ''}`],
   [/^(Op dronk|Drink binnenkort|Nog te jong|Op z’n rijpst|Over de piek\??) · (venster |tot |nog t\/m )?(.+)$/, (m, a, v, r) => `${EN[a] || a} · ${v === 'venster ' ? 'window ' : v ? 'until ' : ''}${r}`],
   [/^(\d+) (gang|gangen)( · tot (.+))?$/, (m, n, g, x, bedrag) => `${n} ${n === '1' ? 'course' : 'courses'}${bedrag ? ' · up to ' + bedrag : ''}`],
