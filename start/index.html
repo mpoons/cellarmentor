@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src https://dbzgrkipcoebglacsqwe.supabase.co; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>CellarMentor · Open elke fles op z'n best</title>
+<meta name="description" content="Scan het etiket en weet wanneer je hem opent. CellarMentor houdt je wijnkelder bij, zegt wat er nu op dronk is, kiest de fles bij je eten en leest in het restaurant de wijnkaart met je mee. Gratis te proberen.">
+<link rel="canonical" href="https://cellarmentor.com/start/">
+<link rel="alternate" hreflang="nl" href="https://cellarmentor.com/start/">
+<link rel="alternate" hreflang="en" href="https://cellarmentor.com/en/">
+<meta name="theme-color" content="#F6F2EA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1B1418" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CellarMentor">
+<meta property="og:title" content="Open elke fles op z'n best">
+<meta property="og:description" content="Scan het etiket. CellarMentor zegt wanneer je hem opent en wat je erbij schenkt uit je eigen kelder.">
+<meta property="og:url" content="https://cellarmentor.com/start/">
+<meta property="og:image" content="https://cellarmentor.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="nl_NL">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/playfair-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/img/start/detail-light.webp" as="image" media="(prefers-color-scheme: light)">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"CellarMentor","applicationCategory":"LifestyleApplication","operatingSystem":"iOS, Android, web","url":"https://cellarmentor.com/","inLanguage":["nl","en"],
+ "description":"Wijnkelder-app: scan een etiket, volg drinkvensters per fles, kies de fles bij je eten en laat de wijnkaart in het restaurant lezen.",
+ "offers":[{"@type":"Offer","price":"0","priceCurrency":"EUR","name":"Gratis"},{"@type":"Offer","price":"2.99","priceCurrency":"EUR","name":"CellarMentor Plus, per maand"}],
+ "publisher":{"@type":"Organization","name":"Ponsen Polutropon B.V.","address":"Westerstraat 244, 1015 MT Amsterdam"}}
+</script>
+<style>
+@font-face{font-family:'EB Garamond';font-style:italic;font-weight:400 800;font-display:swap;src:url(/fonts/ebgaramond-italic-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'EB Garamond';font-style:normal;font-weight:400 800;font-display:swap;src:url(/fonts/ebgaramond-normal-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'EB Garamond';font-style:normal;font-weight:400 800;font-display:swap;src:url(/fonts/ebgaramond-normal-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+A720-A7FF}
+@font-face{font-family:'Playfair Display';font-style:normal;font-weight:400 900;font-display:swap;src:url(/fonts/playfair-normal-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Playfair Display';font-style:italic;font-weight:400 900;font-display:swap;src:url(/fonts/playfair-italic-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+/* dezelfde tokens als de app (Maison licht, Étiquette donker) */
+:root{
+  --bg:#F6F2EA; --card:#FFFDF8; --card2:#EFE7D8;
+  --ink:#241B1F; --ink2:#6B5A60; --ink3:#9C8D92;
+  --line:#E3D9C7; --acc:#6E1F33; --acc-deep:#4F1524; --acc-soft:#F5E8EA; --on-acc:#FFF8F0;
+  --gold:#A8813D; --rule:#C8A96A;
+  --serif:'Playfair Display','Iowan Old Style',Palatino,Georgia,serif;
+  --sc:'EB Garamond','Iowan Old Style',Palatino,Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --bezel:#1D1719;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#1B1418; --card:#271D23; --card2:#31262C; --ink:#E4D9C9; --ink2:#AE9E94; --ink3:#8A767E;
+    --line:#3D2F36; --acc:#C9A25A; --acc-deep:#E0BE7A; --acc-soft:#3A2E24; --on-acc:#1B1418; --gold:#C9A25A; --rule:#6E552C; --bezel:#0E0A0C; }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.sc{font-family:var(--sc);font-variant:small-caps;letter-spacing:.14em;text-transform:lowercase;font-weight:500}
+.eyebrow{font-family:var(--sc);font-variant:small-caps;text-transform:lowercase;letter-spacing:.16em;color:var(--gold);font-size:17px;font-weight:500}
+
+/* kop */
+header{border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.merk{font-family:var(--sc);font-variant:small-caps;letter-spacing:.12em;font-size:22px;font-weight:500;text-decoration:none;color:var(--ink)}
+.kopknop{font-size:14px;font-weight:600;color:var(--acc);text-decoration:none;letter-spacing:.02em}
+
+/* hero */
+.hero{padding:44px 0 8px}
+.hero .wrap{display:grid;gap:36px;align-items:center}
+h1{font-family:var(--serif);font-weight:500;font-size:clamp(40px,10.5vw,74px);line-height:1.04;letter-spacing:-.012em;margin:12px 0 18px}
+h1 em{font-style:italic}
+@media (min-width:600px){ h1 em.nr{display:block} }
+.sub{font-size:clamp(17px,4.4vw,20px);color:var(--ink2);max-width:520px;line-height:1.55}
+.cta{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--acc);color:var(--on-acc);text-decoration:none;
+  font-weight:600;font-size:15px;letter-spacing:.08em;text-transform:uppercase;padding:17px 28px;border-radius:4px;margin-top:28px;min-height:54px;
+  transition:background .2s ease}
+.cta:hover{background:var(--acc-deep)}
+.cta svg{flex:none}
+.tweede{display:inline-block;margin:16px 0 0 2px;color:var(--ink);font-size:15px;text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:4px}
+.klein{font-size:13.5px;color:var(--ink3);margin-top:16px}
+.ctarij{display:flex;flex-wrap:wrap;align-items:center;column-gap:24px}
+
+/* telefoon: een lijst om de echte schermafbeelding, niets nagemaakt */
+.toestel{position:relative;width:min(300px,76vw);margin:0 auto;border-radius:46px;padding:11px;background:var(--bezel);
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 40px 80px -30px rgba(60,20,30,.45),0 18px 36px -18px rgba(36,27,31,.35)}
+.toestel img{border-radius:36px;width:100%;aspect-ratio:390/844;object-fit:cover;background:var(--card2)}
+.fig{font-family:var(--sc);font-style:italic;color:var(--ink3);font-size:15px;text-align:center;margin-top:16px}
+.duo{position:relative;display:flex;justify-content:center}
+.duo .achter{position:absolute;left:50%;top:40px;transform:translateX(-118%) rotate(-4deg);width:min(250px,60vw);opacity:.98;display:none}
+
+/* feitenrij */
+.feiten{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:52px}
+.feiten .wrap{display:grid;grid-template-columns:1fr;gap:0}
+.feit{padding:20px 0;border-bottom:1px solid var(--line)}
+.feit:last-child{border-bottom:0}
+.feit b{display:block;font-family:var(--serif);font-weight:500;font-size:22px;line-height:1.2;margin-bottom:4px}
+.feit span{color:var(--ink2);font-size:15px}
+
+/* hoofdstukken */
+section.h{padding:72px 0;border-bottom:1px solid var(--line)}
+section.h .wrap{display:grid;gap:36px;align-items:center}
+h2{font-family:var(--serif);font-weight:500;font-size:clamp(32px,7.6vw,50px);line-height:1.08;letter-spacing:-.01em;margin:10px 0 16px}
+h2 em{font-style:italic}
+.tekst p{color:var(--ink2);max-width:500px;margin-bottom:12px}
+.tekst ul{list-style:none;margin-top:18px;max-width:500px}
+.tekst li{padding:11px 0;border-top:1px solid var(--line);font-size:15.5px;display:flex;gap:12px}
+.tekst li:last-child{border-bottom:1px solid var(--line)}
+.tekst li i{font-style:normal;font-family:var(--sc);font-variant:small-caps;letter-spacing:.1em;color:var(--gold);min-width:74px}
+
+/* van jou */
+.van{padding:72px 0;border-bottom:1px solid var(--line)}
+.kolommen{display:grid;gap:28px;margin-top:28px}
+.kolom h3{font-family:var(--serif);font-weight:500;font-size:22px;margin-bottom:6px}
+.kolom p{color:var(--ink2);font-size:15.5px}
+
+/* prijs */
+.prijs{padding:72px 0;border-bottom:1px solid var(--line)}
+.plannen{display:grid;gap:18px;margin-top:28px}
+.plan{background:var(--card);border:1px solid var(--line);padding:26px 24px;border-radius:2px;position:relative}
+.plan.plus{outline:1px solid var(--rule);outline-offset:-6px}
+.plan h3{font-family:var(--sc);font-variant:small-caps;text-transform:lowercase;letter-spacing:.14em;font-weight:500;font-size:19px;color:var(--gold)}
+.plan .bedrag{font-family:var(--serif);font-size:44px;line-height:1.1;margin:8px 0 2px}
+.plan .bedrag small{font-family:var(--sans);font-size:15px;color:var(--ink3);margin-left:6px}
+.plan ul{list-style:none;margin-top:16px}
+.plan li{padding:8px 0 8px 22px;position:relative;font-size:15.5px;color:var(--ink2);border-top:1px solid var(--line)}
+.plan li::before{content:'';position:absolute;left:2px;top:17px;width:8px;height:8px;border:1px solid var(--acc);transform:rotate(45deg)}
+
+/* vragen */
+.vragen{padding:72px 0;border-bottom:1px solid var(--line)}
+details{border-top:1px solid var(--line);padding:4px 0}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;padding:18px 34px 18px 0;font-family:var(--serif);font-size:21px;line-height:1.3;position:relative}
+summary::-webkit-details-marker{display:none}
+summary::after{content:'+';position:absolute;right:4px;top:15px;font-family:var(--sans);font-weight:300;font-size:26px;color:var(--acc)}
+details[open] summary::after{content:'−'}
+details p{color:var(--ink2);padding:0 0 18px;max-width:680px}
+
+/* slot */
+.slot{padding:84px 0 92px;text-align:center}
+.slot h2{margin:12px auto 8px;max-width:640px}
+.slot p{color:var(--ink2)}
+footer{border-top:1px solid var(--line);padding:30px 0 calc(30px + env(safe-area-inset-bottom));font-size:13.5px;color:var(--ink3)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:space-between}
+footer a{color:var(--ink3)}
+
+/* plakknop op de telefoon, verschijnt na de hero */
+.plak{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:5;transform:translateY(140%);transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.plak.aan{transform:none}
+.plak .cta{width:100%;margin:0;box-shadow:0 12px 30px -10px rgba(36,27,31,.5)}
+
+@media (min-width:900px){
+  body{font-size:18px}
+  .hero{padding:72px 0 20px}
+  .hero .wrap{grid-template-columns:minmax(0,1fr) 440px;gap:56px}
+  h1{font-size:clamp(52px,5.4vw,72px)}
+  .duo .achter{display:block;transform:translateX(-104%) rotate(-4deg);width:230px;top:56px}
+  .duo .toestel:not(.achter){margin-left:150px}
+  .toestel{width:310px}
+  .feiten .wrap{grid-template-columns:repeat(3,1fr)}
+  .feit{border-bottom:0;padding:26px 28px 26px 0}
+  .feit + .feit{border-left:1px solid var(--line);padding-left:28px}
+  section.h .wrap{grid-template-columns:1fr 1fr;gap:72px}
+  section.h.om .beeld{order:2}
+  .kolommen{grid-template-columns:repeat(3,1fr);gap:40px}
+  .plannen{grid-template-columns:1fr 1fr;max-width:820px}
+  .plak{display:none}
+}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} .plak{transition:none} }
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <a class="merk" href="/start/">CellarMentor</a>
+  <a class="kopknop" href="/?taal=nl" data-cta="kop">Open de app</a>
+</div></header>
+
+<main>
+<section class="hero"><div class="wrap">
+  <div>
+    <div class="eyebrow">Je wijnkelder, in je zak</div>
+    <h1>Open elke fles <em class="nr">op z'n best.</em></h1>
+    <p class="sub">Scan het etiket. CellarMentor zegt wanneer je hem opent, wat je erbij schenkt uit je eigen kelder, en leest in het restaurant de wijnkaart met je mee.</p>
+    <div class="ctarij">
+      <a class="cta" href="/?taal=nl" data-cta="hero"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1l1.4-2h6.2L16.5 6h1A2.5 2.5 0 0 1 20 8.5v7A2.5 2.5 0 0 1 17.5 18h-11A2.5 2.5 0 0 1 4 15.5v-7Z"/><circle cx="12" cy="12" r="3.4"/></svg>Scan je eerste fles</a>
+      <a class="tweede" href="/?taal=nl&amp;demo=1" data-cta="demo">Bekijk een voorbeeldkelder</a>
+    </div>
+    <p class="klein">Gratis. In je browser op iPhone en Android, zonder app store en zonder account.</p>
+  </div>
+  <div class="beeld">
+    <div class="duo">
+      <div class="toestel achter" aria-hidden="true"><picture><source srcset="/img/start/kelder-dark.webp" media="(prefers-color-scheme: dark)"><img src="/img/start/kelder-light.webp" alt="" width="390" height="844" loading="lazy"></picture></div>
+      <div class="toestel"><picture><source srcset="/img/start/detail-dark.webp" media="(prefers-color-scheme: dark)"><img src="/img/start/detail-light.webp" alt="Een fles in CellarMentor: Château Léoville Barton 2016, op dronk, met het drinkvenster van 2025 tot 2060 op een balk" width="390" height="844" fetchpriority="high"></picture></div>
+    </div>
+    <p class="fig">Fig. 1 · Léoville Barton 2016, op dronk tot 2060</p>
+  </div>
+</div></section>
+
+<div class="feiten"><div class="wrap">
+  <div class="feit"><b>38 wijnstreken</b><span>met een eigen jaargangtabel; per jaar staat erbij of hij tegen bronnen is gelegd</span></div>
+  <div class="feit"><b>Prijzen met bron</b><span>een opgezochte prijs komt met winkel en datum, een schatting heet ook zo</span></div>
+  <div class="feit"><b>Van jou</b><span>zonder account staat je hele kelder alleen op je eigen telefoon</span></div>
+</div></div>
+
+<section class="h"><div class="wrap">
+  <div class="beeld"><div class="toestel"><picture><source srcset="/img/start/horizon-dark.webp" media="(prefers-color-scheme: dark)"><img src="/img/start/horizon-light.webp" alt="Het overzicht Horizon: per periode welke flessen op hun mooist zijn" width="390" height="844" loading="lazy"></picture></div>
+    <p class="fig">Fig. 2 · Horizon: wanneer je flessen op hun mooist zijn</p></div>
+  <div class="tekst">
+    <div class="eyebrow">Wanneer</div>
+    <h2>Weet welke fles <em>nu</em> open moet.</h2>
+    <p>Elke fles krijgt een drinkvenster uit streek, jaargang en soort wijn. Je ziet in één oogopslag wat op dronk is, wat binnenkort moet en wat nog jaren mag liggen.</p>
+    <p>Zo gaat die ene dure fles niet te vroeg open, en raakt er geen achter in de kast over zijn hoogtepunt. Elk venster laat zien waar het vandaan komt, en je past het aan als je het anders weet.</p>
+  </div>
+</div></section>
+
+<section class="h om"><div class="wrap">
+  <div class="beeld"><div class="toestel"><picture><source srcset="/img/start/pairing-dark.webp" media="(prefers-color-scheme: dark)"><img src="/img/start/pairing-light.webp" alt="Drinken: bij lamsrack met rozemarijn staan de beste flessen uit de eigen kelder bovenaan, met de reden erbij" width="390" height="844" loading="lazy"></picture></div>
+    <p class="fig">Fig. 3 · Lamsrack met rozemarijn, uit je eigen kelder</p></div>
+  <div class="tekst">
+    <div class="eyebrow">Wat erbij</div>
+    <h2>Zeg wat je eet. <em>De fles staat bovenaan.</em></h2>
+    <p>Typ "iets met kip", "hertenbiefstuk" of "een frisse witte". CellarMentor zoekt in de flessen die je echt hebt, zet de beste bovenaan en zegt waarom.</p>
+    <ul>
+      <li><i>vanavond</i>een fles die nu op dronk is, bij wat er op tafel komt</li>
+      <li><i>andersom</i>bij een fles de gerechten die hem op z'n best laten zien</li>
+      <li><i>schenken</i>temperatuur, glas en of hij een uur lucht nodig heeft</li>
+    </ul>
+  </div>
+</div></section>
+
+<section class="h"><div class="wrap">
+  <div class="beeld"><div class="toestel"><img src="/img/start/wijnkaart-dark.webp" alt="Uit eten: drie flessen van de wijnkaart gekozen bij een menu van drie gangen" width="390" height="844" loading="lazy"></div>
+    <p class="fig">Fig. 4 · Drie gangen, één fles die het hele menu draagt</p></div>
+  <div class="tekst">
+    <div class="eyebrow">Uit eten</div>
+    <h2>Een sommelier <em>aan je eigen tafel.</em></h2>
+    <p>Fotografeer de wijnkaart, en als je wilt het menu. CellarMentor kiest drie of vier flessen die echt op de kaart staan, bij jouw gerechten en binnen je budget, met per fles waarom.</p>
+    <p>Het scherm gaat vanzelf op donker, zodat je tafel er geen last van heeft.</p>
+  </div>
+</div></section>
+
+<section class="h om"><div class="wrap">
+  <div class="beeld"><div class="toestel"><picture><source srcset="/img/start/kelder-dark.webp" media="(prefers-color-scheme: dark)"><img src="/img/start/kelder-light.webp" alt="De kelderlijst met per fles de jaargang, de plek en hoe ver hij in zijn venster is" width="390" height="844" loading="lazy"></picture></div>
+    <p class="fig">Fig. 5 · De kelder, met plek en rijpheid per fles</p></div>
+  <div class="tekst">
+    <div class="eyebrow">Je kelder erin</div>
+    <h2>Je hele kelder <em>in één middag.</em></h2>
+    <p>Scan fles voor fles, fotografeer een rij staande flessen of een lijst, of lees je bestand uit CellarTracker of Vivino in. Plekken en rekken met vakjes kun je zelf aanmaken, tot "Kast onder, B3".</p>
+    <ul>
+      <li><i>scan</i>één foto van het etiket vult naam, druiven, jaargang en venster</li>
+      <li><i>lijst</i>een geplakte lijst of foto's van staande flessen, in één keer</li>
+      <li><i>bestand</i>CSV uit CellarTracker of Vivino, zonder credits</li>
+    </ul>
+  </div>
+</div></section>
+
+<section class="van"><div class="wrap">
+  <div class="eyebrow">Van jou</div>
+  <h2>Je kelder blijft <em>van jou.</em></h2>
+  <div class="kolommen">
+    <div class="kolom"><h3>Zonder account</h3><p>Alles staat op je eigen telefoon. Er gaat niets naar een server, en je maakt een back-up wanneer je wilt.</p></div>
+    <div class="kolom"><h3>Met een account</h3><p>Je kelder synct tussen telefoon, tablet en computer. Alleen jij kunt erbij; dat dwingt de database zelf af.</p></div>
+    <div class="kolom"><h3>Geen reclame</h3><p>Geen advertenties in de app, en we verkopen niets door. CellarMentor verdient aan één ding: het abonnement van wie meer wil.</p></div>
+  </div>
+</div></section>
+
+<section class="prijs" id="prijs"><div class="wrap">
+  <div class="eyebrow">Wat het kost</div>
+  <h2>Begin gratis. <em>Plus als je meer wilt.</em></h2>
+  <div class="plannen">
+    <div class="plan">
+      <h3>Gratis</h3>
+      <div class="bedrag">€ 0</div>
+      <ul>
+        <li>Je hele kelder, met plekken en rekken</li>
+        <li>Drinkvensters en Horizon voor elke fles</li>
+        <li>De fles bij je eten, uit je eigen kelder</li>
+        <li>Met een gratis account: 20 scans per maand en sync</li>
+      </ul>
+    </div>
+    <div class="plan plus">
+      <h3>Plus</h3>
+      <div class="bedrag" id="plusPrijs">€ 2,99<small>per maand</small></div>
+      <ul>
+        <li>300 credits per maand: je hele kelder in één middag</li>
+        <li>Wijnkaarten lezen in elk restaurant, zo'n 35 per maand</li>
+        <li>Prijzen met bron opzoeken voor je hele kelder</li>
+        <li>Maandelijks opzegbaar, btw inbegrepen</li>
+      </ul>
+    </div>
+  </div>
+  <p class="klein">Een etiketscan of pairing kost 1 credit, een pagina van een wijnkaart 2.</p>
+</div></section>
+
+<section class="vragen"><div class="wrap">
+  <div class="eyebrow">Vragen</div>
+  <h2>Goed om te weten</h2>
+  <details><summary>Moet ik een app downloaden?</summary><p>Nee. Open cellarmentor.com op je telefoon en kies "Zet op beginscherm". Dan staat CellarMentor tussen je andere apps en werkt hij ook zonder verbinding. Op een iPhone gaat dat via de deelknop in Safari of Chrome; de app legt het stap voor stap uit.</p></details>
+  <details><summary>Hoe weet CellarMentor wanneer een wijn op dronk is?</summary><p>Uit drie dingen samen: hoe lang deze soort wijn meegaat (een rosé een paar jaar, een geklasseerde Bordeaux decennia), wat de jaargang in die streek deed, en hoe ver de fles nu is. De jaargangtabel is per streek tegen gepubliceerde bronnen gelegd, en per jaar staat erbij of dat gelukt is. Bij elke fles zie je waar het venster vandaan komt, en je kunt het altijd zelf aanpassen.</p></details>
+  <details><summary>Kan ik mijn kelder uit CellarTracker of Vivino meenemen?</summary><p>Ja. Exporteer een CSV-bestand en lees het in via Meer, Meerdere tegelijk. CellarMentor herkent de kolommen, telt dubbele flessen samen en houdt drinkvensters uit het bestand aan. Dat kost geen credits.</p></details>
+  <details><summary>Wat kost het, en wat is een credit?</summary><p>De kelder, drinkvensters en de fles bij je eten zijn gratis. Wat de sommelier voor je leest of opzoekt kost credits: een etiketscan of pairing 1, een pagina van een wijnkaart 2. Met een gratis account krijg je er 20 per maand, met Plus 300 voor € 2,99 per maand.</p></details>
+  <details><summary>Wat gebeurt er met mijn gegevens?</summary><p>Zonder account staat alles alleen op je telefoon. Met een account staat je kelder bij onze hostingpartij in Ierland, en alleen jij kunt erbij. Een foto van een etiket of wijnkaart gaat naar het taalmodel dat hem leest; dat model traint er niet op. We tonen geen advertenties en verkopen niets door. De hele privacyverklaring staat <a href="/#privacy">hier</a>.</p></details>
+  <details><summary>Werkt het ook in het Engels?</summary><p>Ja. De app volgt de taal van je telefoon, en je kunt wisselen bij Instellingen.</p></details>
+</div></section>
+
+<section class="slot"><div class="wrap">
+  <div class="eyebrow">Vanavond</div>
+  <h2>Welke fles <em>moet er vanavond open?</em></h2>
+  <p>Scan er één, dan weet je het.</p>
+  <a class="cta" href="/?taal=nl" data-cta="slot">Scan je eerste fles</a>
+</div></section>
+</main>
+
+<div class="plak" id="plak" aria-hidden="true"><a class="cta" href="/?taal=nl" data-cta="plak" tabindex="-1">Scan je eerste fles</a></div>
+
+<footer><div class="wrap">
+  <span>CellarMentor is een dienst van Ponsen Polutropon B.V., Amsterdam · KvK 77838335</span>
+  <span><a href="/#voorwaarden">Voorwaarden</a> · <a href="/#privacy">Privacy</a> · <a href="/en/">English</a> · Geniet, maar drink met mate</span>
+</div></footer>
+
+<script>
+/* Meting, gelijk aan de app (zie cellarmentor.html, "Meting"): een willekeurige id per apparaat en de
+   eerste herkomst in localStorage, gedeeld met de app op hetzelfde domein. Geen cookies, geen derden. */
+(function(){
+  var aan = location.hostname === 'cellarmentor.com';
+  var SB = 'https://dbzgrkipcoebglacsqwe.supabase.co', KEY = 'sb_publishable_Qvrq6CS6M-CPY5nwQ6suAw_lkpwYrYR';
+  function aid(){ try{ var a = localStorage.getItem('caveau_aid'); if(!a || !/^[A-Za-z0-9_-]{6,64}$/.test(a)){ a = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()).replace(/[^A-Za-z0-9]/g,'').slice(0,32); localStorage.setItem('caveau_aid', a); } return a; }catch(e){ return null; } }
+  function herkomst(){
+    try{ var h = JSON.parse(localStorage.getItem('caveau_herkomst') || 'null'); if(h) return h; }catch(e){}
+    var q = new URLSearchParams(location.search), k = function(v, n){ return v ? String(v).slice(0, n) : null; }, ref = null;
+    try{ ref = document.referrer ? new URL(document.referrer).hostname : null; }catch(e){}
+    if(ref === location.hostname) ref = null;
+    var h2 = { src:k(q.get('utm_source') || q.get('via'), 80), med:k(q.get('utm_medium'), 80), cmp:k(q.get('utm_campaign'), 80), inh:k(q.get('utm_content'), 80), ref:k(ref, 200), page:k(location.pathname, 120), at:Date.now() };
+    try{ localStorage.setItem('caveau_herkomst', JSON.stringify(h2)); }catch(e){}
+    return h2;
+  }
+  function meet(naam, props){
+    if(!aan) return;
+    try{
+      var h = herkomst();
+      var rij = { aid:aid(), name:naam, props:Object.assign({ pagina:location.pathname, breed:innerWidth >= 900 }, props || {}), src:h.src, med:h.med, cmp:h.cmp, inh:h.inh, ref:h.ref, page:h.page };
+      fetch(SB + '/rest/v1/events', { method:'POST', keepalive:true, headers:{ apikey:KEY, 'content-type':'application/json', prefer:'return=minimal' }, body:JSON.stringify([rij]) }).catch(function(){});
+    }catch(e){}
+  }
+  herkomst(); meet('lp_view');
+  document.addEventListener('click', function(e){ var a = e.target.closest('[data-cta]'); if(a) meet('lp_cta', { plek:a.getAttribute('data-cta') }); });
+  var diep = false; addEventListener('scroll', function(){ if(!diep && scrollY > document.body.scrollHeight * .6){ diep = true; meet('lp_scroll'); } }, { passive:true });
+  /* plakknop: pas zichtbaar als de knop in de hero uit beeld is */
+  var plak = document.getElementById('plak'), hero = document.querySelector('.hero .cta');
+  if('IntersectionObserver' in window && plak && hero){
+    new IntersectionObserver(function(es){ var uit = !es[0].isIntersecting && es[0].boundingClientRect.top < 0; plak.classList.toggle('aan', uit); plak.setAttribute('aria-hidden', uit ? 'false' : 'true'); plak.querySelector('a').tabIndex = uit ? 0 : -1; }).observe(hero);
+  }
+})();
+</script>
+</body>
+</html>

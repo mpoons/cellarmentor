@@ -7851,6 +7851,8 @@ if(!S.settings.taal){
 }
 applyTaal();
 try{ meet('app_open', {nieuw: !(+localStorage.getItem('caveau_scans')) && !S.wines.length, flessen: S.wines.length}); }catch(_){}
+/* ?demo=1 van de landingspagina ("Bekijk een voorbeeldkelder"): alleen in een lege kelder, nooit over echte flessen heen */
+if(new URLSearchParams(location.search).get('demo') === '1' && !S.wines.length) setTimeout(() => { if(!S.wines.length) ACT.demoLoad(); }, 300);
 if(standKapot) setTimeout(() => toast('De opgeslagen kelder was onleesbaar en is bewaard als caveau_v1_kapot. Zet een reservekopie terug via Meer, Instellingen', null, null, 12000), 800);
 </script>
 
