@@ -2284,7 +2284,7 @@ const FOODS = [
   {id:'rund', label:'Rundvlees & steak', kw:['rund*','biefstuk*','steak*','entrecote*','tournedos','ribeye','rib eye','ossenhaas*','sucade*','hachee','burger*','hamburger*','tartaar','stoofvlees','stoofpot*','stoverij','bavette','picanha','chateaubriand','cote de boeuf','rosbief','bourguignon','goulash','gehakt*','gehaktbal*','diamanthaas','longhaas','haasbiefstuk*'],
    w:{rood:4}, g:G_BIG_RED, rW:'stevig rood met rijpe tannines draagt rood vlees moeiteloos',
    dishes:['Entrecôte met rodewijnjus','Klassiek stoofvlees','Burger van de grill'], buy:'een stevige Syrah, Malbec of Bordeaux-blend'},
-  {id:'wild', label:'Wild', kw:['wild','wildzwijn*','wildstoof*','wildragout','everzwijn*','hert*','ree','reerug*','reebout*','reefilet*','reestoof*','fazant*','haas','hazen*','hazenpeper','duif*','patrijs*','kwartel*','wilde eend','damhert*','eendenborst'],
+  {id:'wild', label:'Wild', kw:['wild','wildzwijn*','wildstoof*','wildragout','everzwijn*','hert*','ree','reerug*','reebout*','reefilet*','reestoof*','fazant*','haas','hazen*','hazenpeper','duif*','patrijs*','kwartel*','wilde eend','damhert*'],
    w:{rood:4}, g:['pinot','nebbiolo','syrah','grenache','mourvedre','sangiovese'], rW:'aards, gerijpt rood is de klassieke partner van wild',
    dishes:['Hertenbiefstuk met jus van rode port','Gebraden fazant','Wildstoof'], buy:'een gerijpte Pinot Noir, Nebbiolo of noordelijke Rhône'},
   {id:'lam', label:'Lam', kw:['lam','lams*','lammetje*','gigot','shoulder of lamb','lamb'],
@@ -2421,7 +2421,7 @@ function regelReden(x){
   const typeL = (TYPES[pt] ? TYPES[pt].l : pt).toLowerCase();
   const kop = (druif || (TYPES[pt] ? TYPES[pt].l : 'Deze fles')) + (herkomst ? ' uit ' + herkomst : '');
   if(x.grapeHit) return `${kop}: ${(w.grapes||[]).length > 1 ? 'klassieke druiven' : 'een klassieke druif'} bij ${label}.`;
-  if(x.catW >= 3) return druif ? `${kop}: ${typeL}, het register van ${label}.` : `${kop}, het register van ${label}.`;
+  if(x.catW >= 3) return druif ? `${kop}: ${typeL} met het juiste gewicht voor ${label}.` : `${kop}, met het juiste gewicht voor ${label}.`;
   return `${kop}: ${typeL} kan hier ook, al is het niet de eerste keuze bij ${label}.`;
 }
 
@@ -7646,8 +7646,8 @@ const EN_RE = [
   [/^(\d+) scans per maand$/, (m, n) => `${n} scans a month`],
   [/^Kelderregel: (.+)$/, (m, r) => `Cellar rule: ${tr(r)}`],
   [/^(.+?)(?: uit (.+?))?: (?:een klassieke druif|klassieke druiven) bij (.+)\.$/, (m, a, b, l) => `${enEn(a)}${b ? ' from ' + b : ''}: ${/ en /.test(a) ? 'classic grapes' : 'a classic grape'} with ${trLaag(l)}.`],
-  [/^(.+?)(?: uit (.+?))?: (\S+), het register van (.+)\.$/, (m, a, b, t, l) => `${enEn(a)}${b ? ' from ' + b : ''}: ${trLaag(t)} with the weight for ${trLaag(l)}.`],
-  [/^(.+?)(?: uit (.+?))?, het register van (.+)\.$/, (m, a, b, l) => `${enEn(tr(a))}${b ? ' from ' + b : ''}, with the weight for ${trLaag(l)}.`],
+  [/^(.+?)(?: uit (.+?))?: (\S+) met het juiste gewicht voor (.+)\.$/, (m, a, b, t, l) => `${enEn(a)}${b ? ' from ' + b : ''}: ${trLaag(t)} with the right weight for ${trLaag(l)}.`],
+  [/^(.+?)(?: uit (.+?))?, met het juiste gewicht voor (.+)\.$/, (m, a, b, l) => `${enEn(tr(a))}${b ? ' from ' + b : ''}, with the right weight for ${trLaag(l)}.`],
   [/^(.+?)(?: uit (.+?))?: (\S+) kan hier ook, al is het niet de eerste keuze bij (.+)\.$/, (m, a, b, t, l) => `${enEn(a)}${b ? ' from ' + b : ''}: ${trLaag(t)} works too, though it is not the first choice for ${trLaag(l)}.`],
   [/^(Licht|Weinig tannine|Zacht en rond|Droog|Geen hout) tot (Vol|Veel tannine|Fris en strak|Zoet|Veel hout)$/, (m, a, b) => `${EN[a]} to ${EN[b]}`],
   [/^(\d+) fles(?:sen)? zonder prijs$/, (m, n) => `${n} ${bottles(n)} without a price`],
