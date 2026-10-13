@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Voorstel: hoort als /sitemap.xml op de wortel, met een regel "Sitemap: https://cellarmentor.com/sitemap.xml" in /robots.txt.
+     Geschreven door jaargangen/bouw.mjs en gids/bouw.mjs. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://cellarmentor.com/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/start/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/gids/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/gids/cellartracker-vivino-overstappen/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/gids/drinkvenster/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/gids/hoe-lang-wijn-bewaren/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/gids/wijn-bewaren-thuis/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/alentejo/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/argentinie/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/beaujolais/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/bordeaux/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/bourgogne-rood/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/bourgogne-wit/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/californie-centrale-kust/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/champagne/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/chili-centrale-vallei/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/chili-kust/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/dao-bairrada/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/douro/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/duitsland/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/elzas/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/jura-savoie/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/languedoc-roussillon/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/loire/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/napa-valley/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/nieuw-zeeland/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/noordwest-spanje/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/oostenrijk/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/oregon/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/piemonte/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/port/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/priorat/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/provence/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/rhone-noord/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/rhone-zuid/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/ribera-del-duero/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/rioja/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/sauternes/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/sicilie/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/sonoma/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/toscane/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/veneto/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/victoria-tasmanie/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/washington/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/west-australie/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/zuid-afrika/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/zuid-australie/</loc><lastmod>2026-10-13</lastmod></url>
+  <url><loc>https://cellarmentor.com/jaargangen/zuidwest-frankrijk/</loc><lastmod>2026-10-13</lastmod></url>
+</urlset>

@@ -73,7 +73,7 @@ header .wrap{display:flex;align-items:center;justify-content:space-between;heigh
 .hero .wrap{display:grid;gap:36px;align-items:center}
 h1{font-family:var(--serif);font-weight:500;font-size:clamp(40px,10.5vw,74px);line-height:1.04;letter-spacing:-.012em;margin:12px 0 18px}
 h1 em{font-style:italic}
-@media (min-width:600px){ h1 em.nr{display:block} }
+h1 em.nr{display:block}
 .sub{font-size:clamp(17px,4.4vw,20px);color:var(--ink2);max-width:520px;line-height:1.55}
 .cta{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--acc);color:var(--on-acc);text-decoration:none;
   font-weight:600;font-size:15px;letter-spacing:.08em;text-transform:uppercase;padding:17px 28px;border-radius:4px;margin-top:28px;min-height:54px;
@@ -88,9 +88,9 @@ h1 em{font-style:italic}
 .toestel{position:relative;width:min(300px,76vw);margin:0 auto;border-radius:46px;padding:11px;background:var(--bezel);
   box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 40px 80px -30px rgba(60,20,30,.45),0 18px 36px -18px rgba(36,27,31,.35)}
 .toestel img{border-radius:36px;width:100%;aspect-ratio:390/844;object-fit:cover;background:var(--card2)}
+.uitsnede{background:var(--card);border:1px solid var(--line);box-shadow:0 30px 60px -36px rgba(60,20,30,.35);max-width:520px;margin:0 auto}
+.uitsnede img{width:100%}
 .fig{font-family:var(--sc);font-style:italic;color:var(--ink3);font-size:15px;text-align:center;margin-top:16px}
-.duo{position:relative;display:flex;justify-content:center}
-.duo .achter{position:absolute;left:50%;top:40px;transform:translateX(-118%) rotate(-4deg);width:min(250px,60vw);opacity:.98;display:none}
 
 /* feitenrij */
 .feiten{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:52px}
@@ -157,8 +157,6 @@ footer a{color:var(--ink3)}
   .hero{padding:72px 0 20px}
   .hero .wrap{grid-template-columns:minmax(0,1fr) 440px;gap:56px}
   h1{font-size:clamp(52px,5.4vw,72px)}
-  .duo .achter{display:block;transform:translateX(-104%) rotate(-4deg);width:230px;top:56px}
-  .duo .toestel:not(.achter){margin-left:150px}
   .toestel{width:310px}
   .feiten .wrap{grid-template-columns:repeat(3,1fr)}
   .feit{border-bottom:0;padding:26px 28px 26px 0}
@@ -184,57 +182,65 @@ footer a{color:var(--ink3)}
   <div>
     <div class="eyebrow">Your wine cellar, in your pocket</div>
     <h1>Open every bottle <em class="nr">at its best.</em></h1>
-    <p class="sub">Scan the label. CellarMentor tells you when to open it, what to pour from your own cellar, and reads the wine list with you when you eat out.</p>
+    <p class="sub">Scan the label. CellarMentor tells you when to open it and what to pour from your own cellar.</p>
     <div class="ctarij">
       <a class="cta" href="/?taal=en" data-cta="hero"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1l1.4-2h6.2L16.5 6h1A2.5 2.5 0 0 1 20 8.5v7A2.5 2.5 0 0 1 17.5 18h-11A2.5 2.5 0 0 1 4 15.5v-7Z"/><circle cx="12" cy="12" r="3.4"/></svg>Scan your first bottle</a>
       <a class="tweede" href="/?taal=en&amp;demo=1" data-cta="demo">See a sample cellar</a>
     </div>
-    <p class="klein">Free. In your browser on iPhone and Android, no app store and no account needed.</p>
+    <p class="klein">Free. Your cellar and drinking windows work without an account; a free account reads 20 labels a month. In your browser on iPhone and Android.</p>
   </div>
   <div class="beeld">
-    <div class="duo">
-      <div class="toestel achter" aria-hidden="true"><picture><source srcset="/img/start/en-kelder-dark.webp" media="(prefers-color-scheme: dark)"><img src="/img/start/en-kelder-light.webp" alt="" width="390" height="844" loading="lazy"></picture></div>
-      <div class="toestel"><picture><source srcset="/img/start/en-detail-dark.webp" media="(prefers-color-scheme: dark)"><img src="/img/start/en-detail-light.webp" alt="A bottle in CellarMentor: Château Léoville Barton 2016, ready to drink, with its drinking window from 2025 to 2060 on a bar" width="390" height="844" fetchpriority="high"></picture></div>
-    </div>
-    <p class="fig">Fig. 1 · Léoville Barton 2016, ready until 2060</p>
-  </div>
+    <div class="toestel"><img src="/img/start/v2-en-detail.webp" alt="A scanned bottle in CellarMentor: Saint-Julien Grand Cru Classé 2016, ready to drink, with its drinking window to 2060 on a bar" width="390" height="844" fetchpriority="high"></div>
+    <p class="fig">Fig. 1 · Saint-Julien Grand Cru Classé 2016, ready until 2060</p>
+  </div></div>
 </div></section>
 
 <div class="feiten"><div class="wrap">
-  <div class="feit"><b>38 wine regions</b><span>with their own vintage chart; each year says whether it was checked against sources</span></div>
+  <div class="feit"><b>68 wine regions</b><span>with their own vintage chart; each year says whether it was checked against sources</span></div>
   <div class="feit"><b>Prices with a source</b><span>a looked-up price comes with shop and date, an estimate is called one</span></div>
   <div class="feit"><b>Yours</b><span>without an account your whole cellar stays on your own phone</span></div>
 </div></div>
 
 <section class="h"><div class="wrap">
-  <div class="beeld"><div class="toestel"><picture><source srcset="/img/start/en-horizon-dark.webp" media="(prefers-color-scheme: dark)"><img src="/img/start/en-horizon-light.webp" alt="The Horizon overview: which bottles are at their best in each period" width="390" height="844" loading="lazy"></picture></div>
-    <p class="fig">Fig. 2 · Horizon: when your bottles are at their best</p></div>
+  <div class="beeld"><div class="toestel"><img src="/img/start/v2-en-bevestig.webp" alt="The scan: the photo of the label on top, below it name, vintage, grapes and dishes that go with it" width="390" height="844" loading="lazy"></div>
+    <p class="fig">Fig. 2 · One photo: name, vintage and grapes from the label</p></div>
   <div class="tekst">
-    <div class="eyebrow">When</div>
-    <h2>Know which bottle is at its best <em>now</em>.</h2>
-    <p>Every bottle gets a drinking window from region, vintage and style. At a glance you see what is ready, what should go soon and what can rest for years.</p>
-    <p>So that one special bottle is not opened too early, and none fades at the back of the cupboard. Every window shows where it comes from, and you can change it if you know better.</p>
+    <div class="eyebrow">Scan</div>
+    <h2>One photo <em>fills it all in.</em></h2>
+    <p>Point your camera at the label. CellarMentor reads name, region, vintage and grapes, puts the bottle in your cellar and gives it a drinking window.</p>
+    <p>If something is off, change it. What you enter always wins.</p>
   </div>
 </div></section>
 
 <section class="h om"><div class="wrap">
-  <div class="beeld"><div class="toestel"><picture><source srcset="/img/start/en-pairing-dark.webp" media="(prefers-color-scheme: dark)"><img src="/img/start/en-pairing-light.webp" alt="Drink: for rack of lamb with rosemary the best bottles from your own cellar come first, with the reason why" width="390" height="844" loading="lazy"></picture></div>
-    <p class="fig">Fig. 3 · Rack of lamb with rosemary, from your own cellar</p></div>
+  <div class="beeld"><div class="uitsnede"><img src="/img/start/v2-en-horizon.webp" alt="Horizon: per period how many bottles are at their best, from now to 2046 and later" width="900" height="666" loading="lazy"></div>
+    <p class="fig">Fig. 3 · Horizon: when your bottles are at their best</p></div>
+  <div class="tekst">
+    <div class="eyebrow">When</div>
+    <h2>Know which bottle is at its best <em>now</em>.</h2>
+    <p>Every bottle gets a drinking window from region, vintage and style. Horizon puts your whole cellar on a timeline: what is at its best now, what comes in the next few years and what can rest for a long time.</p>
+    <p>So that one special bottle is not opened too early, and none fades at the back of the cupboard. Every window shows where it comes from, and you can change it if you know better.</p>
+  </div>
+</div></section>
+
+<section class="h"><div class="wrap">
+  <div class="beeld"><div class="toestel"><img src="/img/start/v2-en-pairing.webp" alt="Drink: for duck breast the best bottles from your own cellar come first, with the reason why" width="390" height="844" loading="lazy"></div>
+    <p class="fig">Fig. 4 · Duck breast, from your own cellar</p></div>
   <div class="tekst">
     <div class="eyebrow">What to pour</div>
     <h2>Say what you eat. <em>The bottle comes first.</em></h2>
-    <p>Type "something with chicken", "venison steak" or "a crisp white". CellarMentor searches the bottles you actually own, puts the best one first and says why.</p>
+    <p>Type "something with chicken", "duck breast" or "a crisp white". CellarMentor searches the bottles you actually own, puts the best one first and says why.</p>
     <ul>
-      <li><i>tonight</i>a bottle that is ready now, for what is on the table</li>
+      <li><i>dish</i>a bottle that is ready, for what is on the table</li>
       <li><i>the other way</i>for a bottle, the dishes that show it at its best</li>
       <li><i>serving</i>temperature, glass and whether it needs an hour of air</li>
     </ul>
   </div>
 </div></section>
 
-<section class="h"><div class="wrap">
-  <div class="beeld"><div class="toestel"><img src="/img/start/en-wijnkaart-dark.webp" alt="Dining out: three bottles from the wine list chosen for a three-course menu" width="390" height="844" loading="lazy"></div>
-    <p class="fig">Fig. 4 · Three courses, one bottle for the whole menu</p></div>
+<section class="h om"><div class="wrap">
+  <div class="beeld"><div class="toestel"><img src="/img/start/v2-en-wijnkaart.webp" alt="Dining out: three bottles from the wine list chosen for a three-course menu" width="390" height="844" loading="lazy"></div>
+    <p class="fig">Fig. 5 · Three courses, one bottle for the whole menu</p></div>
   <div class="tekst">
     <div class="eyebrow">Dining out</div>
     <h2>A sommelier <em>at your own table.</em></h2>
@@ -243,9 +249,9 @@ footer a{color:var(--ink3)}
   </div>
 </div></section>
 
-<section class="h om"><div class="wrap">
-  <div class="beeld"><div class="toestel"><picture><source srcset="/img/start/en-kelder-dark.webp" media="(prefers-color-scheme: dark)"><img src="/img/start/en-kelder-light.webp" alt="The cellar list with vintage, location and how far each bottle is in its window" width="390" height="844" loading="lazy"></picture></div>
-    <p class="fig">Fig. 5 · The cellar, with place and maturity per bottle</p></div>
+<section class="h"><div class="wrap">
+  <div class="beeld"><div class="toestel"><img src="/img/start/v2-en-kelder.webp" alt="The cellar list with vintage, location and how far each bottle is in its window" width="390" height="844" loading="lazy"></div>
+    <p class="fig">Fig. 6 · The cellar, with place and maturity per bottle</p></div>
   <div class="tekst">
     <div class="eyebrow">Bring your cellar</div>
     <h2>Your whole cellar <em>in one afternoon.</em></h2>
@@ -278,8 +284,8 @@ footer a{color:var(--ink3)}
       <ul>
         <li>Your whole cellar, with places and racks</li>
         <li>Drinking windows and Horizon for every bottle</li>
-        <li>The bottle for your dinner, from your own cellar</li>
-        <li>With a free account: 20 scans a month and sync</li>
+        <li>The bottle for your dinner, by the cellar rules</li>
+        <li>With a free account: 20 credits a month and sync</li>
       </ul>
     </div>
     <div class="plan plus">
@@ -287,7 +293,7 @@ footer a{color:var(--ink3)}
       <div class="bedrag" id="plusPrijs">€2.99<small>per month</small></div>
       <ul>
         <li>300 credits a month: your whole cellar in one afternoon</li>
-        <li>Read wine lists in any restaurant, about 35 a month</li>
+        <li>Read wine lists, about 35 a month</li>
         <li>Look up sourced prices for your whole cellar</li>
         <li>Cancel monthly, VAT included</li>
       </ul>
@@ -302,14 +308,14 @@ footer a{color:var(--ink3)}
   <details><summary>Do I need to download an app?</summary><p>No. Open cellarmentor.com on your phone and choose "Add to Home Screen". CellarMentor then sits among your other apps and also works offline. On an iPhone you do this with the share button in Safari or Chrome; the app explains it step by step.</p></details>
   <details><summary>How does CellarMentor know when a wine is ready?</summary><p>From three things together: how long this style of wine lasts (a rosé a few years, a classified Bordeaux decades), what the vintage did in that region, and how far along the bottle is now. The vintage chart has been checked against published sources region by region, and each year says whether that worked out. Every bottle shows where its window comes from, and you can always adjust it.</p></details>
   <details><summary>Can I bring my cellar from CellarTracker or Vivino?</summary><p>Yes. Export a CSV file and import it via More, Several at once. CellarMentor recognises the columns, adds up duplicate bottles and keeps drinking windows from the file. That costs no credits.</p></details>
-  <details><summary>What does it cost, and what is a credit?</summary><p>The cellar, drinking windows and the bottle for your dinner are free. What the sommelier reads or looks up for you costs credits: a label scan or pairing 1, a page of a wine list 2. A free account gets 20 a month, Plus gets 300 for €2.99 a month.</p></details>
+  <details><summary>What does it cost, and what is a credit?</summary><p>The cellar, the drinking windows and the bottle for your dinner by the fixed cellar rules are free, also without an account. When the sommelier reads or advises for you, that costs credits. A label scan or pairing costs 1, a page of a wine list 2. A free account gets 20 a month, Plus gets 300 for €2.99 a month.</p></details>
   <details><summary>What happens to my data?</summary><p>Without an account everything stays on your phone. With an account your cellar is stored with our hosting provider in Ireland, and only you can see it. A photo of a label or wine list goes to the language model that reads it; that model does not train on it. We show no ads and sell nothing on. The full privacy statement (in Dutch) is <a href="/#privacy">here</a>.</p></details>
   <details><summary>Is it available in Dutch too?</summary><p>Yes. The app follows the language of your phone, and you can switch under Settings.</p></details>
 </div></section>
 
 <section class="slot"><div class="wrap">
   <div class="eyebrow">Tonight</div>
-  <h2>Which bottle <em>will you open tonight?</em></h2>
+  <h2>Which bottle is <em>at its best now?</em></h2>
   <p>Scan one and you will know.</p>
   <a class="cta" href="/?taal=en" data-cta="slot">Scan your first bottle</a>
 </div></section>
@@ -350,9 +356,12 @@ footer a{color:var(--ink3)}
   document.addEventListener('click', function(e){ var a = e.target.closest('[data-cta]'); if(a) meet('lp_cta', { plek:a.getAttribute('data-cta') }); });
   var diep = false; addEventListener('scroll', function(){ if(!diep && scrollY > document.body.scrollHeight * .6){ diep = true; meet('lp_scroll'); } }, { passive:true });
   /* plakknop: pas zichtbaar als de knop in de hero uit beeld is */
-  var plak = document.getElementById('plak'), hero = document.querySelector('.hero .cta');
+  var plak = document.getElementById('plak'), hero = document.querySelector('.hero .cta'), slot = document.querySelector('.slot .cta');
+  var heroUit = false, slotIn = false;
+  function zet(){ var aan = heroUit && !slotIn; plak.classList.toggle('aan', aan); plak.setAttribute('aria-hidden', aan ? 'false' : 'true'); plak.querySelector('a').tabIndex = aan ? 0 : -1; }
   if('IntersectionObserver' in window && plak && hero){
-    new IntersectionObserver(function(es){ var uit = !es[0].isIntersecting && es[0].boundingClientRect.top < 0; plak.classList.toggle('aan', uit); plak.setAttribute('aria-hidden', uit ? 'false' : 'true'); plak.querySelector('a').tabIndex = uit ? 0 : -1; }).observe(hero);
+    new IntersectionObserver(function(es){ heroUit = !es[0].isIntersecting && es[0].boundingClientRect.top < 0; zet(); }).observe(hero);
+    if(slot) new IntersectionObserver(function(es){ slotIn = es[0].isIntersecting; zet(); }).observe(slot);
   }
 })();
 </script>

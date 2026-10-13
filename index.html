@@ -3314,7 +3314,7 @@ function verdict(w){
 }
 /* medaille: gevuld bij een prijs met bron, open bij een schatting */
 const MEDAL = vol => `<svg class="medal" width="11" height="13" viewBox="0 0 22 26" aria-hidden="true"><path d="M6 1h4l1 8h-4zM16 1h-4l-1 8h4z" fill="currentColor" opacity=".8"/><circle cx="11" cy="17" r="7.2" fill="${vol?'currentColor':'none'}" stroke="currentColor" stroke-width="2"/></svg>`;
-const topKort = w => { const p = plekInKelder(w); return p && p.k === 'top' ? `<span class="badge b-top">${MEDAL(p.zeker)} ${p.zeker?'Topfles':'Mogelijk topfles'}</span>` : ''; };
+const topKort = w => { const p = plekInKelder(w); return p && p.k === 'top' ? `<span class="badge b-top">${MEDAL(p.zeker)} ${p.zeker?'Topfles':'Waarschijnlijk topfles'}</span>` : ''; };
 const topBadge = w => { const p = plekInKelder(w); return p && p.k === 'top' ? `<span class="badge b-top">${MEDAL(p.zeker)} ${plekLabel(p)}</span>` : ''; };
 /* De prijsagent vindt geregeld alleen een ándere jaargang van dezelfde wijn, en tot nu toe zei de
    app daarover niets meer dan het jaartal. Dat is te weinig. Gemeten in de gedeelde prijstabel op
@@ -3373,7 +3373,9 @@ function schaalHtml(w){
   const pct = j => Math.max(0, Math.min(100, (j - start) / (eind + 1 - start) * 100));
   const nu = pct(y + 0.5);
   return `<div class="tl"><div class="tl-track"><div class="tl-fill" style="left:${pct(van)}%;right:${100 - pct(tot + 1)}%"></div><div class="tl-now" style="left:${nu}%"></div></div>
-    <div class="tl-lab"><span style="left:0">${start}</span><span class="now" style="left:${nu}%;transform:translateX(${nu < 12 ? '0' : nu > 88 ? '-100%' : '-50%'})">nu · ${y}</span><span style="right:0">${eind}</span></div></div>`;
+    <div class="tl-lab"><span style="left:0">${start}</span><span class="now" style="left:${nu}%;transform:translateX(${nu < 12 ? '0' : nu > 88 ? '-100%' : '-50%'})">nu · ${y}</span><span style="right:0">${tot > eind ? `tot ${tot} →` : eind}</span></div></div>`;
+  /* v100: een venster dat voorbij de as loopt (lange bewaarwijn) kreeg rechts het laatste asjaar als label,
+     zodat "venster 2025–2060" naast een as tot 2059 stond. Dan nu het echte eindjaar met een pijl. */
 }
 /* De waarde als het grootste getal op het scherm, met bron en datum eronder. */
 function waardeBlok(w){
@@ -5502,12 +5504,15 @@ function horizonHtml(){
   }
   if(!alles) return '';
   const max = Math.max(1, ...banden.map(b => b.n));
+  /* v100: twee lege periodes kregen dezelfde zin onder elkaar; de eerste nodigt uit, de volgende zegt alleen wat er is */
+  let leegGezien = false;
+  const leegZin = () => { const z = leegGezien ? 'nog niets voor deze jaren' : 'niets, tijd voor een topfles om weg te leggen'; leegGezien = true; return z; };
   const kleur = ['var(--r-nu)', 'var(--r-rijp)', 'var(--r-op)', 'var(--r-op)', 'var(--r-jong)'];
   return `<div class="sect" style="margin-top:0"><div class="eyebrow mb8">Horizon <span class="small" style="font-family:var(--sans);font-variant:normal;letter-spacing:0">· wanneer je flessen op hun mooist zijn</span></div>
     <div class="hz">${banden.map((b, i) => `<button class="hz-rij" data-act="${b.act || 'soonAlle'}">
       <span class="hz-jaar"><b>${b.l}</b><small>${b.s}</small></span>
       <span class="hz-mid"><span class="hz-bar" style="width:${Math.max(2, b.n / max * 100)}%;background:${kleur[i]}"></span>
-        <span class="hz-note">${b.n ? esc(b.namen.join(', ')) + (b.n > 2 ? ' …' : '') : 'niets, tijd voor een topfles om weg te leggen'}</span></span>
+        <span class="hz-note">${b.n ? esc(b.namen.join(', ')) + (b.n > 2 ? ' …' : '') : leegZin()}</span></span>
       <span class="hz-n"><b>${b.n}</b><small>${b.val ? money(Math.round(b.val)) : ''}</small></span></button>`).join('')}
     ${over ? `<button class="hz-rij" data-act="chipOverzicht"><span class="hz-jaar"><b style="color:var(--bad)">${over}</b><small>over de piek</small></span><span class="hz-mid"><span class="hz-note">Liever nu dan nooit: tik voor de lijst</span></span></button>` : ''}</div></div>`;
 }
@@ -7362,7 +7367,7 @@ const EN = {
   'Vaag mag: "iets met kip", "Aziatisch" of "een frisse witte" is genoeg. De sommelier kiest de beste flessen uit jóuw kelder, met uitleg waarom.':'Vague is fine: "something with chicken", "Asian" or "a crisp white" will do. The sommelier picks the best bottles from your own cellar and explains why.',
   'Fotografeer de kaart, zeg wat je eet. De sommelier kiest de beste flessen ván die kaart: bij elk gerecht één, en één voor de hele tafel.':'Photograph the list, say what you are eating. The sommelier picks the best bottles from that list: one for each dish, and one for the whole table.',
   'Horizon':'Horizon', '· wanneer je flessen op hun mooist zijn':'· when your bottles are at their best', 'Nu':'Now', 'en later':'and later', 'over de piek':'past their peak',
-  'niets, tijd voor een topfles om weg te leggen':'nothing, time to lay down a top bottle', 'Liever nu dan nooit: tik voor de lijst':'Better now than never: tap for the list',
+  'niets, tijd voor een topfles om weg te leggen':'nothing, time to lay down a top bottle', 'nog niets voor deze jaren':'nothing for these years yet', 'Liever nu dan nooit: tik voor de lijst':'Better now than never: tap for the list',
   'Naast de naam':'Next to the name', 'Foto als die er is':'Photo when there is one', 'Altijd het flesje':'Always the bottle',
   'In de lijst staat de etiketfoto naast de naam. Liever een rustige lijst? Dan altijd het flesje in de kleur van de wijn.':'The list shows the label photo next to the name. Prefer a calm list? Then always the bottle in the colour of the wine.',
   'Licht is ivoor met lijnen, donker is dezelfde app op een warme donkere grond. Kies er een als je wilt zien hoe de andere kant eruitziet.':'Light is ivory with rules, dark is the same app on a warm dark ground. Pick one to see what the other side looks like.',
@@ -7387,7 +7392,7 @@ const EN = {
   'Nog te jong':'Too young still', 'Drink binnenkort':'Drink soon', 'Over de piek?':'Past its peak?', 'Venster onbekend':'Window unknown', 'op dronk':'ready from', 'was op dronk':'was ready',
   'Rood':'Red', 'Wit':'White', 'Rosé':'Rosé', 'Mousserend':'Sparkling', 'Zoet':'Sweet', 'Versterkt':'Fortified', 'Oranje':'Orange', 'NV':'NV',
   'Recent toegevoegd':'Recently added', 'Naam':'Name', 'Jaargang':'Vintage', 'Drinkvenster (op dronk eerst)':'Drinking window (ready first)', 'Waarde':'Value', 'Score (zelf genoteerd)':'Score (your own notes)',
-  'Topfles':'Top bottle', 'Mogelijk topfles':'Possibly a top bottle', 'Past bij je smaak':'Matches your taste', 'op tafel':'on the table',
+  'Topfles':'Top bottle', 'Waarschijnlijk topfles':'Probably a top bottle', 'Past bij je smaak':'Matches your taste', 'op tafel':'on the table',
   /* detail */
   'Voorraad':'Stock', 'Fles eraf':'One bottle fewer', 'Fles erbij':'One bottle more', 'Bekijk rek ›':'View rack ›', 'Schenken':'Serving', 'Lekker bij':'Goes well with', 'Lekker bij:':'Goes well with:',
   'Opgeslagen recepten':'Saved recipes', 'Wat past erbij?':'What goes with it?', 'Zet op tafel voor vanavond':'Put on the table for tonight', 'Op tafel':'On the table',
@@ -7641,7 +7646,13 @@ const EN = {
 /* teksten met een getal of naam erin: [regex, vervanging]; de vervanging mag een functie zijn */
 const bottles = n => Number(n) === 1 ? 'bottle' : 'bottles';
 const wines = n => Number(n) === 1 ? 'wine' : 'wines';
+/* druivenlijsten als "cabernet sauvignon en merlot" in Engelse redenen */
+const enEn = x => String(x).replace(/ en /g, ' and ');
 const EN_RE = [
+  [/^(\d{4}) in (.+) · (uitzonderlijk|sterk|klassiek|wisselend|moeilijk)(\?)?$/, (m, j, st, w, q) => `${j} in ${st} · ${({uitzonderlijk:'exceptional', sterk:'strong', klassiek:'classic', wisselend:'mixed', moeilijk:'difficult'})[w]}${q || ''}`],
+  [/^(Op dronk|Drink binnenkort|Nog te jong|Op z’n rijpst|Over de piek\??) · (venster |tot |nog t\/m )?(.+)$/, (m, a, v, r) => `${EN[a] || a} · ${v === 'venster ' ? 'window ' : v ? 'until ' : ''}${r}`],
+  [/^(\d+) (gang|gangen)( · tot (.+))?$/, (m, n, g, x, bedrag) => `${n} ${n === '1' ? 'course' : 'courses'}${bedrag ? ' · up to ' + bedrag : ''}`],
+  [/^tot (\d{4}) →$/, (m, j) => `to ${j} →`],
   [/^(\d+) credits per maand(?: · (loopt af op|proefperiode tot|verlengt op) (.+))?\.$/, (m, n, w, d) => `${n} credits a month${w ? ' · ' + ({'loopt af op':'ends on','proefperiode tot':'trial until','verlengt op':'renews on'})[w] + ' ' + d : ''}.`],
   [/^Je (\d+) gratis credits van deze maand zijn gebruikt\. Met Plus gaat de sommelier gewoon door\.$/, (m, n) => `Your ${n} free credits for this month are used. With Plus the sommelier just keeps going.`],
   [/^Eén foto van het etiket en CellarMentor vult alles in: naam, druiven, jaargang, wanneer hij open moet en wat erbij past\. Met een gratis account krijg je$/, () => 'One photo of the label and CellarMentor fills in everything: name, grapes, vintage, when to open it and what goes with it. With a free account you get'],
@@ -7650,10 +7661,10 @@ const EN_RE = [
   [/^We stuurden een mail naar (.+)\. Tik op de link erin(, kom dan terug naar deze app)?$/, (m, a, b) => `We sent an email to ${a}. Tap the link in it${b ? ', then come back to this app' : ''}`],
   [/^(\d+) scans per maand$/, (m, n) => `${n} scans a month`],
   [/^Kelderregel: (.+)$/, (m, r) => `Cellar rule: ${tr(r)}`],
-  [/^(.+?)(?: uit (.+?))?: een klassieke druif bij (.+)\.$/, (m, a, b, l) => `${a}${b ? ' from ' + b : ''}: a classic grape for ${trLaag(l)}.`],
-  [/^(.+?)(?: uit (.+?))?: (\S+), het register van (.+)\.$/, (m, a, b, t, l) => `${a}${b ? ' from ' + b : ''}: ${trLaag(t)}, the register for ${trLaag(l)}.`],
-  [/^(.+?)(?: uit (.+?))?, het register van (.+)\.$/, (m, a, b, l) => `${tr(a)}${b ? ' from ' + b : ''}, the register for ${trLaag(l)}.`],
-  [/^(.+?)(?: uit (.+?))?: (\S+) kan hier ook, al is het niet de eerste keuze bij (.+)\.$/, (m, a, b, t, l) => `${a}${b ? ' from ' + b : ''}: ${trLaag(t)} works too, though it is not the first choice for ${trLaag(l)}.`],
+  [/^(.+?)(?: uit (.+?))?: een klassieke druif bij (.+)\.$/, (m, a, b, l) => `${enEn(a)}${b ? ' from ' + b : ''}: a classic grape for ${trLaag(l)}.`],
+  [/^(.+?)(?: uit (.+?))?: (\S+), het register van (.+)\.$/, (m, a, b, t, l) => `${enEn(a)}${b ? ' from ' + b : ''}: ${trLaag(t)}, the register for ${trLaag(l)}.`],
+  [/^(.+?)(?: uit (.+?))?, het register van (.+)\.$/, (m, a, b, l) => `${enEn(tr(a))}${b ? ' from ' + b : ''}, the register for ${trLaag(l)}.`],
+  [/^(.+?)(?: uit (.+?))?: (\S+) kan hier ook, al is het niet de eerste keuze bij (.+)\.$/, (m, a, b, t, l) => `${enEn(a)}${b ? ' from ' + b : ''}: ${trLaag(t)} works too, though it is not the first choice for ${trLaag(l)}.`],
   [/^(Licht|Weinig tannine|Zacht en rond|Droog|Geen hout) tot (Vol|Veel tannine|Fris en strak|Zoet|Veel hout)$/, (m, a, b) => `${EN[a]} to ${EN[b]}`],
   [/^(\d+) fles(?:sen)? zonder prijs$/, (m, n) => `${n} ${bottles(n)} without a price`],
   [/^(\d+) CellarMentor-gebruikers betaalden (€\s?[\d.,]+) tot (€\s?[\d.,]+)$/, '$1 CellarMentor users paid $2 to $3'],
