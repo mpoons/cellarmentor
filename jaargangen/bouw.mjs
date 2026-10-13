@@ -327,7 +327,7 @@ function streekPagina(r, alle){
 
   /* in het kort */
   const per = n => jaren.filter(j => JAARTABEL[st.k][j] === n);
-  const s5 = per(5), s4 = per(4), s1 = per(1), s2 = per(2);
+  const s5 = per(5), s4 = per(4), s3 = per(3), s1 = per(1), s2 = per(2);
   const op = jaren.filter(j => a.perJaar[j].van <= NU && NU <= a.perJaar[j].tot);
   const jong = jaren.filter(j => a.perJaar[j].van > NU);
   const kortZin = [];
@@ -336,6 +336,7 @@ function streekPagina(r, alle){
   const regels = [];
   if(s5.length) regels.push(`<li><b>Uitzonderlijk:</b> ${jarenZin(s5)}</li>`);
   if(s4.length) regels.push(`<li><b>Sterk:</b> ${jarenZin(s4)}</li>`);
+  if(s3.length) regels.push(`<li><b>Klassiek:</b> ${jarenZin(s3)}</li>`);
   if(s2.length) regels.push(`<li><b>Wisselend:</b> ${jarenZin(s2)}</li>`);
   if(s1.length) regels.push(`<li><b>Moeilijk:</b> ${jarenZin(s1)}</li>`);
   const opZin = op.length
