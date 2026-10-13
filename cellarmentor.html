@@ -637,7 +637,7 @@ const AANBIEDER_ADRES = 'Westerstraat 244, 1015 MT Amsterdam';
 /* "Ponsen Polutropon B.V. (KvK 77838335, <adres>)", of zonder het deel dat nog leeg is. */
 const aanbieder = () => { const extra = [AANBIEDER_KVK && 'KvK ' + AANBIEDER_KVK, AANBIEDER_ADRES].filter(Boolean).join(', '); return esc(AANBIEDER) + (extra ? ' (' + esc(extra) + ')' : ''); };
 const CONTACT_MAIL = 'max.ponsen@gmail.com';
-const LEGAL_DATUM = '7 september 2026';
+const LEGAL_DATUM = '13 oktober 2026';
 
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id'+Date.now()+Math.random().toString(36).slice(2,8));
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -4763,8 +4763,14 @@ function viewScan(){
     </div>`;
 }
 ACT.goImport = () => { UI.tab='meer'; UI.meerPage='import'; render(); };
-ACT.scanCam = () => openLiveScan();
-ACT.scanLib = () => { photoTarget = 'etiket'; document.getElementById('fLib').click(); };
+/* Zonder account las de camera niets en moest je zelf de weg naar Meer → Account vinden.
+   Nu komt de vraag op het moment zelf; zonder account verder blijft een gewone keuze. */
+const vraagAccountEerst = () => CLOUD_OK && !loggedIn() && !aiReady();
+ACT.scanCam = () => vraagAccountEerst() ? openAanmelden('scan', () => openLiveScan()) : openLiveScan();
+ACT.scanLib = () => {
+  const kies = () => { photoTarget = 'etiket'; document.getElementById('fLib').click(); };
+  vraagAccountEerst() ? openAanmelden('scan_foto', kies) : kies();
+};
 ACT.scanAgain = () => { scanReset(); render(); };
 ACT.scanNewPhoto = () => openLiveScan();
 
@@ -4990,6 +4996,7 @@ async function handlePhoto(file){
   }catch(e){ toast('Foto kon niet worden gelezen'); return; }
   scan.stage = 'confirm'; scan.data = null; scan.err = null; scan.match = null; scanTouched = new Set(); tik(40);
   scan.busy = aiReady(); vensterAuto = true;
+  try{ const n = (+localStorage.getItem('caveau_scans') || 0) + 1; localStorage.setItem('caveau_scans', String(n)); meet('scan', {n, ai: scan.busy}); }catch(_){}
   UI.tab = 'scan'; render(); showScanImg(); camWenkToon();
   if(scan.busy){
     try{ await scanLezen(); }catch(e){ scan.err = leesFout(e); }
@@ -5007,6 +5014,7 @@ function wineFromScanForm(){
 }
 ACT.scanAdd = async () => {
   const d = wineFromScanForm(); if(!d) return;
+  meet('kelder_in', {n: S.wines.length + 1, via: 'scan'});
   const pr = proefLees();
   if(d.location) S.settings.lastLocation = d.location;
   const w = { id:uid(), ...d, qty:formQty, pairing:lijstOk(scan.data&&scan.data.pairing, 8, 120).length ? lijstOk(scan.data.pairing, 8, 120) : (recalcPairing||[]), photo:!!scan.thumb, addedAt:Date.now() };
@@ -5889,7 +5897,7 @@ INP.setModel = el => { S.settings.model = el.value; save(); };
    kan het alleen met de hand, dus daar leggen we het uit in plaats van te knoppen. */
 let installPrompt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; });
-addEventListener('appinstalled', () => { installPrompt = null; S.settings.installWeg = true; save(true); render(); });
+addEventListener('appinstalled', () => { meet('install'); installPrompt = null; S.settings.installWeg = true; save(true); render(); });
 
 function isStandalone(){
   return (matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
@@ -6282,8 +6290,11 @@ function viewPrivacyNL(){
     <h3>Betalen</h3>
     <p>Betalingen lopen via <b>Stripe</b>. Je kaartgegevens gaan rechtstreeks naar Stripe; CellarMentor ziet ze niet en bewaart ze niet. Wat wij wél bewaren is een klantnummer van Stripe en de status van je abonnement, zodat we weten hoeveel tegoed je hebt.</p>
 
+    <h3>Hoe we meten wat werkt</h3>
+    <p>Om te weten welke uitleg en welke kanalen mensen echt helpen, tellen we op cellarmentor.com een klein aantal vaste stappen: de app openen, een etiket scannen, een fles bewaren, een account aanmaken, het Plus-scherm zien en afrekenen. Daarbij bewaren we een willekeurig nummer voor dit apparaat (geen naam, geen e-mailadres, geen IP-adres), de taal, of de app op je beginscherm staat, en via welke link je de eerste keer binnenkwam (bijvoorbeeld een artikel of een advertentie). Dat staat bij onze eigen hostingpartij Supabase en gaat naar niemand anders. Er komen geen cookies of meekijkers van derden aan te pas. Maak je een account, dan koppelen we dat nummer aan je account, zodat we kunnen zien welke weg naar een abonnement leidde.</p>
+
     <h3>Wat we níét doen</h3>
-    <p>Geen advertenties. Geen volgcookies, geen bezoekersstatistieken, geen partij die meekijkt. We verkopen of delen je gegevens met niemand, en we lezen niet mee in je kelder. De gedeelde prijstabel bevat alleen wijnen en prijzen, geen kelders en geen namen van mensen.</p>
+    <p>Geen advertenties in de app. Geen volgcookies, geen partij die meekijkt. We verkopen of delen je gegevens met niemand, en we lezen niet mee in je kelder. De gedeelde prijstabel bevat alleen wijnen en prijzen, geen kelders en geen namen van mensen.</p>
 
     <h3>Hoe lang, en hoe je het weghaalt</h3>
     <p>Je gegevens blijven staan zolang je een account hebt. In de app kun je zelf alles wissen (Instellingen → Alles wissen; met sync aan haalt dat ook de cloudversie weg) en op elk moment een volledige back-up downloaden.</p>
@@ -6430,6 +6441,7 @@ ACT.wipe = () => confirmSheet('Alles wissen?', 'Je hele kelder, historie, verlan
 
 /* ================= voorbeeldflessen ================= */
 ACT.demoLoad = () => {
+  meet('demo');
   const y = Date.now();
   const demo = [
     {name:'Château Léoville Barton', producer:'Saint-Julien, Grand Cru Classé', vintage:2016, type:'rood', grapes:['cabernet sauvignon','merlot'], country:'Frankrijk', region:'Bordeaux', appellation:'Saint-Julien', qty:6, location:'Vintec, zone onder', price:95, value:130, pairing:['Entrecôte','Lamsrack','Harde kazen'], note:'Klassiek en gestructureerd, geduld wordt beloond.'},
@@ -6539,6 +6551,65 @@ let syncTimer = null, syncBusy = false, syncAgain = false, lastSyncNote = '';
 function cloud(){ if(!S.settings.cloud) S.settings.cloud = {refresh:null, email:null, uid:null, lastSync:null}; return S.settings.cloud; }
 function loggedIn(){ return CLOUD_OK && !!cloud().refresh; }
 
+/* ---- Meting (v100): wat er in de trechter gebeurt, van eerste bezoek tot betaling ----
+   Zonder cookies en zonder derden. Eén willekeurige bezoekers-id per apparaat (localStorage
+   `caveau_aid`, geen persoonsgegeven, nooit in sync of back-up), de eerste herkomst (utm-velden
+   of `via` uit het adres, anders de verwijzer; `caveau_herkomst`) en een vaste lijst gebeurtenissen.
+   Alles gaat naar de eigen tabel public.events (alleen invoegen; lezen kan alleen de server, zie
+   supabase/sql/meting-13okt.sql). De landingspagina's op hetzelfde domein schrijven dezelfde twee
+   sleutels, zodat herkomst en id meelopen tot in de app. Alleen op cellarmentor.com, nooit in de
+   ontwikkelaarsstand. Uitzetten: MEET op false. */
+const MEET = true;
+const MEET_NAMEN = new Set(['app_open','demo','aanmeld_open','aanmeld_ok','login_ok','bevestigd','scan','kelder_in',
+  'install','betaalmuur','afrekenen','plus_ok','plus_annuleer','tegoed_op','wijnkaart','pairing']);
+const meetAan = () => MEET && CLOUD_OK && location.hostname === 'cellarmentor.com' && !(S.settings && S.settings.devMode);
+function meetAid(){
+  try{
+    let a = localStorage.getItem('caveau_aid');
+    if(!a || !/^[A-Za-z0-9_-]{6,64}$/.test(a)){ a = uid().replace(/[^A-Za-z0-9]/g, '').slice(0, 32); localStorage.setItem('caveau_aid', a); }
+    return a;
+  }catch(_){ return null; }
+}
+/* eerste herkomst: één keer vastgelegd, daarna nooit overschreven (first touch) */
+function meetHerkomst(){
+  let h = null;
+  try{ h = JSON.parse(localStorage.getItem('caveau_herkomst') || 'null'); }catch(_){}
+  if(h && typeof h === 'object') return h;
+  const q = new URLSearchParams(location.search), kort = (v, n) => v ? String(v).slice(0, n) : null;
+  let ref = null; try{ ref = document.referrer ? new URL(document.referrer).hostname : null; }catch(_){}
+  if(ref === location.hostname) ref = null;
+  h = { src: kort(q.get('utm_source') || q.get('via'), 80), med: kort(q.get('utm_medium'), 80), cmp: kort(q.get('utm_campaign'), 80),
+    inh: kort(q.get('utm_content'), 80), ref: kort(ref, 200), page: kort(location.pathname, 120), at: Date.now() };
+  try{ localStorage.setItem('caveau_herkomst', JSON.stringify(h)); }catch(_){}
+  return h;
+}
+let meetRij = [], meetKlok = null;
+function meet(naam, props){
+  try{
+    if(!meetAan() || !MEET_NAMEN.has(naam)) return;
+    const h = meetHerkomst();
+    const p = Object.assign({ standalone: matchMedia('(display-mode: standalone)').matches || navigator.standalone === true, taal: taal() }, props || {});
+    meetRij.push({ aid: meetAid(), uid: (cloud().refresh && cloud().uid) || null, name: naam, props: p,
+      src: h.src, med: h.med, cmp: h.cmp, inh: h.inh, ref: h.ref, page: h.page });
+    clearTimeout(meetKlok); meetKlok = setTimeout(meetStuur, 1500);
+  }catch(_){}
+}
+function meetStuur(){
+  if(!meetRij.length) return;
+  const rijen = meetRij.splice(0, 50);
+  try{
+    fetch(SB_URL + '/rest/v1/events', { method:'POST', keepalive:true,
+      headers:{ apikey: SB_KEY, 'content-type':'application/json', prefer:'return=minimal' }, body: JSON.stringify(rijen) }).catch(() => {});
+  }catch(_){}
+}
+addEventListener('pagehide', meetStuur);
+/* gaat mee bij het aanmaken van een account (user_metadata), zodat een betaling via de server terug te leggen is op de herkomst */
+function meetMeta(){
+  if(!meetAan()) return {};
+  const h = meetHerkomst();
+  return { aid: meetAid(), src: h.src, med: h.med, cmp: h.cmp, inh: h.inh, ref: h.ref };
+}
+
 /* Geen enkele fetch mag eeuwig hangen: op slechte wifi bleef de app anders 'bezig'. */
 const tijdslimiet = ms => (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) ? AbortSignal.timeout(ms) : undefined;
 /* Het toegangstoken leeft een uur. Wie de app langer open had kreeg daarna "Serverfout 401":
@@ -6606,7 +6677,7 @@ function applySession(s){
 }
 
 async function sbSignup(email, pass){
-  const r = await sbFetch('/auth/v1/signup?redirect_to=' + encodeURIComponent(appAdres()), {method:'POST', body:JSON.stringify({email, password:pass, data:{}})}, true);
+  const r = await sbFetch('/auth/v1/signup?redirect_to=' + encodeURIComponent(appAdres()), {method:'POST', body:JSON.stringify({email, password:pass, data:meetMeta()})}, true);
   if(r.access_token){ applySession(r); return 'ok'; }
   return 'confirm';
 }
@@ -6885,7 +6956,9 @@ async function sbAI(content, maxTokens, kind, onText, opts){
     return readSSE(res, onText);
   const d = await res.json().catch(() => ({}));
   if(!res.ok){
-    const e = new Error(res.status === 402 ? 'Je AI-tegoed voor deze maand is op. Kijk bij Meer → Account'
+    /* tegoed op: dit is het moment waarop Plus iets betekent, dus daar de keuze, niet een verwijzing naar Meer → Account */
+    if(res.status === 402){ meet('tegoed_op', {kind: kind||'ai'}); if(!(quota && quota.plan !== 'free')) setTimeout(() => betaalmuur('tegoed_op'), 350); }
+    const e = new Error(res.status === 402 ? 'Je tegoed voor deze maand is op'
       : res.status === 429 ? (d.error || 'Even rustig aan, daglimiet bereikt')
       : res.status === 404 ? 'De serverfunctie is nog niet geplaatst (zie instructies)'
       : (d.error || ('Serverfout ' + res.status)));
@@ -6903,10 +6976,11 @@ function planBoxHtml(){
     /* 'canceling' = zelf opgezegd, loopt netjes uit; elke andere niet-actieve status
        is een betaalprobleem. Die twee verschillen mogen niet door elkaar lopen. */
     const stopt = quota.status === 'canceling';
-    const gedoe = quota.status && quota.status !== 'active' && !stopt;
+    const proef = quota.status === 'trialing';
+    const gedoe = quota.status && quota.status !== 'active' && !proef && !stopt;
     return `<div class="panel" style="margin-top:12px">
       <div class="eyebrow mb8">CellarMentor Plus</div>
-      <p style="font-size:14px;margin-bottom:8px">${quota.limit} credits per maand${t?` · ${stopt?'loopt af':'verlengt'} op ${esc(t)}`:''}.
+      <p style="font-size:14px;margin-bottom:8px">${quota.limit} credits per maand${t?` · ${stopt?'loopt af op':proef?'proefperiode tot':'verlengt op'} ${esc(t)}`:''}.
       ${gedoe?`<br><b>Let op:</b> de betaling is niet gelukt (${esc(quota.status)}). Werk je betaalmethode bij om Plus te houden.`:''}</p>
       <button class="btn plain" data-act="acPortal">Abonnement beheren</button></div>`;
   }
@@ -6930,29 +7004,49 @@ async function sbFn(name, body){
   if(!res.ok) throw new Error(d.error || (res.status === 404 ? 'De betaalfunctie is nog niet geplaatst' : 'Serverfout ' + res.status));
   return d;
 }
-async function billingGo(action, el){
+async function billingGo(action, el, extra){
   if(el){ el.disabled = true; el.textContent = 'Even geduld…'; }
   try{
-    const d = await sbFn('billing', {action});
+    const d = await sbFn('billing', {action, ...(extra||{})});
     if(d.url && /^https:\/\/([a-z0-9-]+\.)*stripe\.com\//i.test(String(d.url))) location.href = d.url; else throw new Error('Geen geldige betaallink ontvangen');
   }catch(e){ toast(String(e.message||e)); if(el){ el.disabled = false; render(); } }
 }
 /* Voor het afrekenen: wat je koopt, wat het kost, en het vinkje. Dat vinkje is
    geen formaliteit: bij een dienst die meteen begint moet je daar uitdrukkelijk
    om vragen, anders klopt de bedenktijd van veertien dagen niet. */
-ACT.acUpgrade = () => openSheet(`${sheetHead('CellarMentor Plus')}
-  <p style="font-size:14px;color:var(--ink2);line-height:1.6;margin-bottom:6px"><b>${PLUS_CREDITS} credits per maand</b> voor ${esc(PLUS_PRIJS)}, btw inbegrepen.</p>
-  <p class="small mb8">Genoeg voor zo'n 35 wijnkaarten in een restaurant, of honderden etiketten. Maandelijks opzegbaar. Je houdt Plus tot het einde van de periode die je betaald hebt.</p>
-  <label style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--ink2);line-height:1.55;margin:14px 0 10px">
-    <input type="checkbox" id="plusAkkoord" style="width:19px;height:19px;flex:none;margin-top:1px;accent-color:var(--acc)">
-    <span>Ik ga akkoord met de <button class="linkbtn" data-act="legalGo" data-p="voorwaarden">voorwaarden</button> en de <button class="linkbtn" data-act="legalGo" data-p="privacy">privacyverklaring</button>, en ik wil dat Plus meteen ingaat.</span></label>
-  <p class="small mb8">Bedenktijd: heb je binnen veertien dagen nog geen credits gebruikt en wil je er toch vanaf, dan krijg je je geld terug.</p>
-  <button class="btn" data-act="plusGo">Naar de betaling</button>`);
+/* De betaalmuur (v100): één venster, geopend vanuit Account, of op het moment dat het tegoed op is.
+   PLUS_JAAR_PRIJS blijft null tot er in Stripe een jaarprijs staat (secret STRIPE_PRICE_PLUS_JAAR);
+   dan verschijnt de keuze jaar of maand, met jaar voorgeselecteerd. */
+const PLUS_JAAR_PRIJS = null, PLUS_JAAR_VOORDEEL = '';
+ACT.acUpgrade = () => betaalmuur('account');
+function betaalmuur(reden){
+  if(!PLUS_TE_KOOP || !loggedIn()) return;
+  meet('betaalmuur', {reden});
+  const op = reden === 'tegoed_op';
+  const pluspunt = (icoon, t) => `<div style="display:flex;gap:10px;align-items:flex-start;margin:0 0 9px;font-size:14px;line-height:1.5"><span style="flex:none;color:var(--acc)">${ik(icoon)}</span><span>${t}</span></div>`;
+  const keuze = PLUS_JAAR_PRIJS ? `<div class="panel" style="padding:4px 13px;margin:12px 0">
+      <label style="display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)"><input type="radio" name="plusPer" value="jaar" checked style="accent-color:var(--acc)"><span style="flex:1"><b>Per jaar</b> · ${esc(PLUS_JAAR_PRIJS)}</span>${PLUS_JAAR_VOORDEEL ? `<span class="srcchip">${esc(PLUS_JAAR_VOORDEEL)}</span>` : ''}</label>
+      <label style="display:flex;gap:10px;align-items:center;padding:10px 0"><input type="radio" name="plusPer" value="maand" style="accent-color:var(--acc)"><span style="flex:1"><b>Per maand</b> · ${esc(PLUS_PRIJS)}</span></label></div>`
+    : `<p style="font-size:14px;color:var(--ink2);line-height:1.6;margin:12px 0 6px"><b>${esc(PLUS_PRIJS)}</b>, btw inbegrepen. Maandelijks opzegbaar.</p>`;
+  openSheet(`${sheetHead(op ? 'Je gratis scans zijn op' : 'CellarMentor Plus')}
+    <p style="font-size:14px;color:var(--ink2);line-height:1.6;margin-bottom:12px">${op ? `Je ${FREE_CREDITS} gratis credits van deze maand zijn gebruikt. Met Plus gaat de sommelier gewoon door.` : `Alles wat de sommelier voor je leest en opzoekt, vijftien keer zo vaak.`}</p>
+    ${pluspunt('camera', `<b>${PLUS_CREDITS} credits per maand</b>: je hele kelder in één middag gescand`)}
+    ${pluspunt('kaart', 'Wijnkaarten lezen in elk restaurant, zo\'n 35 per maand')}
+    ${pluspunt('glas', 'Pairing uit je eigen kelder en prijzen met bron, zo vaak als je wilt')}
+    ${keuze}
+    <label style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--ink2);line-height:1.55;margin:14px 0 10px">
+      <input type="checkbox" id="plusAkkoord" style="width:19px;height:19px;flex:none;margin-top:1px;accent-color:var(--acc)">
+      <span>Ik ga akkoord met de <button class="linkbtn" data-act="legalGo" data-p="voorwaarden">voorwaarden</button> en de <button class="linkbtn" data-act="legalGo" data-p="privacy">privacyverklaring</button>, en ik wil dat Plus meteen ingaat.</span></label>
+    <button class="btn" data-act="plusGo">Naar de betaling</button>
+    <p class="small mt8">Je houdt Plus tot het einde van de periode die je betaald hebt. Bedenktijd: heb je binnen veertien dagen nog geen credits gebruikt en wil je er toch vanaf, dan krijg je je geld terug.</p>`);
+}
 ACT.legalGo = el => { closeSheet(true); UI.tab='meer'; UI.meerPage = el.dataset.p; render(); };
 ACT.plusGo = el => {
   const v = document.getElementById('plusAkkoord');
   if(!v || !v.checked){ toast('Zet eerst het vinkje, dat hoort bij een abonnement dat meteen ingaat'); return; }
-  billingGo('checkout', el);
+  const per = PLUS_JAAR_PRIJS ? ((document.querySelector('input[name=plusPer]:checked')||{}).value === 'maand' ? 'maand' : 'jaar') : 'maand';
+  meet('afrekenen', {periode: per});
+  billingGo('checkout', el, {periode: per});
 };
 ACT.acPortal = el => billingGo('portal', el);
 
@@ -6975,6 +7069,7 @@ ACT.acPortal = el => billingGo('portal', el);
   if(!q) return;
   history.replaceState(null, '', location.pathname);
   setTimeout(() => {
+    meet(q === 'ok' ? 'plus_ok' : 'plus_annuleer');
     if(q === 'ok'){
       UI.tab = 'meer'; UI.meerPage = 'account'; render(); fetchQuota();
       toast('Welkom bij CellarMentor Plus. Je tegoed staat klaar', null, null, 6000);
@@ -7049,9 +7144,37 @@ function viewAccount(){
 }
 ACT.acLogin = el => acAuth(el, false);
 ACT.acSignup = el => acAuth(el, true);
-async function acAuth(el, isNew){
-  const email = ((document.getElementById('ac_email')||{}).value||'').trim().toLowerCase();
-  const pass = (document.getElementById('ac_pass')||{}).value||'';
+ACT.amLogin = el => acAuth(el, false, 'am');
+ACT.amSignup = el => acAuth(el, true, 'am');
+ACT.amVerder = () => { const v = aanmeldVerder; aanmeldVerder = null; closeSheet(); if(v) setTimeout(v, 320); };
+/* Aanmelden waar het nodig is (v100): op de camera, met wat het oplevert, in één venster.
+   `verder` loopt na het inloggen, of als iemand zonder account doorgaat. */
+let aanmeldVerder = null;
+function openAanmelden(reden, verder){
+  meet('aanmeld_open', {reden});
+  aanmeldVerder = typeof verder === 'function' ? verder : null;
+  openSheet(`${sheetHead('Laat de sommelier lezen')}
+    <p style="font-size:14px;color:var(--ink2);line-height:1.6;margin-bottom:12px">Eén foto van het etiket en CellarMentor vult alles in: naam, druiven, jaargang, wanneer hij open moet en wat erbij past. Met een gratis account krijg je <b>${FREE_CREDITS} scans per maand</b>, en je kelder reist mee naar je andere apparaten.</p>
+    <div id="amStatus"></div>
+    <div class="field"><label>E-mail</label><input class="inp" id="am_email" type="email" autocomplete="username" inputmode="email" placeholder="jij@voorbeeld.nl"></div>
+    <div class="field"><label>Kies een wachtwoord</label><input class="inp" id="am_pass" type="password" autocomplete="new-password" placeholder="minimaal 8 tekens"></div>
+    <button class="btn" id="amSignupBtn" data-act="amSignup" style="margin-bottom:9px">Gratis account aanmaken</button>
+    <div class="center"><button class="linkbtn" id="amLoginBtn" data-act="amLogin">Ik heb al een account, inloggen</button></div>
+    ${aanmeldVerder ? `<div class="center mt8"><button class="linkbtn" data-act="amVerder">Zonder account verder, ik vul zelf in</button></div>` : ''}
+    <p class="small mt14">Geen creditcard nodig. Alleen jij kunt bij je kelder; dat is op databaseniveau afgedwongen.</p>`);
+}
+/* na "account aanmaken" met e-mailbevestiging: het venster blijft staan, met de volgende stap erin */
+function amWacht(email){
+  const st = document.getElementById('amStatus'); if(!st) return;
+  const pwa = isIOS() && (navigator.standalone === true || matchMedia('(display-mode: standalone)').matches);
+  st.innerHTML = `<div class="banner"><span>${ik('info')}</span><span><b>Nog één tik.</b> We stuurden een mail naar ${esc(email)}. Tik op de link erin${pwa ? ', kom dan terug naar deze app' : ''} en tik hieronder op <b>Inloggen</b>.</span></div>`;
+  const sb = document.getElementById('amSignupBtn'); if(sb) sb.style.display = 'none';
+  const lb = document.getElementById('amLoginBtn'); if(lb){ lb.className = 'btn'; lb.textContent = 'Ik heb op de link getikt, inloggen'; }
+}
+async function acAuth(el, isNew, pre){
+  pre = pre || 'ac';
+  const email = ((document.getElementById(pre + '_email')||{}).value||'').trim().toLowerCase();
+  const pass = (document.getElementById(pre + '_pass')||{}).value||'';
   if(!/.+@.+\..+/.test(email)){ toast('Vul een geldig e-mailadres in'); return; }
   if(pass.length < 8){ toast('Gebruik een wachtwoord van minimaal 8 tekens'); return; }
   const orig = el.textContent; el.textContent = 'Even geduld…'; el.style.pointerEvents = 'none';
@@ -7060,9 +7183,18 @@ async function acAuth(el, isNew){
     if(r === 'confirm'){
       /* de bevestigingslink mag alleen hier een sessie opleveren (zie de hash-handler hieronder) */
       try{ localStorage.setItem('caveau_auth_pending', email); }catch(_){}
-      toast('Bijna klaar: open de mail die we je stuurden en tik op de bevestigingslink, op dit apparaat', null, null, 9000);
+      meet('aanmeld_ok', {bevestigen: true, via: pre});
+      if(pre === 'am') amWacht(email);
+      else toast('Bijna klaar: open de mail die we je stuurden en tik op de bevestigingslink, op dit apparaat', null, null, 9000);
     } else {
+      meet(isNew ? 'aanmeld_ok' : 'login_ok', {bevestigen: false, via: pre});
       toast('Ingelogd, synchroniseren…');
+      if(pre === 'am'){
+        const v = aanmeldVerder; aanmeldVerder = null;
+        closeSheet(); render(); syncNow(true);
+        if(v) setTimeout(v, 350);
+        return;
+      }
       render();
       await syncNow(true);
       return;
@@ -7115,6 +7247,7 @@ const appAdres = () => location.origin + location.pathname.replace(/index\.html$
     const hadUid = cloud().uid;
     applySession({...s, user: u});
     if(type === 'recovery'){ openNieuwWachtwoord(hadUid); return; }
+    if(type === 'signup') meet('bevestigd');
     toast(type === 'signup' ? 'Account bevestigd. Welkom!' : 'Ingelogd', null, null, 5000);
     UI.tab = 'meer'; UI.meerPage = 'account'; render();
     koppelOfSync(hadUid);
@@ -7436,7 +7569,22 @@ const EN = {
   'geeft je':'gives you', 'gratis credits per maand. Zonder account krijg je hieronder de kaartgids: waar je bij dit gerecht op de kaart naar zoekt.':'free credits a month. Without an account you get the list guide below: what to look for on the list with this dish.',
   'Mail me even. Heb je al credits gebruikt, dan verrekenen we naar rato van wat je hebt verbruikt.':'Just email me. If you have used credits already, we settle in proportion to what you used.',
   'Bedenktijd: heb je binnen veertien dagen nog geen credits gebruikt en wil je er toch vanaf, dan krijg je je geld terug.':'Cooling-off: if you have not used any credits within fourteen days and want out after all, you get your money back.',
-  'voor':'for', 'btw inbegrepen.':'VAT included.', 'worden dat er':'that becomes', 'Foto\'s van een':'Photos of a', 'Lijst met flessen':'List of bottles',
+  'voor':'for', 'btw inbegrepen.':'VAT included.',
+  /* v100: aanmelden op de camera en de betaalmuur */
+  'Laat de sommelier lezen':'Let the sommelier read it', 'Kies een wachtwoord':'Choose a password',
+  'Gratis account aanmaken':'Create a free account', 'Ik heb al een account, inloggen':'I already have an account, log in',
+  'Zonder account verder, ik vul zelf in':'Continue without an account, I will fill it in',
+  'Geen creditcard nodig. Alleen jij kunt bij je kelder; dat is op databaseniveau afgedwongen.':'No credit card needed. Only you can see your cellar; that is enforced at database level.',
+  'Ik heb op de link getikt, inloggen':'I tapped the link, log in', 'Nog één tik.':'One more tap.',
+  'en tik hieronder op':'and tap', 'Inloggen':'Log in',
+  'Je gratis scans zijn op':'Your free scans are used up',
+  'Alles wat de sommelier voor je leest en opzoekt, vijftien keer zo vaak.':'Everything the sommelier reads and looks up for you, fifteen times as often.',
+  ': je hele kelder in één middag gescand':': your whole cellar scanned in one afternoon',
+  "Wijnkaarten lezen in elk restaurant, zo'n 35 per maand":'Read wine lists in any restaurant, about 35 a month',
+  'Pairing uit je eigen kelder en prijzen met bron, zo vaak als je wilt':'Pairing from your own cellar and sourced prices, as often as you like',
+  'Maandelijks opzegbaar.':'Cancel monthly.', 'Per jaar':'Per year', 'Per maand':'Per month',
+  'Je houdt Plus tot het einde van de periode die je betaald hebt. Bedenktijd: heb je binnen veertien dagen nog geen credits gebruikt en wil je er toch vanaf, dan krijg je je geld terug.':'You keep Plus until the end of the period you paid for. Cooling-off: if you have not used any credits within fourteen days and want out after all, you get your money back.',
+  'Je tegoed voor deze maand is op':'Your credit for this month is used up', 'worden dat er':'that becomes', 'Foto\'s van een':'Photos of a', 'Lijst met flessen':'List of bottles',
   /* prijzen met bron (6 sep) */
   'Nog geen prijs met bron.':'No sourced price yet.', 'De sommelier zoekt de prijs bij wijnhandels…':'The sommelier is looking up the price at wine merchants…', 'je aankoopprijs':'your purchase price', 'Prijs opzoeken':'Look up price', 'Prijs opzoeken · 1 credit':'Look up price · 1 credit', 'Opnieuw opzoeken · 1 credit':'Look up again · 1 credit',
   'Prijs zoeken bij wijnhandels…':'Looking up the price at wine merchants…', 'Diep zoeken bij wijnhandels en veilingen…':'Searching deeper at merchants and auctions…', 'Zoeken bij wijnhandels…':'Searching wine merchants…',
@@ -7462,6 +7610,13 @@ const EN = {
 const bottles = n => Number(n) === 1 ? 'bottle' : 'bottles';
 const wines = n => Number(n) === 1 ? 'wine' : 'wines';
 const EN_RE = [
+  [/^(\d+) credits per maand(?: · (loopt af op|proefperiode tot|verlengt op) (.+))?\.$/, (m, n, w, d) => `${n} credits a month${w ? ' · ' + ({'loopt af op':'ends on','proefperiode tot':'trial until','verlengt op':'renews on'})[w] + ' ' + d : ''}.`],
+  [/^Je (\d+) gratis credits van deze maand zijn gebruikt\. Met Plus gaat de sommelier gewoon door\.$/, (m, n) => `Your ${n} free credits for this month are used. With Plus the sommelier just keeps going.`],
+  [/^Eén foto van het etiket en CellarMentor vult alles in: naam, druiven, jaargang, wanneer hij open moet en wat erbij past\. Met een gratis account krijg je$/, () => 'One photo of the label and CellarMentor fills in everything: name, grapes, vintage, when to open it and what goes with it. With a free account you get'],
+  [/^scans per maand$/, () => 'scans a month'],
+  [/^, en je kelder reist mee naar je andere apparaten\.$/, () => ', and your cellar travels with you to your other devices.'],
+  [/^We stuurden een mail naar (.+)\. Tik op de link erin(, kom dan terug naar deze app)?$/, (m, a, b) => `We sent an email to ${a}. Tap the link in it${b ? ', then come back to this app' : ''}`],
+  [/^(\d+) scans per maand$/, (m, n) => `${n} scans a month`],
   [/^Kelderregel: (.+)$/, (m, r) => `Cellar rule: ${tr(r)}`],
   [/^(.+?)(?: uit (.+?))?: een klassieke druif bij (.+)\.$/, (m, a, b, l) => `${a}${b ? ' from ' + b : ''}: a classic grape for ${trLaag(l)}.`],
   [/^(.+?)(?: uit (.+?))?: (\S+), het register van (.+)\.$/, (m, a, b, t, l) => `${a}${b ? ' from ' + b : ''}: ${trLaag(t)}, the register for ${trLaag(l)}.`],
@@ -7657,7 +7812,15 @@ ACT.setTaal = el => {
   render();
   if(v === 'nl') toast('De app staat op Nederlands'); else toast('The app is now in English');
 };
+/* Eerste opening (v100): de taal komt uit het adres (?taal=en, van de landingspagina) of uit de telefoon.
+   Het keuzevenster vooraf was een extra stap vóór iemand de app zelfs maar zag; wisselen kan in Instellingen. */
+if(!S.settings.taal){
+  const uitAdres = new URLSearchParams(location.search).get('taal');
+  const telefoon = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'nl']).map(String);
+  S.settings.taal = (uitAdres === 'nl' || uitAdres === 'en') ? uitAdres : (telefoon.some(l => /^nl/i.test(l)) ? 'nl' : 'en');
+  save(true);
+}
 applyTaal();
-if(!S.settings.taal && !location.hash.includes('access_token')) setTimeout(() => { if(!sheets.length) openTaalKeuze(); }, 500);
+try{ meet('app_open', {nieuw: !(+localStorage.getItem('caveau_scans')) && !S.wines.length, flessen: S.wines.length}); }catch(_){}
 if(standKapot) setTimeout(() => toast('De opgeslagen kelder was onleesbaar en is bewaard als caveau_v1_kapot. Zet een reservekopie terug via Meer, Instellingen', null, null, 12000), 800);
 </script>

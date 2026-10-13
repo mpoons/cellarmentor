@@ -50,6 +50,17 @@ Deno.serve(async (req) => {
     return data?.user_id || null
   }
 
+  // Meting (v100): een rij in public.events, met de bezoekers-id en herkomst die billing in de metadata zette.
+  // Mag nooit de webhook laten mislukken: een gemiste meting is beter dan een gemist abonnement.
+  const meet = async (name: string, uid: string, md: Record<string, string> | null | undefined, props: Record<string, unknown>) => {
+    try {
+      const m = md || {}
+      const aid = /^[A-Za-z0-9_-]{6,64}$/.test(m.aid || '') ? m.aid : null
+      await supa.from('events').insert({ name, uid, aid, src: m.src || null, med: m.med || null, cmp: m.cmp || null, inh: m.inh || null,
+        props: { ...props, periode: m.periode || null, bron: 'stripe' } })
+    } catch (e) { console.error('stripe-webhook meting', String((e as Error)?.message || e).slice(0, 200)) }
+  }
+
   try {
     // Stripe garandeert geen volgorde: een vertraagde 'updated' mag een latere 'deleted' niet
     // overschrijven. Daarom bewaren we per profiel het tijdstip van de laatst verwerkte gebeurtenis.
@@ -67,8 +78,14 @@ Deno.serve(async (req) => {
       const s = event.data.object as Stripe.Checkout.Session
       const userId = await findUserId(String(s.customer || ''), s.client_reference_id)
       // Bij SEPA is de sessie 'completed' terwijl de betaling nog onderweg is; dan wacht
-      // Plus op 'subscription.updated' met status active.
-      if (userId && s.payment_status === 'paid' && await nieuwer(userId)) {
+      // Plus op 'subscription.updated' met status active. Met een proefperiode (v100) is er
+      // nog niets te betalen: 'no_payment_required', en dan telt alleen een abonnement in 'trialing'.
+      let proefSub: Stripe.Subscription | null = null
+      if (s.payment_status === 'no_payment_required' && s.subscription) {
+        const sub = await stripe.subscriptions.retrieve(String(s.subscription))
+        if (sub.status === 'trialing') proefSub = sub
+      }
+      if (userId && (s.payment_status === 'paid' || proefSub) && await nieuwer(userId)) {
         // Meteen de eerste verlengdatum ophalen, anders staat die pas na de eerste
         // 'subscription.updated' in het profiel en ziet de eerste maand er kaal uit.
         let ends: number | undefined
@@ -78,11 +95,12 @@ Deno.serve(async (req) => {
         }
         await supa.from('profiles').update({
           plan: 'plus',
-          plan_status: 'active',
+          plan_status: proefSub ? 'trialing' : 'active',
           plan_renews_at: ends ? new Date(ends * 1000).toISOString() : null,
           stripe_customer_id: String(s.customer || ''),
           plan_event_at: stempel,
         }).eq('user_id', userId).or(nietOuder)
+        await meet(proefSub ? 'proef_start' : 'betaald', userId, s.metadata, { bedrag: (s.amount_total ?? 0) / 100, valuta: s.currency || 'eur' })
       }
     }
 
@@ -101,6 +119,11 @@ Deno.serve(async (req) => {
         // Allebei aannemen, dan maakt het niet uit welke weg het klantportaal koos.
         const stopt = sub.cancel_at_period_end === true || !!sub.cancel_at
         const ends = sub.cancel_at || periodEnd(sub)
+        // meting: de eerste echte betaling na een proef, en opzeggen
+        const vorigeStatus = (event.data as unknown as { previous_attributes?: { status?: string } }).previous_attributes?.status
+        if (event.type === 'customer.subscription.updated' && vorigeStatus === 'trialing' && sub.status === 'active')
+          await meet('betaald', userId, sub.metadata, { na_proef: true })
+        if (event.type === 'customer.subscription.deleted') await meet('opgezegd', userId, sub.metadata, {})
         await supa.from('profiles').update({
           plan: live ? 'plus' : 'free',
           plan_status: live && stopt ? 'canceling' : sub.status,

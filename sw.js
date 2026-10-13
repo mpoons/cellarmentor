@@ -1,6 +1,6 @@
 /* CellarMentor service worker — netwerk eerst voor de app zelf (updates), cache als offline-vangnet.
    Verhoog het versienummer bij elke wijziging aan de app. */
-const CACHE = 'cellarmentor-v99';
+const CACHE = 'cellarmentor-v100';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png',
   './fonts/ebgaramond-italic-latin-ext.woff2', './fonts/ebgaramond-italic-latin.woff2', './fonts/ebgaramond-normal-latin-ext.woff2', './fonts/ebgaramond-normal-latin.woff2', './fonts/playfair-italic-latin-ext.woff2', './fonts/playfair-italic-latin.woff2', './fonts/playfair-normal-latin-ext.woff2', './fonts/playfair-normal-latin.woff2'];
 
@@ -22,7 +22,9 @@ self.addEventListener('fetch', e => {
       /* alleen de app zelf bewaren: een top-level link naar een icoon of het manifest is ook een navigatie
          met 200, en die kwam dan als "index.html" in de cache en verving offline de hele app */
       const pad = (() => { try{ return new URL(r.url || e.request.url).pathname; }catch(_){ return ''; } })();
-      if(r.ok && (pad.endsWith('/') || pad.endsWith('/index.html')) && /html/.test(r.headers.get('content-type') || '')){ const cp = r.clone(); caches.open(CACHE).then(c => c.put('./index.html', cp)); }
+      /* alleen de app op de wortel, nooit een landingspagina of artikel (/start/, /gids/…): die eindigen ook op '/' */
+      const wortel = new URL('./', self.registration.scope).pathname;
+      if(r.ok && (pad === wortel || pad === wortel + 'index.html') && /html/.test(r.headers.get('content-type') || '')){ const cp = r.clone(); caches.open(CACHE).then(c => c.put('./index.html', cp)); }
       return r;
     }).catch(() => caches.match('./index.html')));
   } else {

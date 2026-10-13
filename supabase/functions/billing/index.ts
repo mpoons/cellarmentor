@@ -6,6 +6,9 @@
 // Vereiste secrets (Edge Functions → Secrets):
 //   STRIPE_SECRET_KEY   = sk_live_... (of sk_test_... om te proberen)
 //   STRIPE_PRICE_PLUS   = price_...   (het €2,99/maand-abonnement uit Stripe → Products)
+// Optioneel (v100, marketingplan sectie 1c):
+//   STRIPE_PRICE_PLUS_JAAR = price_... (jaarabonnement; zonder dit secret valt 'jaar' terug op de maandprijs)
+//   PLUS_PROEF_DAGEN       = 7         (proefperiode in dagen; leeg of 0 = geen proef)
 //   CAVEAU_APP_URL      = https://cellarmentor.com/   (waar Stripe naartoe terugstuurt)
 
 import { createClient } from 'npm:@supabase/supabase-js@2'
@@ -30,7 +33,7 @@ Deno.serve(async (req) => {
     const { data: { user }, error: authErr } = await supa.auth.getUser(jwt)
     if (authErr || !user) return json({ error: 'Niet ingelogd' }, 401)
 
-    const { action } = await req.json().catch(() => ({ action: '' }))
+    const { action, periode } = await req.json().catch(() => ({ action: '', periode: '' }))
 
     let { data: prof } = await supa.from('profiles').select('*').eq('user_id', user.id).maybeSingle()
     if (!prof) {
@@ -50,12 +53,23 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'checkout') {
+      // Jaar alleen als die prijs er is; anders de maand, zodat een oude app of een ontbrekend secret nooit een fout geeft.
+      const jaarPrijs = Deno.env.get('STRIPE_PRICE_PLUS_JAAR')
+      const perJaar = periode === 'jaar' && !!jaarPrijs
+      const proef = Math.max(0, Math.min(30, parseInt(Deno.env.get('PLUS_PROEF_DAGEN') || '0', 10) || 0))
+      // De herkomst uit de aanmelding (utm, bezoekers-id) gaat mee, zodat de webhook een betaling
+      // kan terugleggen op de bron (tabel events, sectie 1a van het marketingplan). Stripe-metadata: max 500 tekens per waarde.
+      const m = (user.user_metadata || {}) as Record<string, unknown>
+      const kort = (v: unknown) => (typeof v === 'string' ? v.slice(0, 80) : '')
+      const herkomst: Record<string, string> = { user_id: user.id, periode: perJaar ? 'jaar' : 'maand' }
+      for (const k of ['aid', 'src', 'med', 'cmp', 'inh']) if (kort(m[k])) herkomst[k] = kort(m[k])
       const session = await stripe.checkout.sessions.create({
         mode: 'subscription',
         customer: customerId,
         client_reference_id: user.id,
-        line_items: [{ price: Deno.env.get('STRIPE_PRICE_PLUS')!, quantity: 1 }],
-        subscription_data: { metadata: { user_id: user.id } },
+        line_items: [{ price: perJaar ? jaarPrijs! : Deno.env.get('STRIPE_PRICE_PLUS')!, quantity: 1 }],
+        metadata: herkomst,
+        subscription_data: { metadata: herkomst, ...(proef ? { trial_period_days: proef } : {}) },
         allow_promotion_codes: true,
         success_url: appUrl + '?plus=ok',
         cancel_url: appUrl + '?plus=annuleer',
