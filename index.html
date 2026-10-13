@@ -499,7 +499,7 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
 .toast{border-radius:3px}
 .nav{background:color-mix(in srgb,var(--bg) 94%,transparent)}
 .b-top{border-radius:2px}
-/* "Ik wil iets drinken": de tweede hoofdactie op het beginscherm, direct onder zoeken */
+/* "Welke fles kies ik?": de tweede hoofdactie op het beginscherm, direct onder zoeken */
 .drinkbar{display:flex;align-items:center;gap:11px;width:100%;border:1.5px solid var(--acc);border-radius:3px;padding:10px 13px;color:var(--acc-ink);background:var(--acc-soft);margin-top:9px;text-align:left;font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
 .drinkbar .grow{flex:1}
 .drinkbar .ik{width:18px;height:18px;margin:0}
@@ -2451,7 +2451,7 @@ function regelReden(x){
   const herkomst = w.region || w.country || '';
   const typeL = (TYPES[pt] ? TYPES[pt].l : pt).toLowerCase();
   const kop = (druif || (TYPES[pt] ? TYPES[pt].l : 'Deze fles')) + (herkomst ? ' uit ' + herkomst : '');
-  if(x.grapeHit) return `${kop}: een klassieke druif bij ${label}.`;
+  if(x.grapeHit) return `${kop}: ${(w.grapes||[]).length > 1 ? 'klassieke druiven' : 'een klassieke druif'} bij ${label}.`;
   if(x.catW >= 3) return druif ? `${kop}: ${typeL}, het register van ${label}.` : `${kop}, het register van ${label}.`;
   return `${kop}: ${typeL} kan hier ook, al is het niet de eerste keuze bij ${label}.`;
 }
@@ -3041,13 +3041,13 @@ function viewKelder(){
     <div class="search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
       <input type="search" placeholder="Naam, druif, streek, of een gerecht" value="${esc(UI.q)}" data-in="q" aria-label="Zoeken">
       <button class="sortbtn" data-act="chipSort" aria-label="Sorteren: ${esc(SORTS[UI.sort])}" title="Sorteren"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20V5m0 0L4 8m3-3 3 3"/><path d="M17 4v15m0 0 3-3m-3 3-3-3"/></svg></button></div>
-    <button class="drinkbar" data-act="drinkenGo">${ik('glas')}<span class="grow">Ik wil iets drinken</span>${ik('chev')}</button>
+    <button class="drinkbar" data-act="drinkenGo">${ik('glas')}<span class="grow">Welke fles kies ik?</span>${ik('chev')}</button>
     <div class="chiprow">${chips}</div>${verhuisBanner()}${opslagBanner()}${tonightBanner()}${installBanner()}${locBanner}${leegRij}${body}`;
 }
 INP.q = el => { UI.q = el.value; refreshList(); };
 function refreshList(){ if(UI.tab==='kelder') { render(true); } }
 ACT.chipType = el => { UI.ftype = el.dataset.t || null; render(); };
-/* "Ik wil iets drinken" op het beginscherm: naar Drinken, bij het eten */
+/* "Welke fles kies ik?" op het beginscherm: naar Drinken, bij het eten */
 ACT.drinkenGo = () => { UI.tab = 'pairing'; UI.pairMode = 'dish'; render(); const i = document.getElementById('pairDish'); if(i) i.focus(); };
 /* zin in rood, wit, rosé of bubbels: de kelder, gefilterd op die kleur en op wat nu op dronk is */
 ACT.zinType = el => { naarLijst({ftype: el.dataset.t || null, fstatus: true}); UI.sort = 'venster'; render(); };
@@ -3314,7 +3314,7 @@ function verdict(w){
 }
 /* medaille: gevuld bij een prijs met bron, open bij een schatting */
 const MEDAL = vol => `<svg class="medal" width="11" height="13" viewBox="0 0 22 26" aria-hidden="true"><path d="M6 1h4l1 8h-4zM16 1h-4l-1 8h4z" fill="currentColor" opacity=".8"/><circle cx="11" cy="17" r="7.2" fill="${vol?'currentColor':'none'}" stroke="currentColor" stroke-width="2"/></svg>`;
-const topKort = w => { const p = plekInKelder(w); return p && p.k === 'top' ? `<span class="badge b-top">${MEDAL(p.zeker)} ${p.zeker?'Topfles':'Waarschijnlijk topfles'}</span>` : ''; };
+const topKort = w => { const p = plekInKelder(w); return p && p.k === 'top' ? `<span class="badge b-top">${MEDAL(p.zeker)} ${p.zeker?'Topfles':'Waarschijnlijk een topfles'}</span>` : ''; };
 const topBadge = w => { const p = plekInKelder(w); return p && p.k === 'top' ? `<span class="badge b-top">${MEDAL(p.zeker)} ${plekLabel(p)}</span>` : ''; };
 /* De prijsagent vindt geregeld alleen een ándere jaargang van dezelfde wijn, en tot nu toe zei de
    app daarover niets meer dan het jaartal. Dat is te weinig. Gemeten in de gedeelde prijstabel op
@@ -4134,7 +4134,7 @@ function formFields(w, opts){
   w = w || {}; opts = opts || {};
   const grapes = (w.grapes||[]).join(', ');
   return `
-  <div class="field"><label>Naam van de wijn *</label><input class="inp" id="f_name" value="${esc(w.name||'')}" placeholder="bv. Château Talbot"></div>
+  <div class="field"><label>Naam van de wijn *</label><input class="inp" id="f_name" value="${esc(w.name||'')}" placeholder="bv. Saint-Julien 2016"></div>
   <div class="frow">
     <div class="field"><label>Producent</label><input class="inp" id="f_producer" value="${esc(w.producer||'')}" placeholder="domaine / château"></div>
     <div class="field" style="max-width:110px"><label>Jaargang</label><input class="inp tnum" id="f_vintage" inputmode="numeric" value="${esc(w.vintage||'')}" placeholder="NV"></div>
@@ -4780,7 +4780,7 @@ function viewScan(){
     ${scan.busy ? '' : `<div class="panel" style="padding:11px 13px;margin-bottom:12px"><div class="eyebrow mb8">Snel wegleggen</div>
       <div style="display:flex;gap:8px"><select class="inp" id="quickLoc" data-in="quickLoc" style="flex:1;min-width:0" aria-label="Locatie">${locSelectOptions(pre.location)}</select>
       <button class="btn sm" data-act="${scan.match?'scanMerge':'scanAdd'}" style="flex:none">+ Kelder in</button></div>
-      <label style="display:flex;gap:8px;align-items:center;font-size:13.5px;margin-top:10px"><input type="checkbox" id="scanTonight" style="width:18px;height:18px;accent-color:var(--acc)"> ${ik('glas')} Vanavond drinken, herinner me om af te strepen</label></div>`}
+      <label style="display:flex;gap:8px;align-items:center;font-size:13.5px;margin-top:10px"><input type="checkbox" id="scanTonight" style="width:18px;height:18px;accent-color:var(--acc)"> ${ik('glas')} Zet op tafel, herinner me om af te strepen</label></div>`}
     ${formFields(pre, {rek:true})}
     ${proefHtml()}
     <div class="field"><label>Aantal flessen</label>
@@ -5212,8 +5212,8 @@ async function runPair(dish, force, stuur){
     if(src === 'Kelderregels') html += zonderAiHtml(aiFout || 'de sommelier vond niets') + regels.map(r => `<p class="small mb8">${esc('Kelderregel: ' + r + '.')}</p>`).join('');
     html += `<div class="mb8" style="display:flex;gap:10px;align-items:center"><span class="srcchip">${esc(meta)}</span>${src==='Opgeslagen'?`<button class="linkbtn" style="font-size:12.5px" data-act="pairFresh" data-d="${esc(dish)}">↻ vernieuw</button>`:''}</div>` + matches.map(m => {
       const st = windowStatus(m.w);
-      const urg = st.k === 'nu' ? 'Moet toch binnenkort op, vanavond is een mooi excuus.'
-                : st.k === 'over' ? 'Over z\'n venster heen. Juist nú opdrinken, niet langer bewaren.' : '';
+      const urg = st.k === 'nu' ? 'Zit in het laatste deel van z\'n venster: een goed moment om hem te openen.'
+                : st.k === 'over' ? 'Over z\'n venster heen: open hem liever vroeg dan laat.' : '';
       return `<div class="match"><div class="match-top"><div style="min-width:0">
         <div class="wname" style="font-size:16px">${esc(m.w.name)}</div>
         <div class="wsub">${esc([m.w.producer, m.w.vintage||'NV'].filter(Boolean).join(' · '))} · ×${m.w.qty}</div>
@@ -6302,8 +6302,8 @@ function viewPrivacyNL(){
   <div class="legal">
     <p>CellarMentor wordt aangeboden door ${aanbieder()}. Vragen of een verzoek over je gegevens? Mail <a href="mailto:${esc(CONTACT_MAIL)}" style="color:var(--acc-ink);font-weight:600">${esc(CONTACT_MAIL)}</a>.</p>
 
-    <h3>Zonder account gaat er niets weg</h3>
-    <p>Gebruik je CellarMentor zonder in te loggen, dan staat je hele kelder (flessen, notities, foto's) alleen op dit apparaat, in de opslag van je browser. Er gaat niets naar een server. Wis je de app-gegevens of je browser, dan is het weg; maak dus af en toe een back-up via Instellingen.</p>
+    <h3>Zonder account blijft je kelder op dit apparaat</h3>
+    <p>Gebruik je CellarMentor zonder in te loggen, dan staat je hele kelder (flessen, notities, foto's) alleen op dit apparaat, in de opslag van je browser. Daarvan gaat niets naar een server; alleen de anonieme tellingen hieronder (bij "Hoe we meten wat werkt") verlaten je telefoon. Wis je de app-gegevens of je browser, dan is het weg; maak dus af en toe een back-up via Instellingen.</p>
 
     <h3>Met een account</h3>
     <p>Log je in, dan bewaren we bij onze hostingpartij <b>Supabase</b>, op servers in <b>Ierland</b>:</p>
@@ -7066,7 +7066,7 @@ function betaalmuur(reden){
     : `<p style="font-size:14px;color:var(--ink2);line-height:1.6;margin:12px 0 6px"><b>${esc(PLUS_PRIJS)}</b>, btw inbegrepen. Maandelijks opzegbaar.</p>`;
   openSheet(`${sheetHead(op ? 'Je gratis scans zijn op' : 'CellarMentor Plus')}
     <p style="font-size:14px;color:var(--ink2);line-height:1.6;margin-bottom:12px">${op ? `Je ${FREE_CREDITS} gratis credits van deze maand zijn gebruikt. Met Plus gaat de sommelier gewoon door.` : `Alles wat de sommelier voor je leest en opzoekt, vijftien keer zo vaak.`}</p>
-    ${pluspunt('camera', `<b>${PLUS_CREDITS} credits per maand</b>: je hele kelder in één middag gescand`)}
+    ${pluspunt('camera', `<b>${PLUS_CREDITS} credits per maand</b>: genoeg om een flinke kelder in te scannen`)}
     ${pluspunt('kaart', 'Wijnkaarten lezen in elk restaurant, zo\'n 35 per maand')}
     ${pluspunt('glas', 'Pairing uit je eigen kelder en prijzen met bron, zo vaak als je wilt')}
     ${keuze}
@@ -7357,7 +7357,7 @@ const EN = {
   /* navigatie en koppen */
   'Kelder':'Cellar', 'Overzicht':'Overview', 'Meer':'More', 'Scan':'Scan', 'Pairing':'Pairing', 'Drinken':'Drink', 'Hoofdnavigatie':'Main navigation',
   /* de nieuwe stijl (v99) */
-  'Ik wil iets drinken':'I want something to drink', 'Naam, druif, streek, of een gerecht':'Name, grape, region, or a dish',
+  'Welke fles kies ik?':'Which bottle should I open?', 'Naam, druif, streek, of een gerecht':'Name, grape, region, or a dish',
   'Je kelder, in je zak':'Your cellar, in your pocket', 'Scan een etiket. CellarMentor weet wat het is, wanneer je hem moet openen en wat erbij past.':'Scan a label. CellarMentor knows what it is, when to open it and what goes with it.',
   'Alles werkt zonder account, op dit apparaat. Log in bij':'Everything works without an account, on this device. Log in under',
   'Zet hem op je beginscherm':'Put it on your home screen', ', dan is hij er ook in de winkel.':', and it is there in the shop too.',
@@ -7392,7 +7392,7 @@ const EN = {
   'Nog te jong':'Too young still', 'Drink binnenkort':'Drink soon', 'Over de piek?':'Past its peak?', 'Venster onbekend':'Window unknown', 'op dronk':'ready from', 'was op dronk':'was ready',
   'Rood':'Red', 'Wit':'White', 'Rosé':'Rosé', 'Mousserend':'Sparkling', 'Zoet':'Sweet', 'Versterkt':'Fortified', 'Oranje':'Orange', 'NV':'NV',
   'Recent toegevoegd':'Recently added', 'Naam':'Name', 'Jaargang':'Vintage', 'Drinkvenster (op dronk eerst)':'Drinking window (ready first)', 'Waarde':'Value', 'Score (zelf genoteerd)':'Score (your own notes)',
-  'Topfles':'Top bottle', 'Waarschijnlijk topfles':'Probably a top bottle', 'Past bij je smaak':'Matches your taste', 'op tafel':'on the table',
+  'Topfles':'Top bottle', 'Past bij je smaak':'Matches your taste', 'op tafel':'on the table',
   /* detail */
   'Voorraad':'Stock', 'Fles eraf':'One bottle fewer', 'Fles erbij':'One bottle more', 'Bekijk rek ›':'View rack ›', 'Schenken':'Serving', 'Lekker bij':'Goes well with', 'Lekker bij:':'Goes well with:',
   'Opgeslagen recepten':'Saved recipes', 'Wat past erbij?':'What goes with it?', 'Zet op tafel voor vanavond':'Put on the table for tonight', 'Op tafel':'On the table',
@@ -7426,7 +7426,7 @@ const EN = {
   'Boek je eerste fles af via een fles in je kelder, of leg een proefnotitie vast van een wijn buiten de deur.':'Remove your first bottle from a bottle in your cellar, or save a tasting note for a wine you had out.',
   'geproefd bij aankoop':'tasted at purchase', 'geproefd elders':'tasted elsewhere', 'buiten de kelder':'outside the cellar', 'Bekijk hele historie →':'View full history →', 'Onlangs gedronken':'Recently drunk',
   /* formulier */
-  'Fles toevoegen':'Add a bottle', 'Naam van de wijn *':'Name of the wine *', 'bv. Château Talbot':'e.g. Château Talbot', 'domaine / château':'domaine / château',
+  'Fles toevoegen':'Add a bottle', 'Naam van de wijn *':'Name of the wine *', 'bv. Saint-Julien 2016':'e.g. Saint-Julien 2016', 'domaine / château':'domaine / château',
   'bv. merlot, cabernet franc':'e.g. merlot, cabernet franc', 'Frankrijk':'France', 'Bordeaux':'Bordeaux', 'Appellation / classificatie':'Appellation / classification', 'bv. Saint-Julien Grand Cru Classé':'e.g. Saint-Julien Grand Cru Classé',
   'Op dronk van':'Ready from', 'Op dronk tot':'Ready until', '↻ Herbereken venster & pairing uit deze velden':'↻ Recalculate window & pairing from these fields', 'Herberekenen…':'Recalculating…',
   'Aankoopprijs €':'Purchase price €', 'Waarde nu €':'Value now €', '= prijs':'= price', 'Score gezien (optioneel)':'Score seen (optional)', 'bv. 92 Parker, 8,5 Hamersma':'e.g. 92 Parker, 17/20 Jancis',
@@ -7451,7 +7451,7 @@ const EN = {
   'Houd stil, bij weinig licht duurt het iets langer…':'Hold still, low light takes a little longer…', 'Houd stil…':'Hold still…', 'Vasthouden…':'Hold it…', 'De zaklamp lukt niet op dit toestel':'The torch does not work on this device',
   'De sommelier leest het etiket…':'The sommelier is reading the label…', 'Het antwoord kwam gehavend aan, ik lees het nog een keer…':'The answer arrived damaged, reading it once more…',
   'Automatisch lezen lukte niet':'Automatic reading failed', '↻ Probeer opnieuw te lezen':'↻ Try reading again', '↻ Probeer opnieuw':'↻ Try again', 'Begin opnieuw':'Start over', 'Opnieuw beginnen':'Start over',
-  'Gescand etiket':'Scanned label', 'Snel wegleggen':'Quick store', '+ Kelder in':'+ Into the cellar', 'In de kelder leggen':'Put in the cellar', 'Vanavond drinken, herinner me om af te strepen':'Drinking tonight, remind me to tick it off',
+  'Gescand etiket':'Scanned label', 'Snel wegleggen':'Put away', '+ Kelder in':'+ Add to cellar', 'In de kelder leggen':'Put in the cellar', 'Zet op tafel, herinner me om af te strepen':'Put it on the table, remind me to tick it off',
   'Staat al in je kelder':'Already in your cellar', 'Als nieuwe bewaren':'Save as new', 'Bijschrijven':'Add to stock', 'Drink / haal er één uit de kelder':'Drink / take one out of the cellar',
   'Zet hem ook op mijn verlanglijst':'Also put it on my wishlist', 'Op verlanglijst':'On wishlist', 'Op je verlanglijst gezet':'Added to your wishlist', '☆ Verlanglijst':'☆ Wishlist',
   'Jaargang niet op het etiket gevonden':'Vintage not found on the label', 'Kleur niet van het etiket af te leiden.':'Colour cannot be told from the label.', 'Kies hieronder het type; venster en pairing rekenen dan mee.':'Choose the type below; window and pairing then follow.',
@@ -7468,8 +7468,8 @@ const EN = {
   'Biefstuk':'Steak', 'Wild':'Game', 'Witte vis':'White fish', 'Schaaldieren':'Shellfish', 'Sushi':'Sushi', 'Pasta met tomaat':'Pasta with tomato', 'Risotto':'Risotto', 'Kip uit de oven':'Roast chicken',
   'Kaasplank':'Cheese board', 'Thaise curry':'Thai curry', 'BBQ':'BBQ', 'Chocolade':'Chocolate', 'Eerder gevraagd':'Asked before', '· tik voor hetzelfde advies, zonder credit':'· tap for the same advice, no credit',
   'Vertel eerst wat je gaat eten':'Tell me first what you are eating', 'De sommelier proeft in gedachten…':'The sommelier is tasting in their mind…', 'Geen goede match':'No good match',
-  'Probeer het gerecht anders te omschrijven.':'Try describing the dish differently.', 'Deze kies ik':'I choose this one', '✓ Deze kies ik':'✓ I choose this one', '✓ Op tafel':'✓ On the table',
-  'Moet toch binnenkort op, vanavond is een mooi excuus.':'Needs drinking soon anyway; tonight is a fine excuse.', "Over z'n venster heen. Juist nú opdrinken, niet langer bewaren.":'Past its window. Drink it now rather than keep it.',
+  'Probeer het gerecht anders te omschrijven.':'Try describing the dish differently.', 'Deze kies ik':'Pick this', '✓ Deze kies ik':'✓ Picked', '✓ Op tafel':'✓ On the table',
+  'Zit in het laatste deel van z\'n venster: een goed moment om hem te openen.':'In the last part of its window: a good moment to open it.', "Over z'n venster heen: open hem liever vroeg dan laat.":'Past its window: better opened sooner than later.',
   'Stuur het advies bij':'Steer the advice', 'bv. liever wit, iets lichter, niet de Barolo':'e.g. rather white, something lighter, not the Barolo', 'Bijsturing':'Steering',
   'Liever wit':'Rather white', 'Liever rood':'Rather red', 'Iets lichter':'Something lighter', 'Iets specialer':'Something more special', 'Een eenvoudigere fles':'A simpler bottle', 'Niet de eerste':'Not the first one',
   'Zeg wat er anders moet, bv. liever wit':'Say what should change, e.g. rather white', 'Tik een fles aan voor gerechten die erbij passen.':'Tap a bottle for dishes that go with it.',
@@ -7483,7 +7483,7 @@ const EN = {
   'Proefmenu of dagmenu? Fotografeer de menukaart. De sommelier leest de gangen en kiest er één fles bij (of per gang een glas).':'Tasting menu or set menu? Photograph the menu. The sommelier reads the courses and picks one bottle (or a glass per course).',
   "of typ het: 'gebraden parelhoen met knolselderij'":"or type it: 'roast guinea fowl with celeriac'", 'geen budget':'no budget', 'tot € 40':'up to € 40', 'tot € 60':'up to € 60', 'tot € 80':'up to € 80', 'tot € 120':'up to € 120',
   'ook per glas':'by the glass too', 'Lees de kaart en kies':'Read the list and choose', 'Maak eerst een foto van de wijnkaart':'Take a photo of the wine list first', 'De sommelier leest de kaart…':'The sommelier is reading the list…',
-  'De kaart lezen lukte niet':'Reading the list failed', 'Van het menu gelezen':'Read from the menu', 'Per glas:':'By the glass:', 'Deze bestel ik':'I will order this', 'Uit eten? Scan de wijnkaart →':'Eating out? Scan the wine list →',
+  'De kaart lezen lukte niet':'Reading the list failed', 'Van het menu gelezen':'Read from the menu', 'Per glas:':'By the glass:', 'Deze bestel ik':'Order this', 'Uit eten? Scan de wijnkaart →':'Eating out? Scan the wine list →',
   'Prijzen en namen komen van de foto. Controleer ze even bij de bediening.':'Prices and names come from the photo. Do check them with the staff.', 'Vertel wat je gaat eten, of fotografeer het menu':'Say what you are eating, or photograph the menu',
   'Even opletten':'Take note', 'Gevonden':'Found', 'Gevonden:':'Found:', 'per glas':'per glass', 'per fles':'per bottle', 'wijnkaart in een restaurant':'a wine list in a restaurant',
   /* overzicht */
@@ -7630,7 +7630,7 @@ const EN = {
   'en tik hieronder op':'and tap', 'Inloggen':'Log in',
   'Je gratis scans zijn op':'Your free scans are used up',
   'Alles wat de sommelier voor je leest en opzoekt, vijftien keer zo vaak.':'Everything the sommelier reads and looks up for you, fifteen times as often.',
-  ': je hele kelder in één middag gescand':': your whole cellar scanned in one afternoon',
+  ': genoeg om een flinke kelder in te scannen':': enough to scan in a sizeable cellar',
   "Wijnkaarten lezen in elk restaurant, zo'n 35 per maand":'Read wine lists in any restaurant, about 35 a month',
   'Pairing uit je eigen kelder en prijzen met bron, zo vaak als je wilt':'Pairing from your own cellar and sourced prices, as often as you like',
   'Maandelijks opzegbaar.':'Cancel monthly.', 'Per jaar':'Per year', 'Per maand':'Per month',
@@ -7676,9 +7676,9 @@ const EN_RE = [
   [/^We stuurden een mail naar (.+)\. Tik op de link erin(, kom dan terug naar deze app)?$/, (m, a, b) => `We sent an email to ${a}. Tap the link in it${b ? ', then come back to this app' : ''}`],
   [/^(\d+) scans per maand$/, (m, n) => `${n} scans a month`],
   [/^Kelderregel: (.+)$/, (m, r) => `Cellar rule: ${tr(r)}`],
-  [/^(.+?)(?: uit (.+?))?: een klassieke druif bij (.+)\.$/, (m, a, b, l) => `${enEn(a)}${b ? ' from ' + b : ''}: a classic grape for ${trLaag(l)}.`],
-  [/^(.+?)(?: uit (.+?))?: (\S+), het register van (.+)\.$/, (m, a, b, t, l) => `${enEn(a)}${b ? ' from ' + b : ''}: ${trLaag(t)}, the register for ${trLaag(l)}.`],
-  [/^(.+?)(?: uit (.+?))?, het register van (.+)\.$/, (m, a, b, l) => `${enEn(tr(a))}${b ? ' from ' + b : ''}, the register for ${trLaag(l)}.`],
+  [/^(.+?)(?: uit (.+?))?: (?:een klassieke druif|klassieke druiven) bij (.+)\.$/, (m, a, b, l) => `${enEn(a)}${b ? ' from ' + b : ''}: ${/ en /.test(a) ? 'classic grapes' : 'a classic grape'} with ${trLaag(l)}.`],
+  [/^(.+?)(?: uit (.+?))?: (\S+), het register van (.+)\.$/, (m, a, b, t, l) => `${enEn(a)}${b ? ' from ' + b : ''}: ${trLaag(t)} with the weight for ${trLaag(l)}.`],
+  [/^(.+?)(?: uit (.+?))?, het register van (.+)\.$/, (m, a, b, l) => `${enEn(tr(a))}${b ? ' from ' + b : ''}, with the weight for ${trLaag(l)}.`],
   [/^(.+?)(?: uit (.+?))?: (\S+) kan hier ook, al is het niet de eerste keuze bij (.+)\.$/, (m, a, b, t, l) => `${enEn(a)}${b ? ' from ' + b : ''}: ${trLaag(t)} works too, though it is not the first choice for ${trLaag(l)}.`],
   [/^(Licht|Weinig tannine|Zacht en rond|Droog|Geen hout) tot (Vol|Veel tannine|Fris en strak|Zoet|Veel hout)$/, (m, a, b) => `${EN[a]} to ${EN[b]}`],
   [/^(\d+) fles(?:sen)? zonder prijs$/, (m, n) => `${n} ${bottles(n)} without a price`],
